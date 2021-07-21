@@ -1,0 +1,13 @@
+node_modules/
+vendor/
+yarn.lock
+package.lock
+composer.lock
+assets/css/
+assets/js/
+assets/libs/
+.yarn/**
+.yarn/**/**
+!.yarn/*.yml
+.pnp.*
+.env

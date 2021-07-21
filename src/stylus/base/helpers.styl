@@ -1,0 +1,32 @@
+/*!
+ --- HELPERS ------------------------------------
+*/
+
+.tab
+  display: none;
+  opacity: 0;
+
+  &.is-active
+    display: block;
+    animation: tab-show 1s linear 0.01s 1 forwards;
+
+@keyframes tab-show
+  from
+    opacity: 0;
+  to
+    opacity: 1;
+
+
+.iframe-container
+  overflow: hidden;
+  padding-top: 56.25%;
+  position: relative;
+  width: 100%;
+
+  iframe
+    border: 0;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
