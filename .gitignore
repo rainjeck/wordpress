@@ -6,8 +6,9 @@ composer.lock
 assets/css/
 assets/js/
 assets/libs/
-.yarn/**
-.yarn/**/**
+.yarn/cache/
+.yarn/*.gz
 !.yarn/*.yml
+!.yarn/releases/*.cjs
 .pnp.*
 .env
