@@ -1,0 +1,13 @@
+{
+  "name": "theme",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Tishuk Nadezda (https://github.com/rainjeck)",
+  "homepage": "https://github.com/rainjeck/wordpress",
+  "license": "MIT",
+  "browserslist": [
+    "> 1%",
+    "last 10 versions",
+    "not ie <= 8"
+  ]
+}

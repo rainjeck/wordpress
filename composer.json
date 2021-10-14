@@ -1,0 +1,8 @@
+{
+  "autoload": {
+    "files": ["vendor/cmb2/cmb2/init.php"],
+    "psr-4": {
+      "tnwpt\\": "./config"
+    }
+  }
+}

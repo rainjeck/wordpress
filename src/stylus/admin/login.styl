@@ -1,0 +1,184 @@
+@import '../setup/vars.styl';
+@import '../setup/mixins.styl';
+
+$colorLogin = #374151;
+$colorLoginAccent = #1D4ED8;
+$fontLogin = 'sans-serif';
+
+
+/*!
+  LOGIN
+  ===============================================
+*/
+
+.login
+  height: 100vh
+  display: flex
+  flex-direction: column
+  justify-content: center
+  font-family: $fontLogin
+  color: $colorLogin
+  background-color: #f6f6f6
+  padding: 0
+
+  a:focus
+    box-shadow: none
+
+  h1
+    width: 100%
+    margin-bottom: 15px
+
+    a
+      background: none
+      width: 100%
+      height: auto
+      text-indent: 0
+      margin-bottom: 0
+      color: $colorLogin
+      &:hover
+        color: $colorLogin
+
+      img
+        max-width: 100%
+
+  form
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.05)
+    border-radius: 3px
+    border: 0
+    padding 2em 1.5em 1.5em
+
+    .input
+      background-color: #fff
+      border-radius: 3px
+      border-color: rgba($colorLogin, 0.2)
+      box-shadow: none
+      font-size: 1.2em
+      padding: 0 0.5em
+
+      &:focus
+        border-color: $colorLoginAccent
+        box-shadow: 0 0 0 1px $colorLoginAccent
+
+    .button
+      &.wp-hide-pw
+        color: $colorLoginAccent
+
+    .forgetmenot
+      float: none
+
+  .forgetmenot
+    display: flex
+    align-items: center
+
+    input
+      display: block
+      border-color: rgba($colorLogin, 0.3)
+      background-color: #fff
+      margin: 0
+      box-shadow: none
+
+      &:before
+        content: ''
+        width: 14px
+        height: 14px
+        margin: 0
+        border-radius: 3px
+
+      &:checked:before
+        background-color: $colorLoginAccent
+
+    label
+      display: block
+      font-size: 0.9em
+      line-height: 1
+      padding-top: 2px
+      margin-bottom: 0
+      margin-left: 0.5em
+
+  #nav a,
+  #backtoblog a
+    color: #9e9c99
+    transition()
+
+    &:hover, &:focus
+      color: $colorLogin
+      box-shadow: none
+
+  .privacy-policy-page-link
+    margin: 4em 0 0
+
+  .privacy-policy-link
+    color: $colorLogin
+    transition()
+
+    &:hover
+      opacity: 0.6
+
+  #backtoblog,
+  .privacy-policy-page-link
+    display: none
+
+#login
+  padding: 2em 1em
+
+  form
+    a
+      color: $colorLoginAccent;
+
+    p.submit
+      margin-top: 2em
+
+    .button,
+    .button-primary
+      float: none
+      display: block
+      width: 100%
+      background-color: $colorLoginAccent;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $colorLoginAccent;
+      height: 3em
+      transition()
+
+      &:hover
+        background-color: rgba($colorLoginAccent, 0.8)
+
+      &:focus
+        // box-shadow: 0 0 0 1px #fff, 0 0 0 3px colorPrime
+        box-shadow: none
+        border-color: rgba(#fff,0)
+
+      &.wp-hide-pw
+        color: $colorLoginAccent
+        background: none;
+        width: auto;
+        border: 0;
+        padding: 0;
+        height: 32px;
+        min-height: auto;
+
+    .admin-email__actions-primary
+      a.button
+        background: none;
+        color: $colorLoginAccent;
+
+
+.login-action-confirm_admin_email
+  #login
+    width: 100%;
+    max-width: 480px;
+    margin-top: auto;
+
+
+.admin-email__actions-primary
+  .button
+    margin-bottom: 1em;
+
+
+.login
+  .admin-email__actions
+    .button-primary
+      margin-left: auto;
+      margin-right: auto;
