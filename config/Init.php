@@ -17,6 +17,7 @@ class Init
       custom\AdminOptionsPage::class,
       custom\CustomFields::class,
       ajax\Mail::class,
+      helpers\BackupDB::class,
       helpers\Admin::class,
       helpers\AdminColumns::class,
       helpers\ImageOptimizer::class,

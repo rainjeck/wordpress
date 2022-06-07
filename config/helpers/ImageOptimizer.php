@@ -2,10 +2,6 @@
 
 namespace tnwpt\helpers;
 
-use Spatie\ImageOptimizer\OptimizerChain;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
-use Spatie\ImageOptimizer\Optimizers\Pngquant;
-
 class ImageOptimizer
 {
   public function register()
@@ -14,7 +10,6 @@ class ImageOptimizer
     add_filter( 'big_image_size_threshold', '__return_false' );
 
     $this->checkOriginalImagesFolder();
-    // add_filter( 'wp_generate_attachment_metadata', [ &$this, 'optimizeImage'], 10, 3 );
     add_filter( 'wp_generate_attachment_metadata', [ &$this, 'optimizeImageStandart'], 10, 3 );
     add_filter( 'pre_delete_attachment', [ &$this, 'deleteOriginalAttachment'], 10, 3 );
 
@@ -160,67 +155,9 @@ class ImageOptimizer
     $upload_dir = wp_get_upload_dir();
     $original_folder = "{$upload_dir['basedir']}/originals";
 
-    if ( file_exists($original_folder) ) return;
-
-    mkdir($original_folder, 0777);
-  }
-
-  public function optimizeImage( $image_meta, $attachment_id, $string )
-  {
-    if ( !wp_attachment_is_image($attachment_id) ) return;
-
-    $this->checkOriginalImagesFolder();
-
-    $upload_dir = wp_get_upload_dir();
-    $original_folder = "{$upload_dir['basedir']}/originals";
-
-    $meta = wp_get_attachment_metadata($attachment_id);
-    $original = $meta['file'];
-    $sizes = $meta['sizes'];
-
-    // Copy Original File to 'originals'
-    $original_path = "{$upload_dir['basedir']}/{$original}";
-    $original_path_to = "{$upload_dir['basedir']}/originals/{$original}";
-    copy($original_path, $original_path_to);
-
-    // Optimize sizes
-    $optimizerChain = (new OptimizerChain)
-      ->addOptimizer(new Jpegoptim([
-        '-m80',
-        '--strip-all',
-        '--all-progressive',
-      ]))
-      ->addOptimizer(new Pngquant([
-        '--speed 3',
-        '--force',
-        '--strip'
-      ]));
-
-    foreach ($sizes as $size) {
-      $path = "{$upload_dir['basedir']}/{$size['file']}";
-      // $path_to = "{$upload_dir['basedir']}/opt/{$size['file']}";
-      $optimizerChain->optimize($path);
+    if (!is_dir($original_folder)) {
+      mkdir($original_folder, 0777);
     }
-
-    unset($optimizerChain);
-
-    // Optimize Original image
-    $optimizerChain = (new OptimizerChain)
-      ->addOptimizer(new Jpegoptim([
-        '-m90',
-        '--strip-all',
-        '--all-progressive',
-      ]))
-      ->addOptimizer(new Pngquant([
-        '--speed 3',
-        '--force',
-        '--strip'
-      ]));
-
-    // $original_path_to = "{$upload_dir['basedir']}/opt/{$original}";
-    $optimizerChain->optimize($original_path);
-
-    return $image_meta;
   }
 
   public function optimizeImageStandart( $image_meta, $attachment_id, $string )

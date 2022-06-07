@@ -2,10 +2,6 @@
 
 namespace tnwpt\helpers;
 
-use Spatie\ImageOptimizer\OptimizerChain;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
-use Spatie\ImageOptimizer\Optimizers\Pngquant;
-
 class Admin
 {
   public function register()

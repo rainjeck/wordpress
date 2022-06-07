@@ -51,7 +51,8 @@ class AdminOptionsPage
       'type' => 'group',
       'id' => 'g_code',
       'repeatable' => false,
-      'options' => [ 'group_title' => 'Codes', 'closed' => false ]
+      'options' => [ 'group_title' => 'Codes', 'closed' => false ],
+      'desc' => "Don't put any code in the HEAD tag. It slows loading"
     ]);
 
     // $mb->add_group_field($group_code, [
