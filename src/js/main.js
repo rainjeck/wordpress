@@ -1,12 +1,9 @@
-import Form from './modules/Form.js';
+(function () {
+  //=require modules/app.js
+  //=require modules/form.js
 
-class App {
-  constructor() {
-    console.log("It works!");
-    svg4everybody();
-
-    new Form();
-  }
-};
-
-new App();
+  document.addEventListener('DOMContentLoaded', () => {
+    app.init();
+    form.init();
+  });
+}());

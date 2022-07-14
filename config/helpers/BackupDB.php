@@ -19,10 +19,10 @@ class BackupDB
 
     $this->checkBackupDir();
 
-    add_action( 'admin_head', [&$this, 'setupCron'] );
-    add_action( 'tnwpt_backupdb_cron', [&$this, 'actionCron'] );
+    add_action('admin_head', [&$this, 'setupCron']);
+    add_action('tnwpt_backupdb_cron', [&$this, 'actionCron']);
 
-    add_action( 'cmb2_admin_init', [&$this, 'adminControlPage'] );
+    add_action('cmb2_admin_init', [&$this, 'adminControlPage']);
   }
 
   public function checkBackupDir()

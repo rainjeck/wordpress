@@ -14,29 +14,29 @@ class Admin
 
     if ( is_admin() ) {
       // отключим проверку обновлений при любом заходе в админку...
-      // remove_action( 'admin_init', '_maybe_update_core' );
-      remove_action( 'admin_init', '_maybe_update_plugins' );
-      remove_action( 'admin_init', '_maybe_update_themes' );
+      remove_action('admin_init', '_maybe_update_core');
+      remove_action('admin_init', '_maybe_update_plugins');
+      remove_action('admin_init', '_maybe_update_themes');
 
       // отключим проверку обновлений при заходе на специальную страницу в админке...
-      // remove_action( 'load-plugins.php', 'wp_update_plugins' );
-      remove_action( 'load-themes.php', 'wp_update_themes' );
+      remove_action('load-plugins.php', 'wp_update_plugins');
+      remove_action('load-themes.php', 'wp_update_themes');
 
       /**
        * отключим проверку необходимости обновить браузер в консоли - мы всегда юзаем топовые браузеры!
        * эта проверка происходит раз в неделю...
        * @see https://wp-kama.ru/function/wp_check_browser_version
        */
-      add_filter( 'pre_site_transient_browser_'. md5( $_SERVER['HTTP_USER_AGENT'] ), '__return_true' );
+      add_filter('pre_site_transient_browser_'. md5( $_SERVER['HTTP_USER_AGENT'] ), '__return_true');
     }
 
-    add_action( 'admin_enqueue_scripts', [ &$this, 'adminEnqueueScripts' ] );
-    add_action( 'login_enqueue_scripts', [ &$this, 'loginEnqueueScripts' ] );
+    add_action('admin_enqueue_scripts', [&$this, 'adminEnqueueScripts']);
+    add_action('login_enqueue_scripts', [&$this, 'loginEnqueueScripts']);
 
-    add_action( 'wp_before_admin_bar_render', [ &$this, 'beforeAdminBarRender' ] );
+    add_action('wp_before_admin_bar_render', [&$this, 'beforeAdminBarRender']);
 
-    add_filter( 'login_headertext', [ &$this, 'loginHeaderText' ], 10, 1 );
-    add_filter( 'login_headerurl', [ &$this, 'loginHeaderUrl' ], 10, 1 );
+    add_filter('login_headertext', [&$this, 'loginHeaderText'], 10, 1);
+    add_filter('login_headerurl', [&$this, 'loginHeaderUrl'], 10, 1);
   }
 
   public function adminEnqueueScripts()
@@ -44,7 +44,7 @@ class Admin
     $url = get_template_directory_uri();
 
     wp_enqueue_style('admin-modify', "{$url}/assets/css/admin.css", array('cmb2-styles'), null, 'all');
-    wp_enqueue_script( 'admin-main', "{$url}/assets/js/admin.min.js", array(), null, true );
+    wp_enqueue_script('admin-main', "{$url}/assets/js/admin.min.js", array(), null, true);
   }
 
   public function loginEnqueueScripts()
@@ -59,16 +59,16 @@ class Admin
     global $wp_admin_bar;
 
     // Don't show for logged out users.
-    if ( ! is_user_logged_in() ) return;
+    if (!is_user_logged_in()) return;
 
     // Show only when the user is a member of this site, or they're a super admin.
-    if ( ! is_user_member_of_blog() && ! current_user_can( 'manage_network' ) ) return;
+    if (!is_user_member_of_blog() && !current_user_can('manage_network')) return;
 
     $wp_admin_bar->add_menu( [
       'id'    => 'site-name',
       'title' => __('Visit Site'),
-      'href'  => ( is_admin() || ! current_user_can( 'read' ) ) ? home_url( '/' ) : admin_url(),
-      'meta' => [ 'target' => '_blank', 'title' => 'Open in a new tab' ]
+      'href'  => (is_admin() || ! current_user_can('read')) ? home_url( '/' ) : admin_url(),
+      'meta' => ['target' => '_blank', 'title' => 'Open in a new tab']
     ] );
 
     $wp_admin_bar->remove_node('wp-logo');

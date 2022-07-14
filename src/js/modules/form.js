@@ -1,10 +1,11 @@
-class Form {
+const form = {
+  init() {
+    const _this = form;
 
-  constructor() {
-    this.setup();
-    this.validation();
-    this.sending();
-  }
+    _this.setup(_this);
+    _this.validation();
+    _this.sending();
+  },
 
   setup() {
     this.bouncerSettings = {
@@ -24,7 +25,7 @@ class Form {
       },
       disableSubmit: true
     }
-  }
+  },
 
   validation() {
     if (!document.querySelector('[data-bouncer]')) return;
@@ -40,12 +41,17 @@ class Form {
       var field = e.target;
       field.classList.remove('valid');
     }, false);
-  }
+  },
 
   sending() {
     document.addEventListener('bouncerFormValid', e => {
       const form = e.target;
       const type = form.dataset.type;
+
+      if (form.hasAttribute('method')) {
+        form.submit();
+        return;
+      }
 
       const btn = form.querySelector('[type="submit"]');
 
@@ -58,21 +64,20 @@ class Form {
       form.classList.add('is-process');
       btn.setAttribute('disabled', true);
 
-      axios.post(url, fd).then((res) => {
-        console.log(res.data);
+      fetch(url, {
+        method: 'POST',
+        body: fd
+      }).then(response => response.json()).then(res => {
+        console.log(res);
 
-        if (res.data.success) {
-          form.classList.remove('is-process');
-          btn.removeAttribute('disabled');
-          form.reset();
+        form.classList.remove('is-process');
+        btn.removeAttribute('disabled');
+        form.reset();
 
-          if (res.data.data.url) {
-            window.location.assign(res.data.data.url);
-          }
+        if (res.data.url) {
+          window.location.assign(res.data.url);
         }
       });
     }, false);
   }
 };
-
-export default Form;

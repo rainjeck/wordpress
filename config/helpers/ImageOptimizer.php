@@ -6,17 +6,17 @@ class ImageOptimizer
 {
   public function register()
   {
-    add_filter( 'jpeg_quality', [ &$this, 'jpeg_quality' ], 10, 1 );
-    add_filter( 'big_image_size_threshold', '__return_false' );
+    add_filter('jpeg_quality', [ &$this, 'jpeg_quality' ], 10, 1);
+    add_filter('big_image_size_threshold', '__return_false');
 
     $this->checkOriginalImagesFolder();
-    add_filter( 'wp_generate_attachment_metadata', [ &$this, 'optimizeImageStandart'], 10, 3 );
-    add_filter( 'pre_delete_attachment', [ &$this, 'deleteOriginalAttachment'], 10, 3 );
+    add_filter('wp_generate_attachment_metadata', [ &$this, 'optimizeImageStandart'], 10, 3);
+    add_filter('pre_delete_attachment', [ &$this, 'deleteOriginalAttachment'], 10, 3);
 
-    add_action( 'cmb2_admin_init', [&$this, 'adminControlPage'] );
+    add_action('cmb2_admin_init', [&$this, 'adminControlPage']);
 
-    add_action( 'wp_ajax_regenerateThumbs', [ &$this, 'regenerateThumbs'] );
-    add_action( 'wp_ajax_regenerateThumbsStatus', [ &$this, 'regenerateThumbsStatus'] );
+    add_action('wp_ajax_regenerateThumbs', [ &$this, 'regenerateThumbs']);
+    add_action('wp_ajax_regenerateThumbsStatus', [ &$this, 'regenerateThumbsStatus']);
   }
 
   public function adminControlPage()
@@ -56,7 +56,7 @@ class ImageOptimizer
     ]);
   }
 
-  public function imagesCount( $field_args, $field )
+  public function imagesCount($field_args, $field)
   {
     $posts = get_posts([
       'post_type' => 'attachment',
@@ -69,7 +69,7 @@ class ImageOptimizer
     return count($posts);
   }
 
-  public function regenerateThumbsButton( $field_args, $field )
+  public function regenerateThumbsButton($field_args, $field)
   {
     ?>
     <div class="cmb-row cmb-type-text cmb2-id-images-status table-layout">
@@ -84,7 +84,7 @@ class ImageOptimizer
     $get_upload_dir = wp_upload_dir();
     $upload_dir = $get_upload_dir['basedir'];
 
-    $opts = get_option( 'tnwpt_regenerate_thumbs', false );
+    $opts = get_option('tnwpt_regenerate_thumbs', false);
     $count = $opts['images_status'];
 
     $attachment_ids = get_posts([
@@ -103,9 +103,9 @@ class ImageOptimizer
 
     // Delete Files
     foreach($attachment_ids as $id) {
-      $meta = wp_get_attachment_metadata( $id );
-      $backup_sizes = get_post_meta( $id, '_wp_attachment_backup_sizes', true );
-      $file = get_attached_file( $id );
+      $meta = wp_get_attachment_metadata($id);
+      $backup_sizes = get_post_meta($id, '_wp_attachment_backup_sizes', true);
+      $file = get_attached_file($id);
 
       wp_delete_attachment_files($id, $meta, $backup_sizes, $file );
     }
@@ -139,10 +139,10 @@ class ImageOptimizer
 
   public function regenerateThumbsStatus()
   {
-    $opts = get_option( 'tnwpt_regenerate_thumbs', false );
+    $opts = get_option('tnwpt_regenerate_thumbs', false);
     $count = $opts['images_status'];
 
-    wp_send_json_success( $count );
+    wp_send_json_success($count);
   }
 
   public function jpeg_quality($q)
@@ -160,9 +160,9 @@ class ImageOptimizer
     }
   }
 
-  public function optimizeImageStandart( $image_meta, $attachment_id, $string )
+  public function optimizeImageStandart($image_meta, $attachment_id, $string)
   {
-    if ( !wp_attachment_is_image($attachment_id) ) return;
+    if (!wp_attachment_is_image($attachment_id)) return;
 
     $this->checkOriginalImagesFolder();
 
@@ -182,28 +182,28 @@ class ImageOptimizer
       $path = "{$upload_dir['basedir']}/{$size['file']}";
       chmod($path, 0777);
       // $path_to = "{$upload_dir['basedir']}/opt/{$size['file']}";
-      $image = wp_get_image_editor( $path );
+      $image = wp_get_image_editor($path);
 
-      if ( ! is_wp_error( $image ) ) {
+      if (!is_wp_error($image)) {
         $image->set_quality(80);
-        $image->save( $path );
+        $image->save($path);
       }
     }
 
     unset($image);
 
-    $image = wp_get_image_editor( $original_path );
+    $image = wp_get_image_editor($original_path);
     $image->set_quality(80);
-    $image->save( $original_path );
+    $image->save($original_path);
 
     return $image_meta;
   }
 
-  public function deleteOriginalAttachment( $delete, $post, $force_delete )
+  public function deleteOriginalAttachment($delete, $post, $force_delete)
   {
     if ( !wp_attachment_is_image($post->ID) ) return $delete;
 
-    $post = get_post( $post->ID );
+    $post = get_post($post->ID);
 
     $upload_dir = wp_get_upload_dir();
 

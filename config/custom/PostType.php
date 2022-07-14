@@ -6,8 +6,8 @@ class PostType
 {
   public function register()
   {
-    add_action( 'init', [&$this, 'registerPostTypes'] );
-    add_action( 'dashboard_glance_items' , [&$this, 'consoleOnShowMetabox'] );
+    add_action('init', [&$this, 'registerPostTypes']);
+    add_action('dashboard_glance_items' , [&$this, 'consoleOnShowMetabox']);
 
   }
 

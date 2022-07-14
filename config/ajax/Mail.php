@@ -13,11 +13,11 @@ class Mail
 
   private function register_mail_actions()
   {
-    add_action( 'phpmailer_init', [&$this, 'phpmailer_init'] );
-    add_action( 'wp_mail_failed', [&$this, 'wp_mail_failed'], 10, 1 );
+    add_action('phpmailer_init', [&$this, 'phpmailer_init']);
+    add_action('wp_mail_failed', [&$this, 'wp_mail_failed'], 10, 1);
 
-    add_action( 'wp_ajax_mail', [ &$this, 'mailHandler'] );
-    add_action( 'wp_ajax_nopriv_mail', [ &$this, 'mailHandler' ] );
+    add_action('wp_ajax_mail', [&$this, 'mailHandler']);
+    add_action('wp_ajax_nopriv_mail', [&$this, 'mailHandler']);
   }
 
   public function phpmailer_init($phpmailer)
@@ -48,7 +48,7 @@ class Mail
   public function mailHandler()
   {
     // проверяем nonce код, если проверка не пройдена прерываем обработку
-    if ( ! wp_verify_nonce( $_POST['token'], $_ENV['MAIL_NONCE']) ) {
+    if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
       wp_send_json_error(['msg' => 'Fail']); // Check failed
     }
 
@@ -56,7 +56,7 @@ class Mail
     $data = $_POST; // если FormData
 
     // проверяем на робота
-    if ( !empty($data['mouse']) || !isset($data['mouse']) ) {
+    if (!empty($data['mouse']) || !isset($data['mouse'])) {
       wp_send_json_error(['msg' => 'You are robot']); // Robot
     }
 
@@ -110,7 +110,7 @@ class Mail
         'email' => $to,
         'sbj' => $sbj,
         'msg' => $msg,
-        // 'url' => $url
+        // 'url' => '/'
       ]);
     }
 
@@ -135,13 +135,13 @@ class Mail
     }
   }
 
-  private function postFilesData( $files )
+  private function postFilesData($files)
   {
     if (!$files) return [];
 
     $filesData = [];
 
-    $types = [ 'msword', 'vnd.openxmlformats-officedocument.wordprocessingml.document', 'plain', 'rtf', 'pdf', 'jpeg', 'png', 'tiff' ];
+    $types = ['msword', 'vnd.openxmlformats-officedocument.wordprocessingml.document', 'plain', 'rtf', 'pdf', 'jpeg', 'png', 'tiff'];
     $size = 2; // limit 2 mb
 
     // Фильтры

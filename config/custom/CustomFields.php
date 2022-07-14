@@ -9,7 +9,7 @@ class CustomFields
 
   public function register()
   {
-    add_action( 'cmb2_admin_init', [&$this, 'registerCustomFields'] );
+    add_action('cmb2_admin_init', [&$this, 'registerCustomFields']);
   }
 
   public function registerCustomFields()

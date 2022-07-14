@@ -6,11 +6,11 @@ class AdminColumns
 {
   public function register()
   {
-    add_filter( 'manage_posts_columns', [ &$this, 'adminColumnsAdd' ] );
-    add_action( 'manage_posts_custom_column', [ &$this, 'adminColumnsView' ] );
+    add_filter('manage_posts_columns', [&$this, 'adminColumnsAdd']);
+    add_action('manage_posts_custom_column', [&$this, 'adminColumnsView']);
   }
 
-  public function adminColumnsAdd( $columns )
+  public function adminColumnsAdd($columns)
   {
     $post_type = get_post_type();
 
@@ -23,20 +23,20 @@ class AdminColumns
       // }
 
       $new_column = ['thumbnail' => ''];
-      $columns = array_slice( $columns, 0, $num ) + $new_column + array_slice( $columns, $num );
+      $columns = array_slice($columns, 0, $num) + $new_column + array_slice($columns, $num);
     }
 
     // ID
     if (in_array($post_type, [])) {
       $num = 1;
-      $new_column = [ 'pid' => 'ID' ];
-      $columns = array_slice( $columns, 0, $num ) + $new_column + array_slice( $columns, $num );
+      $new_column = ['pid' => 'ID'];
+      $columns = array_slice($columns, 0, $num) + $new_column + array_slice($columns, $num);
     }
 
     return $columns;
   }
 
-  public function adminColumnsView( $column_name )
+  public function adminColumnsView($column_name)
   {
     if ( !in_array($column_name, ['thumbnail', 'pid']) ) return;
 
