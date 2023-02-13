@@ -23,6 +23,9 @@ class BackupDB
     add_action('tnwpt_backupdb_cron', [&$this, 'actionCron']);
 
     add_action('cmb2_admin_init', [&$this, 'adminControlPage']);
+
+    add_action('wp_ajax_createBackupFile', [ &$this, 'createBackupFile']);
+    add_action('wp_ajax_deleteBackupFile', [ &$this, 'deleteBackupFile']);
   }
 
   public function checkBackupDir()
@@ -48,9 +51,11 @@ class BackupDB
   {
     $list = $this->backupList();
 
+    $nonce = wp_create_nonce($_ENV['MAIL_NONCE']);
+
     $mb = new_cmb2_box([
       'id' => 'backup',
-      'title' => 'Backup DB',
+      'title' => 'Резервные копии БД',
       'object_types' => [ 'options-page' ],
       'parent_slug' => 'tools.php',
       'option_key' => 'tnwpt_backupdb',
@@ -62,6 +67,7 @@ class BackupDB
       'desc' => "
         <p>Папка, где хранятся копии: {$this->db_path}</p>
         <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>tnwpt_backupdb_cron</strong>'</p>
+        <p><button type='button' id='create-backup' data-token='{$nonce}'>Создать резервную копию</button></p>
         ",
       'type' => 'title'
     ]);
@@ -137,17 +143,48 @@ class BackupDB
 
   private function backupList()
   {
-    $html = '';
+    $html = '<div class="backup-list"><ul>';
 
     $files = array_values(array_diff(scandir($this->db_path), ['..', '.'])); // files in dir
 
+    $nonce = wp_create_nonce($_ENV['MAIL_NONCE']);
+
     if ($files) {
       foreach($files as $file) {
-        $html .= "<p>{$file} <a href='{$this->db_path_url}{$file}'>Скачать</a></p>";
+        $html .= "<li>{$file} <a href='{$this->db_path_url}{$file}'>Скачать</a> <button type='button' class='js-backup-delete' data-file='{$file}' data-token='{$nonce}'><span class='dashicons dashicons-trash'></span></button></li>";
       }
     }
 
+    $html .= '</ul></div>';
+
     return $html;
+  }
+
+  public function createBackupFile()
+  {
+    // проверяем nonce код, если проверка не пройдена прерываем обработку
+    if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
+      wp_send_json_error(['msg' => 'Fail']); // Check failed
+    }
+
+    $this->createBackup();
+
+    wp_send_json_success();
+    die();
+  }
+
+  public function deleteBackupFile()
+  {
+    // проверяем nonce код, если проверка не пройдена прерываем обработку
+    if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
+      wp_send_json_error(['msg' => 'Fail']); // Check failed
+    }
+
+    $path = "{$this->db_path}{$_POST['file']}";
+    unlink($path);
+
+    wp_send_json_success();
+    die();
   }
 }
 ?>

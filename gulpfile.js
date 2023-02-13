@@ -58,7 +58,7 @@ gulp.task("css-libs", function () {
     .pipe(plugin.rename({
       suffix: '.min'
     }))
-    .pipe(plugin.sourcemaps.write("../css"))
+    // .pipe(plugin.sourcemaps.write("../css"))
     .pipe(gulp.dest(destAssetsDir + "/css"))
   );
 });
@@ -153,12 +153,11 @@ gulp.task("svg-sprite", function () {
     ])
     .pipe(plugin.svgmin({
       multipass: true,
-      plugins: [
-        {
-          name: 'removeAttrs',
-          params: {
-            attrs: "(fill|stroke|opacity|color|style)"
-          }
+      plugins: [{
+        name: 'removeAttrs',
+        params: {
+          attrs: "(fill|stroke|opacity|color|style)"
+        }
       }]
     }))
     .pipe(plugin.svgSprite({

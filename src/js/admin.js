@@ -1,9 +1,11 @@
 (function () {
+  'use strict';
+
   const app = {
     init() {
-      const _this = app;
-
-      _this.regenerateThumbsButton();
+      this.regenerateThumbsButton();
+      this.createBackupFile();
+      this.removeBackupFile();
     },
 
     regenerateThumbsButton() {
@@ -21,6 +23,7 @@
         const fd = new FormData();
 
         fd.append('action', 'regenerateThumbs');
+        fd.append('token', btn.dataset.token);
 
         const fdStatus = new FormData();
         fdStatus.append('action', 'regenerateThumbsStatus');
@@ -49,6 +52,58 @@
           body: fd
         }).then(response => response.json()).then(data => {
           status = false;
+        });
+      });
+    },
+
+    createBackupFile() {
+      const el = document.querySelector('#create-backup');
+
+      if (!el) return;
+
+      el.addEventListener('click', e => {
+        const url = `/wp-admin/admin-ajax.php`;
+
+        const fd = new FormData();
+
+        fd.append('action', 'createBackupFile');
+        fd.append('token', el.dataset.token);
+
+        fetch(url, {
+          method: 'POST',
+          body: fd
+        }).then(response => response.json()).then(res => {
+          if (res.success) {
+            window.location.reload();
+          }
+        });
+      });
+    },
+
+    removeBackupFile() {
+      const elems = document.querySelectorAll('.js-backup-delete');
+
+      if (!elems.length) return;
+
+      const url = `/wp-admin/admin-ajax.php`;
+
+      const fd = new FormData();
+
+      fd.append('action', 'deleteBackupFile');
+
+      elems.forEach(el => {
+        el.addEventListener('click', e => {
+          fd.append('token', el.dataset.token);
+          fd.append('file', el.dataset.file);
+
+          fetch(url, {
+            method: 'POST',
+            body: fd
+          }).then(response => response.json()).then(res => {
+            if (res.success) {
+              window.location.reload();
+            }
+          });
         });
       });
     }

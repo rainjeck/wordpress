@@ -10,6 +10,7 @@ class ImageOptimizer
     add_filter('big_image_size_threshold', '__return_false');
 
     $this->checkOriginalImagesFolder();
+
     add_filter('wp_generate_attachment_metadata', [ &$this, 'optimizeImageStandart'], 10, 3);
     add_filter('pre_delete_attachment', [ &$this, 'deleteOriginalAttachment'], 10, 3);
 
@@ -23,7 +24,7 @@ class ImageOptimizer
   {
     $mb = new_cmb2_box([
       'id' => 'regenerate-thumbs',
-      'title' => 'Regenerate Thumbnails',
+      'title' => 'Перегенерировать картинки',
       'object_types' => [ 'options-page' ],
       'parent_slug' => 'tools.php',
       'option_key' => 'tnwpt_regenerate_thumbs',
@@ -74,13 +75,18 @@ class ImageOptimizer
     ?>
     <div class="cmb-row cmb-type-text cmb2-id-images-status table-layout">
       <p>Не уходите с этой страницы до конца операции</p>
-      <input type="button" name="submit-cmb" id="regenerate-thumbs-btn" class="button button-primary" value="Regenerate Thumbnails">
+      <input type="button" name="submit-cmb" id="regenerate-thumbs-btn" class="button button-primary" value="Regenerate Thumbnails" data-token="<?= wp_create_nonce($_ENV['MAIL_NONCE']); ?>">
     </div>
     <?php
   }
 
   public function regenerateThumbs()
   {
+    // проверяем nonce код, если проверка не пройдена прерываем обработку
+    if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
+      wp_send_json_error(['msg' => 'Fail']); // Check failed
+    }
+
     $get_upload_dir = wp_upload_dir();
     $upload_dir = $get_upload_dir['basedir'];
 
@@ -167,7 +173,6 @@ class ImageOptimizer
     $this->checkOriginalImagesFolder();
 
     $upload_dir = wp_get_upload_dir();
-    // $original_folder = "{$upload_dir['basedir']}/originals";
 
     $meta = wp_get_attachment_metadata($attachment_id);
     $original = $meta['file'];
@@ -181,7 +186,6 @@ class ImageOptimizer
     foreach ($sizes as $size) {
       $path = "{$upload_dir['basedir']}/{$size['file']}";
       chmod($path, 0777);
-      // $path_to = "{$upload_dir['basedir']}/opt/{$size['file']}";
       $image = wp_get_image_editor($path);
 
       if (!is_wp_error($image)) {
@@ -193,6 +197,7 @@ class ImageOptimizer
     unset($image);
 
     $image = wp_get_image_editor($original_path);
+    $image->resize(2048, 2048, false);
     $image->set_quality(80);
     $image->save($original_path);
 

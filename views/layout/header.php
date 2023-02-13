@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) {
 ?>
 
 <header class="header">
-  <p>This is "views/header"</p>
+  <div class="container">
+    <p>This is "views/header"</p>
+  </div>
 </header>
-<!-- end .header -->
+<!-- .HEADER -->

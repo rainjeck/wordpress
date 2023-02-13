@@ -14,7 +14,7 @@ class AdminOptionsPage
   {
     $mb = new_cmb2_box([
       'id' => 'theme-options',
-      'title' => 'Theme Fields',
+      'title' => 'Настройки сайта',
       'object_types' => ['options-page'],
       'option_key' => 'tnwpt_app'
     ]);

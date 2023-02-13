@@ -1,4 +1,6 @@
 (function () {
+  'use strict';
+
   //=require modules/app.js
   //=require modules/form.js
 

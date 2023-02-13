@@ -4,10 +4,5 @@
     "psr-4": {
       "tnwpt\\": "./config"
     }
-  },
-  "require": {
-    "cmb2/cmb2": "^2.10",
-    "vlucas/phpdotenv": "^5.4",
-    "ifsnop/mysqldump-php": "^2.9"
   }
 }
