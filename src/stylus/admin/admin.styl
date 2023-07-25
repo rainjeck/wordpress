@@ -6,22 +6,61 @@
   ===============================================
 */
 
+.is-loading
+  position: relative;
+
+  &:before
+    pseudo();
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(#fff,0.5);
+    z-index: 10;
+
+  &:after
+    pseudo();
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    top: 50%;
+    left: 50%;
+    margin-top: -20px;
+    margin-left: -20px;
+    border-width: 5px;
+    border-color: #111827 #E5E7EB;
+    border-style: solid;
+    animation: process-rotate 1s ease-in-out infinite forwards;
+    z-index: 15;
+
+@keyframes process-rotate
+  from
+    transform: rotate(0deg);
+  to
+    transform: rotate(360deg);
+
+
 input[name="post_name"]
   width: 100%
 
-#edittag
-  max-width: 100%;
+
+#edittag,
+#poststuff
+  max-width: 1440px;
+
+#excerpt
+  height: 10em;
 
 
 /*! --- MEDIA MODAL ------------------- */
-.media-modal-content
-  .media-sidebar,
-  .attachment-info
-    .description,
-    .setting[data-setting="title"],
-    .setting[data-setting="caption"],
-    .setting[data-setting="description"]
-      display: none;
+// .media-modal-content
+//   .media-sidebar,
+//   .attachment-info
+//     .description,
+//     .setting[data-setting="title"],
+//     .setting[data-setting="caption"],
+//     .setting[data-setting="description"]
+//       display: none;
 
 
 /*! --- TERM -------------------------- */
@@ -50,6 +89,9 @@ input[name="post_name"]
       @media all and (max-width: 520px)
         width: 95%
         padding-top: 0
+
+      &.cmb-remove-row
+        width: 24px;
 
     &.cmb-repeat-group-wrap
       .cmb-td
@@ -90,53 +132,33 @@ input[name="post_name"]
 .cmb-repeatable-group .cmb-group-description .cmb-th
   padding-bottom: 0;
 
+.cmb-repeat-table .cmb-row.cmb-repeat-row
+  padding-top: 5px;
+  padding-bottom: 5px;
+
+
 .cmb2-postbox .cmb2-wrap > .cmb-field-list > .cmb-row
   padding: 0.5em 0;
 
 
-/*! --- COLUMNS ----------------------- */
-.column-thumbnail
-  width: 50px
-  @media screen and (max-width: 782px)
-    display: none;
+.cmb2-media-status .img-status
+  margin-right: 20px;
 
-  &:before
-    display: none !important;
-
-  &-link
-    display: block
-    width: 100%
-
-  &-pic
-    background-repeat: no-repeat
-    background-size: contain
-    background-position: center
-    max-height: 50px
-
-    .img, img
-      width: 100%
-      max-height: 50px
-      max-width: 100%
+  img
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    max-height: 120px;
+    display: block;
+    box-sizing: border-box;
 
 
-.column-management,
-.column-investments
-  width: 155px
+#side-sortables
+  .cmb-th
+    padding-bottom: 0;
 
-
-.column-pid
-  width:40px
-
-
-.column-order
-  width: 84px
-  text-align: center
-  @media screen and (max-width: 782px)
-    display: none;
-
-
-.column-order.manage-column
-  font-size: 0.9em
+  .cmb2-wrap>.cmb-field-list>.cmb-row
+    padding: 0;
 
 
 /*!
@@ -163,3 +185,36 @@ input[name="post_name"]
 
     &:hover .dashicons-trash
       color: #EF4444;
+
+
+/*! --- DRAG DROP --------------------- */
+.gu-unselectable
+  user-select: none !important;
+
+
+.bDragDropList
+  li
+    border: 1px solid rgba(#fff,0);
+    transit();
+
+    &:hover
+      border-color: #c026d3;
+      color: #c026d3;
+      cursor: grab;
+
+    &.gu-transit
+      color: red;
+      box-shadow: 0 0 10px rgba(#000,0.5);
+      cursor: grabbing;
+
+    &.gu-mirror
+      box-sizing: border-box;
+      padding: 5px;
+      border: 1px solid;
+      text-align: left;
+      position: fixed !important;
+      margin: 0 !important;
+      z-index: 9999 !important;
+      opacity: 0.8;
+      background: #fff;
+      cursor: grabbing;

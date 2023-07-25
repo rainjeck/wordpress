@@ -6,8 +6,14 @@ use tnwpt\custom\AdminOptionsPage;
 
 class Mail
 {
+  public $from_name;
+  public $from_email;
+
   public function register()
   {
+    $this->from_name = str_replace(['http://', 'https://'], '', get_home_url());
+    $this->from_email = 'noreply@' . $this->from_name;
+
     $this->register_mail_actions();
   }
 
@@ -61,11 +67,14 @@ class Mail
     }
 
     // отправляем на email, указанный в опциях сайта
-    $email = AdminOptionsPage::getAppOpts('email_order');
-    $to = ($email) ? $email : get_bloginfo('admin_email');
+    $to = AdminOptionsPage::getAppOpts('email_order');
+
+    if (!$to) {
+      wp_send_json_error(['msg' => 'Не установлен адресат в настройках']);
+    }
 
     // Тема письма
-    $sbj = 'Новая заявка '. home_url();
+    $sbj = "Новая заявка {$this->from_name}";
 
     // Сообщение
     $msg = '';
@@ -116,7 +125,7 @@ class Mail
 
     $headers = [
       'content-type: text/html',
-      "From: {$_ENV['MAIL_FROM']} <{$_ENV['MAIL_FROM_EMAIL']}>"
+      "From: {$this->from_name} <{$this->from_email}>"
     ];
 
     // Отправка

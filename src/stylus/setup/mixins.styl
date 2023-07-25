@@ -43,3 +43,9 @@ bg($position, $size)
 size($wsize, $hsize)
   width: $wsize
   height: $hsize
+
+
+//- FONT SIZE
+font($size,$lineheight)
+  font-size: unit($size,'px');
+  line-height: round($lineheight/$size,2);

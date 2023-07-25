@@ -10,8 +10,8 @@ var destAssetsDir = "./assets";
 gulp.task("css-app", function () {
   return (
     gulp.src([
-      "./src/stylus/main.styl",
-      "./src/stylus/admin.styl",
+      "./src/stylus/*.styl",
+      "!./src/stylus/libs.styl"
     ])
     .pipe(plugin.sourcemaps.init())
     .pipe(plugin.stylus({
@@ -29,8 +29,10 @@ gulp.task("css-app", function () {
 
 gulp.task("css-app-minify", function () {
   return gulp.src([
-      destAssetsDir + "/css/main.css",
-      destAssetsDir + "/css/admin.css",
+      destAssetsDir + "/css/*.css",
+      "!" + destAssetsDir + "/css/*.min.css",
+      "!" + destAssetsDir + "/css/*libs*.css",
+      "!" + destAssetsDir + "/css/*bundle*.css",
     ])
     .pipe(plugin.cleanCss())
     .pipe(plugin.rename({

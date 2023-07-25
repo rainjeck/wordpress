@@ -3,6 +3,13 @@
   ===============================================
 */
 
+.container
+  width: 100%;
+  max-width: $containerWidth;
+  padding-left: $containerPadding;
+  padding-right: $containerPadding;
+  margin: 0 auto;
+
 /*!
  --- GRID -----------------------------
 */
@@ -99,6 +106,12 @@ uidisplay($prefix = '')
 
     .ui-pb-{$one}{$prefix}
       padding-bottom: unit($one, 'px');
+
+    .ui-pr-{$one}{$prefix}
+      padding-right: unit($one, 'px');
+
+    .ui-pl-{$one}{$prefix}
+      padding-left: unit($one, 'px');
 
     .ui-mt-{$one}{$prefix}
       margin-top: unit($one, 'px');

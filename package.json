@@ -10,31 +10,6 @@
     "last 10 versions",
     "not ie <= 8"
   ],
-  "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.20.2",
-    "babel-loader": "^8.3.0",
-    "core-js": "^3.27.2",
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^8.0.0",
-    "gulp-babel": "^8.0.0",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-include": "^2.4.1",
-    "gulp-livereload": "^4.0.2",
-    "gulp-load-plugins": "^2.0.8",
-    "gulp-notify": "^4.0.0",
-    "gulp-rename": "^2.0.0",
-    "gulp-sourcemaps": "^3.0.0",
-    "gulp-stylus": "^2.7.1",
-    "gulp-svg-sprite": "^1.5.0",
-    "gulp-svgmin": "^4.1.0",
-    "gulp-uglify": "^3.0.2",
-    "webpack-stream": "^7.0.0"
-  },
-  "dependencies": {
-    "formbouncerjs": "^1.4.6",
-    "modern-css-reset": "^1.4.0",
-    "svg4everybody": "^2.1.9"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

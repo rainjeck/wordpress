@@ -1,5 +1,7 @@
 APPDEV = 1
 
+CMB = "_tnwpt"
+
 MAIL_DEV = 1
 
 MAIL_NONCE = "mail"
@@ -13,6 +15,3 @@ MAIL_SMPT_USERNAME = ""
 MAIL_SMTP_PASSWORD = ""
 MAIL_SMTP_FROM = ""
 MAIL_SMTP_FROMNAME = "myapp.com"
-
-MAIL_FROM_EMAIL = "msg@myapp.com"
-MAIL_FROM = "myapp.com"
