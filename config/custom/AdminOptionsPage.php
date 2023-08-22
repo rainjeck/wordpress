@@ -50,19 +50,16 @@ class AdminOptionsPage
       'options' => ['group_title' => 'Коды', 'closed' => false],
       'desc' => 'Не помещайте код в HEAD. Это тормозит загрузку страниц'
     ]);
-
-    $mb->add_group_field($group_code, [
+    $mb->add_group_field($g_code, [
       'id' => 'head_in',
       'name' => 'HEAD',
       'type' => 'textarea_code'
     ]);
-
     $mb->add_group_field($g_code, [
       'id' => 'body_start',
       'name' => 'BODY открывающий',
       'type' => 'textarea_code'
     ]);
-
     $mb->add_group_field($g_code, [
       'id' => 'body_end',
       'name' => 'BODY закрывающий',
