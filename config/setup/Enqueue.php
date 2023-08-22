@@ -11,12 +11,11 @@ class Enqueue
 
   public function enqueueScripts()
   {
-    $dev = $_ENV['APPDEV'];
     $url = get_template_directory_uri();
 
     wp_deregister_style('wp-block-library');
 
-    if ($dev) {
+    if (is_user_logged_in()) {
       wp_enqueue_style('main', "{$url}/assets/css/libs.min.css", array(), null, 'all');
       wp_enqueue_style('app', "{$url}/assets/css/main.css", array('main'), null, 'all');
 
@@ -24,7 +23,7 @@ class Enqueue
       wp_enqueue_script('app', "{$url}/assets/js/main.js", array('main'), null, true);
     }
 
-    if (!$dev) {
+    if (!is_user_logged_in()) {
       wp_enqueue_style('app', "{$url}/assets/css/bundle.min.css", array(), time(), 'all');
       wp_enqueue_script('app', "{$url}/assets/js/bundle.min.js", array(), time(), true);
     }

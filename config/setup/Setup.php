@@ -48,7 +48,7 @@ class Setup
 			'medium'    => __('Medium'),
       'medium_large' => __('Medium Large'),
 			'large'     => __('Large'),
-			// 'full'      => __( 'Full Size' ),
+			'full'      => __( 'Full Size' ),
     );
 
     return $new_sizes;

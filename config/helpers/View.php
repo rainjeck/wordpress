@@ -131,7 +131,7 @@ class View
   public static function getPluralForm($number, $after)
   {
     /*
-    plural_form($number, [__('вариант', 'theme'), __('варианта', 'theme'), __('вариантов', 'theme')]);
+    getPluralForm($number, [__('вариант', 'tnwpt'), __('варианта', 'tnwpt'), __('вариантов', 'tnwpt')]);
     */
 
     $cases = array (2, 0, 1, 1, 1, 2);
@@ -153,20 +153,13 @@ class View
   {
     if (!$template_file) return;
 
-    global $wpdb;
+    $key = array_search($template_file, self::$templates);
 
-    $sql = "
-      SELECT post_id
-      FROM $wpdb->postmeta WHERE meta_key = '_wp_page_template' AND meta_value = '{$template_file}'
-    ";
-
-    $q = $wpdb->get_var($sql);
-
-    if ( $q ) {
-      return (int)$q;
+    if ($key) {
+      return $key;
     }
 
-    return;
+    return false;
   }
 
   public static function getPostMeta($post_id, $keys = [])
@@ -309,12 +302,12 @@ class View
   {
     if (!$array) return false;
 
-    if ($key !== false) {
-      if (isset($array[$key]) && !empty($array[$key])) return true;
-
+    if ($key) {
       if ($value) {
-        if (isset($array[$key]) && $array[$key] == $value) return true;
+        return ( isset($array[$key]) && $array[$key] == $value ) ? true : false;
       }
+
+      return (isset($array[$key]) && !empty($array[$key])) ? true : false;
     }
 
     return false;
@@ -353,35 +346,51 @@ class View
   public static function breadcrumbs($class = '')
   {
     $main_link = get_home_url();
-    $main_link_name = 'Главная';
 
-    $sep = '&nbsp;<span class="bCrumbs-separator">&mdash;</span>';
+    $sep = '<li class="breadcrumbs-separator">&nbsp;&mdash;&nbsp;</li>';
+    $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
 
-    $html = "<div class='bCrumbs {$class}'>";
+    $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$class}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
 
     // Main page
-    $html .= "<span class='bCrumbs-item'><a class='bCrumbs-link' href='{$main_link}'>{$main_link_name}</a></span>";
+    $main_link_name = 'Главная';
+    $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$main_link}' itemprop='item'><span itemprop='name'>{$main_link_name}</span></a><meta itemprop='position' content='1'></li>";
+
+    $position = 2;
 
     // Page
     if ( is_page() ) {
       global $post;
 
-      $page_title = $post->post_title;
+      $ptitle = $post->post_title;
 
       $html .= $sep;
-      $html .= "&nbsp;<span class='bCrumbs-item is-current'>{$page_title}</span>";
+      $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
     }
 
     // Single Post
     if ( is_singular('post') ) {
       global $post;
 
+      $cats = get_the_category($post->ID);
+
+      if ($cats) {
+        $cat = array_shift($cats);
+        $plink = get_category_link($cat->term_id);
+        $ptitle = $cat->name;
+
+        $html .= $sep;
+        $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$plink}' itemprop='item'><span itemprop='name'>{$ptitle}</span></a><meta itemprop='position' content='{$position}'></li>";
+        $position += 1;
+      }
+
+      $ptitle = $post->post_title;
+
       $html .= $sep;
-      $page_title = $post->post_title;
-      $html .= "&nbsp;<span class='bCrumbs-item is-current'>{$page_title}</span>";
+      $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
     }
 
-    $html .= '</div>';
+    $html .= '</ul>';
 
     return $html;
   }

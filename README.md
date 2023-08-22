@@ -2,17 +2,28 @@
 
 Starting template theme for WordPress
 
-`git clone https://github.com/rainjeck/wordpress.git`
+1. `git clone https://github.com/rainjeck/wordpress.git`
 
-`composer require cmb2/cmb2 vlucas/phpdotenv ifsnop/mysqldump-php`
+2. `composer require cmb2/cmb2 vlucas/phpdotenv ifsnop/mysqldump-php`
 
-Rename `env` to `.env`
+3. Rename:
+  ```
+    env to .env
+    composer-prod.json to composer.json
+    package-prod.json to package.json
+  ```
 
-`npm i @babel/core @babel/preset-env babel-loader webpack-stream gulp gulp-autoprefixer gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-notify gulp-rename gulp-sourcemaps gulp-stylus gulp-svg-sprite gulp-svgmin gulp-uglify core-js -D`
+4. Install devDependencies
+  ```
+  npm i @babel/core @babel/preset-env babel-loader webpack-stream gulp gulp-autoprefixer gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-notify gulp-rename gulp-sourcemaps gulp-stylus gulp-svg-sprite gulp-svgmin gulp-uglify core-js -D
+  ```
 
-`npm i modern-css-reset svg4everybody formbouncerjs`
+5. Install dependencies
+  ```
+  npm i modern-css-reset svg4everybody formbouncerjs
+  ```
 
-`gulp build`
+6. `gulp build`
 
 ## Images
 

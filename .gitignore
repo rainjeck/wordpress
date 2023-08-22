@@ -13,3 +13,5 @@ assets/libs/
 !.yarn/releases/*.cjs
 .pnp.*
 .env
+package.json
+composer.json

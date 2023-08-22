@@ -18,30 +18,26 @@ class AdminOptionsPage
       'object_types' => ['options-page'],
       'option_key' => 'tnwpt_app'
     ]);
-
     $mb->add_field([
       'id' => 'setup_title',
-      'name' => 'Setup',
+      'name' => 'Основное',
       'type' => 'title'
     ]);
-
     $mb->add_field([
       'id' => 'phone',
-      'name' => 'Site Phone',
+      'name' => 'Телефон на сайте',
       'type' => 'text',
       'attributes' => ['class' => 'large-text']
     ]);
-
     $mb->add_field([
       'id' => 'email',
-      'name' => 'Site E-Mail',
+      'name' => 'E-Mail на сайте',
       'type' => 'text_email',
       'attributes' => ['class' => 'large-text']
     ]);
-
     $mb->add_field([
       'id' => 'email_order',
-      'name' => 'E-Mail for forms',
+      'name' => 'E-Mail для заявок',
       'type' => 'text_email',
       'attributes' => ['class' => 'large-text']
     ]);
@@ -51,25 +47,25 @@ class AdminOptionsPage
       'type' => 'group',
       'id' => 'g_code',
       'repeatable' => false,
-      'options' => ['group_title' => 'Codes', 'closed' => false],
-      'desc' => "Don't put any code in the HEAD tag. It slows loading"
+      'options' => ['group_title' => 'Коды', 'closed' => false],
+      'desc' => 'Не помещайте код в HEAD. Это тормозит загрузку страниц'
     ]);
 
-    // $mb->add_group_field($group_code, [
-    //   'id' => 'head_in',
-    //   'name' => 'Code in HEAD tag',
-    //   'type' => 'textarea_code'
-    // ]);
+    $mb->add_group_field($group_code, [
+      'id' => 'head_in',
+      'name' => 'HEAD',
+      'type' => 'textarea_code'
+    ]);
 
     $mb->add_group_field($g_code, [
       'id' => 'body_start',
-      'name' => 'Start BODY tag',
+      'name' => 'BODY открывающий',
       'type' => 'textarea_code'
     ]);
 
     $mb->add_group_field($g_code, [
       'id' => 'body_end',
-      'name' => 'End BODY tag',
+      'name' => 'BODY закрывающий',
       'type' => 'textarea_code'
     ]);
   }
@@ -80,7 +76,10 @@ class AdminOptionsPage
 
     // Add theme options to query
     $theme_options = self::getAppOpts('all');
-    $query->set('theme_options', $theme_options);
+
+    $theme_options['front_id'] = get_option('page_on_front');
+
+    $query->set('app', $theme_options);
   }
 
   public static function getAppOpts($key = '', $default = false)

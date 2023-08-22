@@ -4,8 +4,7 @@ namespace tnwpt\custom;
 
 class CustomFields
 {
-  private $prefix = '_tnwpt';
-  public static $prefix_static = '_tnwpt';
+  private $prefix = '';
 
   public function register()
   {
@@ -14,12 +13,14 @@ class CustomFields
 
   public function registerCustomFields()
   {
-
+    $this->prefix = $_ENV['CMB'];
   }
 
   /*
   private function demo()
   {
+    $bit = $this->prefix;
+
     $mb = new_cmb2_box([
       'id' => 'mb-',
       'title' => 'Дополнительные поля',

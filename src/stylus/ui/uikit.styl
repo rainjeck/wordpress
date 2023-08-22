@@ -76,6 +76,7 @@
 
 .ui-media-ratio-1,
 .ui-media-ratio-43,
+.ui-media-ratio-53,
 .ui-media-ratio-169
   overflow: hidden;
   position: relative;
@@ -94,12 +95,12 @@
 .ui-media-ratio
   &-1
     padding-top: 100%;
-
   &-169
     padding-top: round((9 / 16) * 100%, 2);
-
   &-43
     padding-top: round((3 / 4) * 100%, 2);
+  &-53
+    padding-top: round((3 / 5) * 100%, 2);
 
 
 .ui-tab
@@ -175,6 +176,31 @@
   border: 1px solid $colorText;
 
 
+.ui-cbx
+  position: relative;
+
+  input
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    z-index: -1;
+
+  &-wrapper
+    cursor: pointer;
+
+  &-box
+    size(1em,1em);
+    border: 1px solid $colorAccent;
+
+  input:checked ~ &-box
+    background-color: $colorAccent;
+
+  &.is-radio &-box
+    border-radius: 100px;
+    size(18px,18px);
+
+
 /*!
   --- ELEMENTS ------------------------
 */
@@ -229,3 +255,7 @@
 
   &:hover
     opacity: 0.6;
+
+
+.ui-link-zoom
+  cursor: zoom-in;

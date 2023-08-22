@@ -66,13 +66,6 @@ class Mail
       wp_send_json_error(['msg' => 'You are robot']); // Robot
     }
 
-    // отправляем на email, указанный в опциях сайта
-    $to = AdminOptionsPage::getAppOpts('email_order');
-
-    if (!$to) {
-      wp_send_json_error(['msg' => 'Не установлен адресат в настройках']);
-    }
-
     // Тема письма
     $sbj = "Новая заявка {$this->from_name}";
 
@@ -108,6 +101,9 @@ class Mail
     //   }
     // }
 
+    // отправляем на email, указанный в опциях сайта
+    $to = AdminOptionsPage::getAppOpts('email_order');
+
     // URL, на который отправим после отправки письма
     // $page_thanks_id = View::getPostIdByTemplate('template-page-thanks.php');
     // $url = get_the_permalink($page_thanks_id);
@@ -121,6 +117,12 @@ class Mail
         'msg' => $msg,
         // 'url' => '/'
       ]);
+    }
+
+
+
+    if (!$to) {
+      wp_send_json_error(['msg' => 'Не установлен адресат в настройках']);
     }
 
     $headers = [

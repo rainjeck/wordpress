@@ -1,10 +1,13 @@
 <?php
+
 // File Security Check
 if (!defined('ABSPATH')) {
   exit;
 }
 
-$app = get_query_var('theme_options');
+use tnwpt\helpers\View;
+
+$app = get_query_var('app');
 $codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 ?>
 
@@ -23,7 +26,7 @@ $codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 
   <?php
   if (!is_user_logged_in()) {
-    echo (!empty($codes['head_in'])) ? $codes['head_in'] : '';
+    echo (View::checkArray($codes, 'head_in')) ? $codes['head_in'] : '';
   }
   ?>
 
@@ -33,7 +36,7 @@ $codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 
   <?php
   if (!is_user_logged_in()) {
-    echo (!empty($codes['body_start'])) ? $codes['body_start'] : '';
+    echo (View::checkArray($codes, 'body_start')) ? $codes['body_start'] : '';
   }
   ?>
 

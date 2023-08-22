@@ -4,9 +4,9 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-// use tnwpt\helpers\View;
+use tnwpt\helpers\View;
 
-$app = get_query_var('theme_options');
+$app = get_query_var('app');
 $codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 ?>
 
@@ -20,7 +20,7 @@ $codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 
 <?php
 if (!is_user_logged_in()) {
-  echo (!empty($codes['body_end'])) ? $codes['body_end'] : '';
+  echo (View::checkArray($codes, 'body_end')) ? $codes['body_end'] : '';
 }
 ?>
 

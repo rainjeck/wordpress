@@ -9,6 +9,7 @@ const form = {
 
   inputTel() {
     // https://github.com/uNmAnNeR/imaskjs
+    // npm install imask
     const elems = document.querySelectorAll('.js-masked');
 
     if (!elems.length) return;
@@ -31,6 +32,7 @@ const form = {
 
   setup() {
     this.bouncerSettings = {
+      disableSubmit: true,
       messageAfterField: true,
       messages: {
         missingValue: {
@@ -43,9 +45,45 @@ const form = {
         patternMismatch: {
           email: 'Не верный формат e-mail',
           default: 'Проверьте формат значения'
-        }
+        },
+        phoneNum: 'Не верный формат телефона'
       },
-      disableSubmit: true
+      customValidations: {
+        checkboxMultiValidator: field => {
+          if (field.type == 'checkbox' && field.name.includes('[]')) {
+            if (!field.required) return;
+
+            const fields = field.form.querySelectorAll('input[name="' + field.name + '"]');
+            const fieldsChecked = Array.from(fields).filter(item => item.checked);
+
+            if (fieldsChecked.length) {
+              fields.forEach(item => {
+                item.classList.remove('error');
+                item.removeAttribute('required');
+              });
+              return false;
+            } else {
+              fields.forEach(item => {
+                item.classList.add('error');
+                item.setAttribute('required', true);
+              });
+              return true; // error
+            }
+          }
+
+          // no error
+          return false;
+        },
+        phoneNum: (field) => {
+          if (field.type == 'tel') {
+            const pattern = /^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
+            let test = pattern.test(field.value);
+            if (!test) return true;
+          }
+
+          return false;
+        },
+      }
     }
   },
 
@@ -77,7 +115,7 @@ const form = {
 
       const btn = form.querySelector('[type="submit"]');
 
-      const url = `${form.action}wp-admin/admin-ajax.php`;
+      const url = `/wp-admin/admin-ajax.php`;
 
       const fd = new FormData(form);
 
@@ -98,6 +136,27 @@ const form = {
 
         if (res.data.url) {
           window.location.assign(res.data.url);
+        }
+
+        if (res.success) {
+          form.reset();
+          form.classList.add('is-success');
+
+          setTimeout(() => {
+            form.classList.remove('is-success');
+            // Unimodal.closeAll();
+          }, 3000);
+        }
+
+        if (!res.success) {
+          form.classList.add('is-error');
+
+          setTimeout(() => {
+            form.classList.remove('is-error');
+          }, 3000);
+
+          console.error(res);
+          return;
         }
       });
     }, false);

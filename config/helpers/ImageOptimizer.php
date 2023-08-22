@@ -39,7 +39,6 @@ class ImageOptimizer
       'attributes' => ['class' => 'large-text', 'readonly' => true],
       'default_cb' => [&$this, 'imagesCount']
     ]);
-
     $mb->add_field([
       'id' => 'images_status',
       'name' => 'Статус',
@@ -47,7 +46,6 @@ class ImageOptimizer
       'attributes' => ['class' => 'large-text', 'readonly' => true],
       'default' => 0
     ]);
-
     $mb->add_field([
       'id' => 'images_btn',
       'type' => 'text',
@@ -169,6 +167,10 @@ class ImageOptimizer
   public function optimizeImageStandart($image_meta, $attachment_id, $string)
   {
     if (!wp_attachment_is_image($attachment_id)) return;
+
+    $ext = pathinfo($image_meta['file'], PATHINFO_EXTENSION);
+
+    if (!in_array($ext, ['png', 'jpg'])) return $image_meta;
 
     $this->checkOriginalImagesFolder();
 
