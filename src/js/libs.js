@@ -8,8 +8,8 @@ import Bouncer from 'formbouncerjs';
 
 // SwiperCore.use([Navigation, Pagination]);
 
-// import Unitoggle from './libs/unitoggle.js';
-// import Unimodal from './libs/unimodal.js';
+// import Unitoggle from '../libs/unitoggle.js';
+// import Unimodal from '../libs/unimodal.js';
 
 window.svg4everybody = svg4everybody;
 window.Bouncer = Bouncer;

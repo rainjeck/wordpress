@@ -2,398 +2,425 @@
 
 namespace tnwpt\helpers;
 
-use tnwpt\custom\CustomFields;
-
 class View
 {
-  public static $url = '';
-  public static $home_url = '';
-  public static $templates = [];
+    public static $url = '';
+    public static $home_url = '';
+    public static $templates = [];
 
-  public function register()
-  {
-    self::$url = get_stylesheet_directory_uri();
-    self::$home_url = get_home_url();
+    public function register()
+    {
+        self::$url = get_stylesheet_directory_uri();
+        self::$home_url = get_home_url();
 
-    self::$templates = get_option('_page_templates');
+        self::$templates = get_option('_page_templates');
 
-    return;
-  }
-
-  public static function getPagesTemplate()
-  {
-    global $wpdb;
-
-    $sql = "
-      SELECT post_id, meta_value as template
-      FROM $wpdb->postmeta
-      WHERE meta_key = '_wp_page_template'
-    ";
-
-    $result = $wpdb->get_results($sql);
-
-    $data = [];
-
-    foreach ($result as $one) {
-      $data[$one->post_id] = $one->template;
+        return;
     }
 
-    return $data;
-  }
+    public static function getOpt($key = '', $default = false)
+        {
+            if (function_exists('cmb2_get_option')) {
+                return cmb2_get_option($_ENV['APPOPTSKEY'], $key, $default);
+            }
 
-  public static function getPhoneNumber($number)
-  {
-    if ( !$number ) return;
+            $opts = get_option($_ENV['APPOPTSKEY'], $default);
 
-    return preg_replace('/[^0-9]/', '', $number);
-  }
+            $val = $default;
 
-  public static function getPhoneLink($number, $className = '')
-  {
-    if ( !$number ) return;
+            if ('all' == $key) {
+                $val = $opts;
+            } elseif (is_array( $opts ) && array_key_exists($key, $opts) && false !== $opts[$key]) {
+                $val = $opts[$key];
+            }
 
-    $clearNum = self::getPhoneNumber($number);
-    return '<a href="tel:+'. $clearNum .'" class="'. $className .'">'. $number .'</a>';
-  }
+            return $val;
+        }
 
-  public static function getEmailLink($email, $className = '')
-  {
-    return '<a href="mailto:'. $email .'" class="'. $className .'">'. $email .'</a>';
-  }
+    public static function getPagesTemplate()
+    {
+        global $wpdb;
 
-  public static function getLogo($classes = '', $link = true, $bg = false)
-  {
-    $logo_id = get_theme_mod('custom_logo');
+        $sql = "
+            SELECT post_id, meta_value as template
+            FROM $wpdb->postmeta
+            WHERE meta_key = '_wp_page_template'
+        ";
 
-    $classes = ($classes) ? $classes : 'customLogo';
+        $result = $wpdb->get_results($sql);
 
-    if ($logo_id) {
-      $home_url = get_home_url();
-      $url = wp_get_attachment_image_url($logo_id, 'small');
-      $name = get_bloginfo('name');
-      $desc = get_bloginfo('description');
+        $data = [];
 
-      $style = '';
+        foreach ($result as $one) {
+            $data[$one->post_id] = $one->template;
+        }
 
-      if ($bg) {
-        $style = " style='background-image: url({$url})'";
-      }
-
-      $html = "<div class='{$classes}'{$style}>";
-
-      if ($link) {
-        $html .= "
-          <a href='{$home_url}' class='ui-d-block'>
-            <img src='{$url}' title='{$desc}' alt='{$name}'/>
-          </a>"
-        ;
-      }
-
-      if (!$link && !$bg) {
-        $html .= "<img src='{$url}' title='{$desc}' alt='{$name}'/>";
-      }
-
-      $html .= "</div>";
-
-
-      return $html;
+        return $data;
     }
-  }
 
-  public static function getImg($filename, $folder)
-  {
-    $url = self::$url;
-    return "{$url}/assets/{$folder}/{$filename}";
-  }
+    public static function getPhoneNumber($number)
+    {
+        if ( !$number ) return;
 
-  public static function getSvg($icon_id, $className = '')
-  {
-    if (!$icon_id) return;
+        return preg_replace('/[^0-9]/', '', $number);
+    }
 
-    $addClass = ( $className ) ? ' '.$className : '';
+    public static function getPhoneLink($number, $className = '')
+    {
+        if ( !$number ) return;
 
-    $url = self::$url . '/assets/icons/sprite.svg#';
+        $clearNum = self::getPhoneNumber($number);
 
-    return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
-  }
+        return '<a href="tel:+'. $clearNum .'" class="'. $className .'">'. $number .'</a>';
+    }
 
-  public static function getSvgColor($icon_id, $className = '')
-  {
-    if (!$icon_id) return;
+    public static function getEmailLink($email, $className = '')
+    {
+        return '<a href="mailto:'. $email .'" class="'. $className .'">'. $email .'</a>';
+    }
 
-    $addClass = ( $className ) ? ' '.$className : '';
+    public static function getLogo($classes = '', $link = true, $bg = false)
+    {
+        $logo_id = get_theme_mod('custom_logo');
 
-    $url = self::$url . '/assets/icons/sprite-color.svg#';
+        $classes = ($classes) ? $classes : 'customLogo';
 
-    return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
-  }
+        if ($logo_id) {
+            $home_url = self::$home_url;
+            $url = wp_get_attachment_image_url($logo_id, 'small');
+            $name = get_bloginfo('name');
+            $desc = get_bloginfo('description');
 
-  public static function getPluralForm($number, $after)
-  {
-    /*
-    getPluralForm($number, [__('вариант', 'tnwpt'), __('варианта', 'tnwpt'), __('вариантов', 'tnwpt')]);
+            $style = '';
+
+            if ($bg) {
+                $style = " style='background-image: url({$url})'";
+            }
+
+            $html = "<div class='{$classes}'{$style}>";
+
+            if ($link) {
+                $html .= "
+                <a href='{$home_url}' class='ui-d-block'>
+                    <img src='{$url}' title='{$desc}' alt='{$name}'/>
+                </a>"
+                ;
+            }
+
+            if (!$link && !$bg) {
+                $html .= "<img src='{$url}' title='{$desc}' alt='{$name}'/>";
+            }
+
+            $html .= "</div>";
+
+
+            return $html;
+        }
+
+        return '';
+    }
+
+    public static function getImg($filename, $folder)
+    {
+        $url = self::$url;
+
+        return "{$url}/assets/{$folder}/{$filename}";
+    }
+
+    public static function getSvg($icon_id, $className = '')
+    {
+        if (!$icon_id) return;
+
+        $addClass = ( $className ) ? ' '.$className : '';
+
+        $url = self::$url . '/assets/icons/sprite.svg#';
+
+        return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
+    }
+
+    public static function getSvgColor($icon_id, $className = '')
+    {
+        if (!$icon_id) return;
+
+        $addClass = ( $className ) ? ' '.$className : '';
+
+        $url = self::$url . '/assets/icons/sprite-color.svg#';
+
+        return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
+    }
+
+    public static function getPluralForm($number, $after)
+    {
+        /*
+        getPluralForm($number, [__('вариант', 'tnwpt'), __('варианта', 'tnwpt'), __('вариантов', 'tnwpt')]);
+        */
+
+        $cases = [2, 0, 1, 1, 1, 2];
+
+        return $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
+    }
+
+    public static function wpautop($text)
+    {
+        if ( !$text ) return;
+
+        $content = wpautop($text);
+        $content = preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+
+        return $content;
+    }
+
+    public static function getPostIdByTemplate($template_file)
+    {
+        if (!$template_file) return;
+
+        $key = array_search($template_file, self::$templates);
+
+        if ($key) {
+            return $key;
+        }
+
+        return false;
+    }
+
+    public static function getPostMeta($post_id, $keys = [])
+    {
+        if ( !$post_id || !$keys ) return;
+
+        $prefix = $_ENV['CMB'];
+
+        $arr = [];
+
+        foreach ($keys as $key) {
+            $meta = get_post_meta($post_id, "{$prefix}_{$key}", 1);
+
+            if ( $meta ) {
+                $arr[$key] = $meta;
+            } else {
+                $arr[$key] = false;
+            }
+        }
+
+        return $arr;
+    }
+
+    /**
+    * Get metas for many objects
+    * @return array
     */
+    public static function getPostData($post_ids = [], $fields = [], $metas = [], $prefix = true)
+    {
+        $home_url = self::$home_url;
 
-    $cases = array (2, 0, 1, 1, 1, 2);
+        $post_ids = array_filter($post_ids, function($item) {
+            if (!empty($item)) return true;
+            return false;
+        });
 
-    return $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
-  }
+        if (!$post_ids) return [];
 
-  public static function wpautop($text)
-  {
-    if ( !$text ) return;
+        $fields = array_filter($fields, function($item) {
+            if (!empty($item)) return true;
+            return false;
+        });
 
-    $content = wpautop( $text );
-    $content = preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+        $metas = array_filter($metas, function($item) {
+            if (!empty($item)) return true;
+            return false;
+        });
 
-    return $content;
-  }
+        $bit = $_ENV['CMB'];
 
-  public static function getPostIdByTemplate($template_file)
-  {
-    if (!$template_file) return;
+        $data = [];
 
-    $key = array_search($template_file, self::$templates);
+        global $wpdb;
 
-    if ($key) {
-      return $key;
-    }
+        $ids_str = implode(',', $post_ids);
 
-    return false;
-  }
+        $fields_str = ($fields) ? ', '. implode(', ', $fields) : '';
 
-  public static function getPostMeta($post_id, $keys = [])
-  {
-    if ( !$post_id || !$keys ) return;
+        $sql = "
+            SELECT ID, post_type, post_name $fields_str
+            FROM $wpdb->posts
+            WHERE ID IN ($ids_str)
+        ";
 
-    $prefix = $_ENV['CMB'];
+        $query = $wpdb->get_results($sql, 'OBJECT_K');
 
-    $arr = [];
+        if ($query) {
+            foreach($post_ids as $pid) {
+                foreach($query[$pid] as $k2 => $v2) {
+                    $key = str_replace('post_', '', $k2);
+                    $data[$pid][$key] = $v2;
+                }
 
-    foreach ($keys as $key) {
-      $meta = get_post_meta($post_id, "{$prefix}_{$key}", 1);
-
-      if ( $meta ) {
-        $arr[$key] = $meta;
-      } else {
-        $arr[$key] = false;
-      }
-    }
-
-    return $arr;
-  }
-
-  /**
-   * Get metas for many objects
-   * @return array
-   */
-  public static function getPostData($post_ids = [], $fields = [], $metas = [], $prefix = true)
-  {
-    $home_url = self::$home_url;
-
-    $post_ids = array_filter($post_ids, function($item) {
-      if (!empty($item)) return true;
-      return false;
-    });
-
-    if (!$post_ids) return [];
-
-    $fields = array_filter($fields, function($item) {
-      if (!empty($item)) return true;
-      return false;
-    });
-
-    $metas = array_filter($metas, function($item) {
-      if (!empty($item)) return true;
-      return false;
-    });
-
-    $bit = $_ENV['CMB'];
-
-    $data = [];
-
-    global $wpdb;
-
-    $ids_str = implode(',', $post_ids);
-
-    $fields_str = ($fields) ? ', '. implode(', ', $fields) : '';
-
-    $sql = "
-      SELECT ID, post_type, post_name $fields_str
-      FROM $wpdb->posts
-      WHERE ID IN ($ids_str)
-    ";
-
-    $query = $wpdb->get_results($sql, 'OBJECT_K');
-
-    if ($query) {
-      foreach($post_ids as $pid) {
-        foreach($query[$pid] as $k2 => $v2) {
-          $key = str_replace('post_', '', $k2);
-          $data[$pid][$key] = $v2;
+                if ( in_array($query[$pid]->post_type, ['post']) ) {
+                    $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_name}";
+                } else {
+                    $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_type}/{$query[$pid]->post_name}";
+                }
+            }
         }
 
-        if ( in_array($query[$pid]->post_type, ['post']) ) {
-          $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_name}";
+        if ($prefix) {
+            $metas = array_map(function($var) use ($bit) {
+                return "'{$bit}_{$var}'";
+            }, $metas);
         } else {
-          $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_type}/{$query[$pid]->post_name}";
+            $metas = array_map(function($var) use ($bit) {
+                return "'{$var}'";
+            }, $metas);
         }
-      }
+
+        $metas[] = "'_thumbnail_id'";
+
+        $metas_str = implode(',', $metas);
+
+        $sql = "
+            SELECT post_id, meta_key, meta_value
+            FROM $wpdb->postmeta
+            WHERE post_id IN ($ids_str) AND meta_key IN ($metas_str)
+        ";
+
+        $query = $wpdb->get_results($sql, 'ARRAY_A');
+
+        if ($query) {
+            foreach($query as $v) {
+                $key = str_replace(["{$bit}_"], '', $v['meta_key']);
+                $data[$v['post_id']][$key] = maybe_unserialize($v['meta_value']);
+            }
+        }
+
+        return $data;
     }
 
-    if ($prefix) {
-      $metas = array_map(function($var) use ($bit) {
-        return "'{$bit}_{$var}'";
-      }, $metas);
-    } else {
-      $metas = array_map(function($var) use ($bit) {
-        return "'{$var}'";
-      }, $metas);
+    public static function checkMeta($metas, $key, $return_type = '', $array_key = -1, $return_array_key = false)
+    {
+        $result = $return_type;
+
+        if ($array_key < 0) {
+            // simple check
+            $result = (isset($metas[$key]) && !empty($metas[$key])) ? $metas[$key] : $return_type;
+        } else {
+            // if array (group)
+            if (!$return_array_key) {
+                // return full group
+                $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key] : $return_type;
+            } else {
+                // return key group
+                $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key][$array_key] : $return_type;
+            }
+        }
+
+        return $result;
     }
 
-    $metas[] = "'_thumbnail_id'";
+    /**
+    * Check key & value in array
+    * @return boolean
+    */
+    public static function checkArray($array = [], $key = '', $value = '')
+    {
+        if (!$array) return false;
 
-    $metas_str = implode(',', $metas);
+        if ($key) {
+            if ($value) {
+                return ( isset($array[$key]) && $array[$key] == $value ) ? true : false;
+            }
 
-    $sql = "
-      SELECT post_id, meta_key, meta_value
-      FROM $wpdb->postmeta
-      WHERE post_id IN ($ids_str) AND meta_key IN ($metas_str)
-    ";
+            return (isset($array[$key])) ? true : false;
+        }
 
-    $query = $wpdb->get_results($sql, 'ARRAY_A');
-
-    if ($query) {
-      foreach($query as $v) {
-        $key = str_replace(["{$bit}_"], '', $v['meta_key']);
-        $data[$v['post_id']][$key] = maybe_unserialize($v['meta_value']);
-      }
+        return false;
     }
 
-    return $data;
-  }
+    public static function getImageSizes($unset_disabled = true)
+    {
+        $wais = & $GLOBALS['_wp_additional_image_sizes'];
 
-  public static function checkMeta($metas, $key, $return_type = '', $array_key = -1, $return_array_key = false)
-  {
-    $result = $return_type;
+        $sizes = array();
 
-    if ($array_key < 0) {
-      // simple check
-      $result = (isset($metas[$key]) && !empty($metas[$key])) ? $metas[$key] : $return_type;
-    } else {
-      // if array (group)
-      if (!$return_array_key) {
-        // return full group
-        $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key] : $return_type;
-      } else {
-        // return key group
-        $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key][$array_key] : $return_type;
-      }
+        foreach (get_intermediate_image_sizes() as $size) {
+            if ( in_array($size, ['thumbnail', 'medium', 'medium_large', 'large']) ) {
+                $sizes[$size] = [
+                    'width' => get_option( "{$size}_size_w" ),
+                    'height' => get_option( "{$size}_size_h" ),
+                    'crop' => (bool) get_option( "{$size}_crop" ),
+                ];
+            }
+            elseif ( isset( $wais[$size] ) ) {
+                $sizes[ $size ] = [
+                    'width' => $wais[ $size ]['width'],
+                    'height' => $wais[ $size ]['height'],
+                    'crop' => $wais[ $size ]['crop'],
+                ];
+            }
+
+            // size registered, but has 0 width and height
+            if ( $unset_disabled && ($sizes[ $size ]['width'] == 0) && ($sizes[ $size ]['height'] == 0) ) {
+                unset($sizes[ $size ]);
+            }
+        }
+
+        return $sizes;
     }
 
-    return $result;
-  }
+    public static function breadcrumbs($class = '')
+    {
+        $sep = '<li class="breadcrumbs-separator">&nbsp;&mdash;&nbsp;</li>';
+        $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
 
-  /**
-   * Check key & value in array
-   * @return boolean
-   */
-  public static function checkArray($array = [], $key = '', $value = '')
-  {
-    if (!$array) return false;
+        $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$class}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
 
-    if ($key) {
-      if ($value) {
-        return ( isset($array[$key]) && $array[$key] == $value ) ? true : false;
-      }
+        // Main page
+        $main_name = 'Главная';
+        $main_link = self::$home_url;
 
-      return (isset($array[$key]) && !empty($array[$key])) ? true : false;
+        $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$main_link}' itemprop='item'><span itemprop='name'>{$main_name}</span></a><meta itemprop='position' content='1'></li>";
+
+        $position = 2;
+
+        // Page
+        if ( is_page() ) {
+            global $post;
+
+            $ptitle = $post->post_title;
+
+            $html .= $sep;
+
+            $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
+        }
+
+        // Single Post
+        if ( is_singular('post') ) {
+            global $post;
+
+            $cats = get_the_category($post->ID);
+
+            if ($cats) {
+                $cat = array_shift($cats);
+
+                $ptitle = $cat->name;
+                $plink = get_category_link($cat->term_id);
+
+                $html .= $sep;
+
+                $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$plink}' itemprop='item'><span itemprop='name'>{$ptitle}</span></a><meta itemprop='position' content='{$position}'></li>";
+
+                $position += 1;
+            }
+
+            $ptitle = $post->post_title;
+
+            $html .= $sep;
+
+            $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
+        }
+
+        $html .= '</ul>';
+
+        return $html;
     }
-
-    return false;
-  }
-
-  public static function getImageSizes($unset_disabled = true)
-  {
-    $wais = & $GLOBALS['_wp_additional_image_sizes'];
-
-    $sizes = array();
-
-    foreach (get_intermediate_image_sizes() as $_size) {
-      if ( in_array($_size, ['thumbnail', 'medium', 'medium_large', 'large']) ) {
-        $sizes[ $_size ] = [
-          'width'  => get_option( "{$_size}_size_w" ),
-          'height' => get_option( "{$_size}_size_h" ),
-          'crop'   => (bool) get_option( "{$_size}_crop" ),
-        ];
-      }
-      elseif ( isset( $wais[$_size] ) ) {
-        $sizes[ $_size ] = [
-          'width'  => $wais[ $_size ]['width'],
-          'height' => $wais[ $_size ]['height'],
-          'crop'   => $wais[ $_size ]['crop'],
-        ];
-      }
-
-      // size registered, but has 0 width and height
-      if( $unset_disabled && ($sizes[ $_size ]['width'] == 0) && ($sizes[ $_size ]['height'] == 0) )
-        unset($sizes[ $_size ]);
-    }
-
-    return $sizes;
-  }
-
-  public static function breadcrumbs($class = '')
-  {
-    $main_link = get_home_url();
-
-    $sep = '<li class="breadcrumbs-separator">&nbsp;&mdash;&nbsp;</li>';
-    $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
-
-    $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$class}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
-
-    // Main page
-    $main_link_name = 'Главная';
-    $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$main_link}' itemprop='item'><span itemprop='name'>{$main_link_name}</span></a><meta itemprop='position' content='1'></li>";
-
-    $position = 2;
-
-    // Page
-    if ( is_page() ) {
-      global $post;
-
-      $ptitle = $post->post_title;
-
-      $html .= $sep;
-      $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
-    }
-
-    // Single Post
-    if ( is_singular('post') ) {
-      global $post;
-
-      $cats = get_the_category($post->ID);
-
-      if ($cats) {
-        $cat = array_shift($cats);
-        $plink = get_category_link($cat->term_id);
-        $ptitle = $cat->name;
-
-        $html .= $sep;
-        $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$plink}' itemprop='item'><span itemprop='name'>{$ptitle}</span></a><meta itemprop='position' content='{$position}'></li>";
-        $position += 1;
-      }
-
-      $ptitle = $post->post_title;
-
-      $html .= $sep;
-      $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
-    }
-
-    $html .= '</ul>';
-
-    return $html;
-  }
 }
 
 ?>

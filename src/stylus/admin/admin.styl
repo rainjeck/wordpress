@@ -2,229 +2,268 @@
 @import '../setup/mixins.styl';
 
 /*!
-  ADMIN
-  ===============================================
+* ADMIN
+* ===============================================
 */
 
 .is-loading
-  position: relative;
+    position: relative;
 
-  &:before
-    pseudo();
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: rgba(#fff,0.5);
-    z-index: 10;
+    &:before
+        pseudo();
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(#fff, 0.5);
+        z-index: 10;
 
-  &:after
-    pseudo();
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    top: 50%;
-    left: 50%;
-    margin-top: -20px;
-    margin-left: -20px;
-    border-width: 5px;
-    border-color: #111827 #E5E7EB;
-    border-style: solid;
-    animation: process-rotate 1s ease-in-out infinite forwards;
-    z-index: 15;
+    &:after
+        pseudo();
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+        top: 50%;
+        left: 50%;
+        margin-top: -20px;
+        margin-left: -20px;
+        border-width: 5px;
+        border-color: #111827 #E5E7EB;
+        border-style: solid;
+        animation: process-rotate 1s ease-in-out infinite forwards;
+        z-index: 15;
 
 @keyframes process-rotate
-  from
-    transform: rotate(0deg);
-  to
-    transform: rotate(360deg);
+    from
+        transform: rotate(0deg);
 
+    to
+        transform: rotate(360deg);
 
-input[name="post_name"]
-  width: 100%
+input[name='post_name']
+    width: 100%;
 
-
-#edittag,
-#poststuff
-  max-width: 1440px;
-
+#edittag, #poststuff
+    max-width: 1440px;
 
 #excerpt
-  height: 10em;
-
+    height: 10em;
 
 .menu-item-bar .menu-item-handle
-  max-width: 640px;
+    max-width: 640px;
 
 .menu-item-settings
-  max-width: 650px;
+    max-width: 650px;
 
 .menu-item-settings .description-thin
-  width: 100%;
+    width: 100%;
 
-
-/*! --- MEDIA MODAL ------------------- */
-// .media-modal-content
-//   .media-sidebar,
-//   .attachment-info
-//     .description,
-//     .setting[data-setting="title"],
-//     .setting[data-setting="caption"],
-//     .setting[data-setting="description"]
-//       display: none;
-
-
-/*! --- TERM -------------------------- */
+/*!
+* --- TERM --------------------------------------
+*/
 .term-php
-  .cmb2-metabox
-    border: 1px solid #e5e5e5;
-    background-color: #fff;
-    padding-top: 1em;
-    margin-top: 1em;
+    .cmb2-metabox
+        border: 1px solid #e5e5e5;
+        background-color: #fff;
+        padding-top: 1em;
+        margin-top: 1em;
 
-  .cmb-row
-    padding-left: 12px
-    padding-right: 12px
+    .cmb-row
+        padding-left: 12px;
+        padding-right: 12px;
+
+        .cmb-th
+            width: 18%;
+
+            @media all and (max-width: 520px)
+                width: 95%;
+                padding-bottom: 0;
+
+        .cmb-td
+            width: 80%;
+            padding-left: 0;
+            padding-right: 0;
+
+            @media all and (max-width: 520px)
+                width: 95%;
+                padding-top: 0;
+
+            &.cmb-remove-row
+                width: 24px;
+
+        &.cmb-repeat-group-wrap
+            .cmb-td
+                width: 100%;
+
+/*!
+* --- FIELDS ------------------------------------
+*/
+.cmb-type-group
+    .cmb-repeat-group-field
+        padding-top: 0;
+        margin-bottom: 5px;
+
+    .cmb-row
+        padding-bottom: 5px;
 
     .cmb-th
-      width: 18%
+        @media phone
+            width: 100%;
 
-      @media all and (max-width: 520px)
-        width: 95%
-        padding-bottom: 0
+        &+.cmb-td
+            @media phone
+                width: 100%;
 
-    .cmb-td
-      width: 80%;
-      padding-left: 0
-      padding-right: 0
-      @media all and (max-width: 520px)
-        width: 95%
-        padding-top: 0
+    .cmb-repeatable-grouping
+        .cmb-remove-field-row
+            padding-bottom: 0;
+            padding-top: 0;
+            margin-bottom: 5px;
 
-      &.cmb-remove-row
-        width: 24px;
-
-    &.cmb-repeat-group-wrap
-      .cmb-td
-        width: 100%;
-
-
-/*! --- FIELDS ------------------------ */
-.cmb-type-group
-  .cmb-repeat-group-field
-    padding-top: 0;
-    margin-bottom: 5px;
-
-  .cmb-row
-    padding-bottom: 5px;
-
-  .cmb-th
-    @media phone
-      width: 100%;
-
-    &+.cmb-td
-      @media phone
-        width: 100%;
-
-  .cmb-repeatable-grouping
-    .cmb-remove-field-row
-      padding-bottom: 0;
-      padding-top: 0;
-      margin-bottom: 5px;
-
-  .cmb-repeatable-group
-    .cmb-add-row
-      margin-top: 10px;
-
+    .cmb-repeatable-group
+        .cmb-add-row
+            margin-top: 10px;
 
 .cmb2-wrap .cmb-row.cmb-repeat .cmb2-metabox-description
-  padding-bottom: 0;
-
-.cmb-repeatable-group .cmb-group-description .cmb-th
-  padding-bottom: 0;
-
-.cmb-repeat-table .cmb-row.cmb-repeat-row
-  padding-top: 5px;
-  padding-bottom: 5px;
-
-.cmb2-postbox .cmb2-wrap > .cmb-field-list > .cmb-row
-  padding: 0.5em 0;
-
-
-.cmb2-media-status .img-status
-  margin-right: 20px;
-
-  img
-    width: 100%;
-    max-width: 120px;
-    height: auto;
-    max-height: 120px;
-    display: block;
-    box-sizing: border-box;
-
-
-#side-sortables
-  .cmb-th
     padding-bottom: 0;
 
-  .cmb2-wrap>.cmb-field-list>.cmb-row
-    padding: 0;
+.cmb-repeatable-group .cmb-group-description .cmb-th
+    padding-bottom: 0;
 
+.cmb-repeat-table .cmb-row.cmb-repeat-row
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+.cmb2-postbox .cmb2-wrap > .cmb-field-list > .cmb-row
+    padding: 0.5em 0;
+
+.cmb2-media-status .img-status
+    margin-right: 20px;
+
+    img
+        width: 100%;
+        max-width: 120px;
+        height: auto;
+        max-height: 120px;
+        display: block;
+        box-sizing: border-box;
+
+#side-sortables
+    .cmb-th
+        padding-bottom: 0;
+
+    .cmb2-wrap>.cmb-field-list>.cmb-row
+        padding: 0;
+
+.metabox-holder .postbox > h3
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+.cmb2-metabox .cmbhandle:before
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+.cmb2-metabox button.dashicons-before.dashicons-no-alt.cmb-remove-group-row
+    top: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
 /*!
-  --- REGENERATE THUMBNAILS -----------
+* --- COLUMNS -----------------------------------
+*/
+.column-thumbnail
+    width: 50px;
+
+    @media screen and (max-width: 782px)
+        display: none;
+
+    &:before
+        display: none !important;
+
+    &-link
+        display: block;
+        width: 100%;
+
+    &-pic
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        max-height: 50px;
+
+        .img, img
+            width: 100%;
+            max-height: 50px;
+            max-width: 100%;
+
+.column-management, .column-investments
+    width: 155px;
+
+.column-pid
+    width: 40px;
+
+.column-order
+    width: 84px;
+    text-align: center;
+
+    @media screen and (max-width: 782px)
+        display: none;
+
+.column-order.manage-column
+    font-size: 0.9em;
+
+/*
+* --- REGENERATE THUMBNAILS ---------------------
 */
 .tools_page_tnwpt_regenerate_thumbs
-  .submit
-    display: none;
+    .submit
+        display: none;
 
-
-/*!
-  --- BACKUP DB -----------------------
+/*
+* --- BACKUP DB ---------------------------------
 */
 .backup-list
-  ul
-    list-style-type: disc;
-    padding-left: 2em;
-    margin: 1em 0;
+    ul
+        list-style-type: disc;
+        padding-left: 2em;
+        margin: 1em 0;
 
-  button
-    background: none;
-    border: 0;
-    cursor: pointer;
+    button
+        background: none;
+        border: 0;
+        cursor: pointer;
 
-    &:hover .dashicons-trash
-      color: #EF4444;
+        &:hover .dashicons-trash
+            color: #EF4444;
 
-
-/*! --- DRAG DROP --------------------- */
+/*
+* --- DRAG DROP ---------------------------------
+*/
 .gu-unselectable
-  user-select: none !important;
-
+    user-select: none !important;
 
 .bDragDropList
-  li
-    border: 1px solid rgba(#fff,0);
-    transit();
+    li
+        border: 1px solid rgba(#fff, 0);
+        transit();
 
-    &:hover
-      border-color: #c026d3;
-      color: #c026d3;
-      cursor: grab;
+        &:hover
+            border-color: #c026d3;
+            color: #c026d3;
+            cursor: grab;
 
-    &.gu-transit
-      color: red;
-      box-shadow: 0 0 10px rgba(#000,0.5);
-      cursor: grabbing;
+        &.gu-transit
+            color: red;
+            box-shadow: 0 0 10px rgba(#000, 0.5);
+            cursor: grabbing;
 
-    &.gu-mirror
-      box-sizing: border-box;
-      padding: 5px;
-      border: 1px solid;
-      text-align: left;
-      position: fixed !important;
-      margin: 0 !important;
-      z-index: 9999 !important;
-      opacity: 0.8;
-      background: #fff;
-      cursor: grabbing;
+        &.gu-mirror
+            box-sizing: border-box;
+            padding: 5px;
+            border: 1px solid;
+            text-align: left;
+            position: fixed !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
+            opacity: 0.8;
+            background: #fff;
+            cursor: grabbing;

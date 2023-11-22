@@ -13,8 +13,6 @@ if (!defined('ABSPATH')) {
 
     <?php the_content(); ?>
 
-    <?php if (comments_open()) : comments_template();
-    endif; ?>
+    <?php if (comments_open()): comments_template(); endif; ?>
 
-<?php endwhile;
-endif; ?>
+<?php endwhile; endif; ?>

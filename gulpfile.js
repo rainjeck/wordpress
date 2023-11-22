@@ -15,7 +15,8 @@ gulp.task("css-app", function () {
     ])
     .pipe(plugin.sourcemaps.init())
     .pipe(plugin.stylus({
-      'include css': true
+      'include css': true,
+      compress: false
     }).on("error",
       plugin.notify.onError("<%= error.message %>")))
     .pipe(plugin.autoprefixer({

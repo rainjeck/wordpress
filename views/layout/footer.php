@@ -6,8 +6,8 @@ if (!defined('ABSPATH')) {
 ?>
 
 <footer class="footer">
-  <div class="container">
-    <p>This is "views/footer"</p>
-  </div>
+    <div class="container">
+        <p>This is "views/footer"</p>
+    </div>
 </footer>
 <!-- .FOOTER -->

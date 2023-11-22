@@ -1,31 +1,30 @@
 <?php
 // File Security Check
 if (!defined('ABSPATH')) {
-  exit;
+    exit;
 }
 
 use tnwpt\helpers\View;
 
 $app = get_query_var('app');
-$codes = (isset($app['g_code'])) ? array_shift($app['g_code']) : [];
 ?>
 
-</main>
-<!-- end .main -->
+            </main>
+            <!-- end .main -->
 
-<?php get_template_part('views/layout/footer'); ?>
+        <?php get_template_part('views/layout/footer'); ?>
 
-</div>
-<!-- end .wrapper -->
+        </div>
+        <!-- end .wrapper -->
 
-<?php
-if (!is_user_logged_in()) {
-  echo (View::checkArray($codes, 'body_end')) ? $codes['body_end'] : '';
-}
-?>
+        <?php
+            if (!is_user_logged_in()) {
+                echo View::checkArray($app, 'bodyend') ? $app['bodyend'] : '';
+            }
+        ?>
 
-<?php wp_footer(); ?>
+        <?php wp_footer(); ?>
 
-</body>
+    </body>
 
 </html>

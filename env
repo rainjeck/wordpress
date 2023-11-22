@@ -1,4 +1,7 @@
+APPDEV = 1
+
 CMB = "_tnwpt"
+APPOPTSKEY = "tnwpt_app"
 
 MAIL_DEV = 1
 

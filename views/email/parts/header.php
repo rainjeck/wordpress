@@ -46,18 +46,18 @@ $logo_id = get_theme_mod('custom_logo');
   <body>
 
     <table class="body">
-      <tbody>
-        <tr>
-          <td>
+        <tbody>
+            <tr>
+                <td>
 
-            <table class="container">
-              <tr>
-                <td class="logo">
-                  <?php /* ?>
-                  <a href="<?= home_url(); ?>" class="logo-link" target="_blank">
-                    <img src="<?= wp_get_attachment_image_url($logo_id, 'small'); ?>" alt="<?= bloginfo('name'); ?>" class="logo-img">
-                  </a>
-                  <?php /**/ ?>
-                </td>
-              </tr>
-            </table>
+                    <table class="container">
+                        <tr>
+                            <td class="logo">
+                                <?php /* ?>
+                                <a href="<?= home_url(); ?>" class="logo-link" target="_blank">
+                                    <img src="<?= wp_get_attachment_image_url($logo_id, 'small'); ?>" alt="<?= bloginfo('name'); ?>" class="logo-img">
+                                </a>
+                                <?php /**/ ?>
+                            </td>
+                        </tr>
+                    </table>

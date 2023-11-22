@@ -7,12 +7,13 @@ if (!defined('ABSPATH')) {
 
 <p>This is "archive"</p>
 
-<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+<?php if (have_posts()): ?>
+    <?php while (have_posts()) : the_post(); ?>
 
-    <div>
-      <h2><?php the_title(); ?></h2>
-      <?php the_excerpt(); ?>
-    </div>
+        <div>
+            <h2><?php the_title(); ?></h2>
+            <?php the_excerpt(); ?>
+        </div>
 
   <?php endwhile; ?>
 
@@ -21,6 +22,6 @@ if (!defined('ABSPATH')) {
 
 <?php else : ?>
 
-  <p>По вашему запросу ничего не найдено.</p>
+    <p>По вашему запросу ничего не найдено.</p>
 
 <?php endif; ?>
