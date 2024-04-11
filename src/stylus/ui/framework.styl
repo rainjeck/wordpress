@@ -1,31 +1,30 @@
 /*!
-* FRAMEWORK
-* ===============================================
-*/
+ * === FRAMEWORK ================================
+ */
 .container
     width: 100%;
-    max-width: $containerWidth;
-    padding-left: $containerPadding;
-    padding-right: $containerPadding;
+    max-width: unit($containerWidth,'px');
+    padding-left: unit($containerPadding,'px');
+    padding-right: unit($containerPadding,'px');
     margin: 0 auto;
 
     &.is-pd-0
         padding-left: 0;
         padding-right: 0;
-        max-width: ($containerWidth - ($containerPadding * 2));
+        max-width: unit($containerWidth - ($containerPadding * 2), 'px');
 
 /*!
-* --- GRID --------------------------------------
-*/
-.ui-row
+ * --- GRID -------------------------------------
+ */
+.v-row
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     list-style: none;
-    margin-left: (-($gridPadding));
-    margin-right: (-($gridPadding));
+    margin-left: (-(unit($gridPadding,'px')));
+    margin-right: (-(unit($gridPadding,'px')));
 
-.ui-col
+.v-col
     width: 100%;
     padding-left: $gridPadding;
     padding-right: $gridPadding;
@@ -39,146 +38,160 @@ col($num, $columns)
 
 grid($columns, $prefix = '')
     for $col in 1 .. $columns
-        .ui-col-{$col}{$prefix}
-            max-width: floor(
-                (100% / $columns) * $col,
-                6
-            );
+        .v-col-{$col}{$prefix}
+            max-width: floor( (100% / $columns) * $col, 6 );
 
 grid($gridColumns);
 
 for one, key in $points
     @media one
-        grid(
-            $gridColumns,
-            $pointsPrefix[key]
-        );
+        grid( $gridColumns, $pointsPrefix[key] );
 
 /*!
-* --- HELPER CLASSES ----------------------------
-*/
+ * --- HELPER CLASSES ---------------------------
+ */
 uidisplay($prefix = '')
     // Flex
     for $one in flex inline-flex
-        .ui-d-{$one}{$prefix}
+        .v-d-{$one}{$prefix}
             display: $one;
             flex-wrap: wrap;
 
-    .ui-flex-nowrap{$prefix}
+    .v-flex-nowrap{$prefix}
         flex-wrap: nowrap;
 
-    .ui-flex-wrap{$prefix}
+    .v-flex-wrap{$prefix}
         flex-wrap: wrap;
 
-    .ui-flexgrow-1{$prefix}
+    .v-flexgrow-1{$prefix}
         flex-grow: 1;
 
     // Display
     for $one in block inline-block inline none
-        .ui-d-{$one}{$prefix}
+        .v-d-{$one}{$prefix}
             display: $one;
 
     for $one in visible hidden
-        .ui-d-{$one}{$prefix}
+        .v-d-{$one}{$prefix}
             visibility: $one;
 
     // Align
     for $one in left center right
-        .ui-ta-{$one}{$prefix}
+        .v-ta-{$one}{$prefix}
             text-align: $one;
 
     for $one in flex-start flex-end center
-        .ui-ai-{$one}{$prefix}
+        .v-ai-{$one}{$prefix}
             align-items: $one;
 
-        .ui-jc-{$one}{$prefix}
+        .v-jc-{$one}{$prefix}
             justify-content: $one;
 
-        .ui-as-{$one}{$prefix}
+        .v-as-{$one}{$prefix}
             align-self: $one;
 
     for $one in space-between space-around
-        .ui-jc-{$one}{$prefix}
+        .v-jc-{$one}{$prefix}
             justify-content: $one;
 
     // Direction
     for $one in row row-reverse column column-reverse
-        .ui-flexdir-{$one}{$prefix}
+        .v-flexdir-{$one}{$prefix}
             flex-direction: $one;
 
     // Margins & Paddings
-    for $one in 0 8 16 24 32 64 128
-        .ui-pt-{$one}{$prefix}
+    for $one in 0 5
+        .v-pt-{$one}{$prefix}
             padding-top: unit($one, 'px');
 
-        .ui-pb-{$one}{$prefix}
+        .v-pb-{$one}{$prefix}
             padding-bottom: unit($one, 'px');
 
-        .ui-pr-{$one}{$prefix}
+        .v-pr-{$one}{$prefix}
             padding-right: unit($one, 'px');
 
-        .ui-pl-{$one}{$prefix}
+        .v-pl-{$one}{$prefix}
             padding-left: unit($one, 'px');
 
-        .ui-mt-{$one}{$prefix}
+        .v-mt-{$one}{$prefix}
             margin-top: unit($one, 'px');
 
-        .ui-mb-{$one}{$prefix}
+        .v-mb-{$one}{$prefix}
             margin-bottom: unit($one, 'px');
 
-        .ui-ml-{$one}{$prefix}
+        .v-ml-{$one}{$prefix}
             margin-left: unit($one, 'px');
 
-        .ui-mr-{$one}{$prefix}
+        .v-mr-{$one}{$prefix}
             margin-right: unit($one, 'px');
 
     // Margin
-    .ui-mx-auto{$prefix}
+    .v-mx-auto{$prefix}
         margin-left: auto;
         margin-right: auto;
 
-    .ui-mx-auto-left{$prefix}
+    .v-mx-auto-left{$prefix}
         margin-left: auto;
         margin-right: initial;
 
-    .ui-mx-auto-right{$prefix}
+    .v-mx-auto-right{$prefix}
         margin-left: initial;
         margin-right: left;
 
-    .ui-mx-none{$prefix}
+    .v-mx-none{$prefix}
         margin-left: initial;
         margin-right: initial;
 
-    .ui-mx-0{$prefix}
+    .v-mx-0{$prefix}
         margin-left: 0;
         margin-right: 0;
 
     // Padding
-    .ui-px-0{$prefix}
+    .v-px-0{$prefix}
         padding-left: 0;
         padding-right: 0;
 
     // Width
-    .ui-w-100{$prefix}
+    .v-w-100{$prefix}
         width: 100%;
 
-    .ui-w-auto{$prefix}
+    .v-w-auto{$prefix}
         width: auto;
         max-width: none;
 
     // Height
-    .ui-h-100{$prefix}
+    .v-h-100{$prefix}
         height: 100%;
 
-    .ui-h-auto{$prefix}
+    .v-h-auto{$prefix}
         height: auto;
 
     // White Space
-    .ui-ws-nowrap{$prefix}
+    .v-ws-nowrap{$prefix}
         white-space: nowrap;
 
-    .ui-ws-wrap{$prefix}
+    .v-ws-wrap{$prefix}
         white-space: normal;
+
+    // Font Size
+    for $one in 16 20
+        .v-fz-{$one}{$prefix}
+            font-size: unit($one,'px');
+
+    // Position
+    for $one in relative absolute fixed initial
+        .v-pos-{$one}{$prefix}
+            position: $one;
+
+    // z-index
+    for $one in 0 5 10 15 20
+        .v-zi-{$one}{$prefix}
+            z-index: $one;
+
+    // border-radius
+    for $one in 1000 100 10
+        .v-brad-{$one}{$prefix}
+            border-radius: unit($one,'px');
 
 uidisplay();
 

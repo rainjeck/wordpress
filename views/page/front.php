@@ -1,25 +1,23 @@
 <?php
 // File Security Check
-if (!defined('ABSPATH')) {
-  exit;
-}
+if (!defined('ABSPATH')) exit;
 
 use tnwpt\helpers\View;
 ?>
 
 <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
 
-  <div class="container">
+  <div class="v-box">
         <p>This is "front-page"</p>
 
         <?//= View::breadcrumbs(); ?>
 
-        <nav class="container" itemscope="" itemtype="http://schema.org/SiteNavigationElement">
+        <nav class="" itemscope="" itemtype="http://schema.org/SiteNavigationElement">
             <?php /*/
                 wp_nav_menu([
                     'theme_location' => 'place-menu-header',
                     'container' => false,
-                    'menu_class' => 'ui-ul-clear',
+                    'menu_class' => 'v-ul-clear',
                     'items_wrap' => '<ul id="%1$s" class="%2$s" itemprop="about" itemscope="" itemtype="http://schema.org/ItemList">%3$s</ul>'
                 ]);
             /**/ ?>
@@ -27,37 +25,39 @@ use tnwpt\helpers\View;
 
         <?php //get_search_form(); ?>
 
-        <form action="/" data-bouncer class="ui-form">
-            <input type="text" name="mouse" value="" class="ui-d-none">
+        <form action="/" data-bouncer class="v-form">
+            <input type="text" name="mouse" value="" class="v-d-none">
             <input type="hidden" name="token" value="<?= wp_create_nonce($_ENV['MAIL_NONCE']); ?>">
             <input type="hidden" name="title" value="<?= wp_get_document_title(); ?>">
             <input type="hidden" name="url" value="<?= get_self_link(); ?>">
             <input type="hidden" name="sbj" value="<?= wp_get_document_title(); ?>">
 
             Инпут:
-            <span class="ui-fg ui-d-inline-block"><input type="text" name="name" required class="ui-input ui-d-inline-block"></span>
+            <span class="v-fg v-d-inline-block">
+                <input type="text" name="name" required class="v-input v-d-inline-block">
+            </span>
 
-            <div class="ui-cbx ui-fg is-cbx ui-d-block">
-                <label class="ui-cbx-wrapper ui-d-flex ui-ai-center ui-flex-nowrap">
+            <div class="v-cbx is-cbx v-fg v-d-block">
+                <label class="v-cbx-wrapper v-d-flex v-ai-center v-flex-nowrap">
                     <input type="checkbox" name="type[]" value="checkbox">
-                    <span class="ui-cbx-box ui-icon ui-d-flex ui-ai-center ui-jc-center ui-mr-16"></span>
-                    <span class="ui-cbx-txt">checkbox</span>
+                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-16"></span>
+                    <span class="v-cbx-txt">checkbox</span>
                 </label>
             </div>
 
-            <div class="ui-cbx is-radio ui-fg is-cbx ui-d-block">
-                <label class="ui-cbx-wrapper ui-d-flex ui-ai-center ui-flex-nowrap">
+            <div class="v-cbx is-radio v-fg is-cbx v-d-block">
+                <label class="v-cbx-wrapper v-d-flex v-ai-center v-flex-nowrap">
                     <input type="radio" name="type[]" value="radio" checked>
-                    <span class="ui-cbx-box ui-icon ui-d-flex ui-ai-center ui-jc-center ui-mr-16"></span>
-                    <span class="ui-cbx-txt">radio</span>
+                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-16"></span>
+                    <span class="v-cbx-txt">radio</span>
                 </label>
             </div>
 
-            <div class="ui-form-result is-success ui-status-success ui-ta-center ui-mb-24 js-result-success">
+            <div class="v-form-result-success v-status-success v-ta-center v-mb-24 js-result-success">
                 Спасибо! Ваша заявка отправлена
             </div>
 
-            <div class="ui-form-result is-error ui-status-error ui-ta-center ui-mb-24 js-result-error">
+            <div class="v-form-result-error v-status-error v-ta-center v-mb-24 js-result-error">
                 Ошибка! Что-то пошло не так
             </div>
 

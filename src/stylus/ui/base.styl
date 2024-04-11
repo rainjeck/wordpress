@@ -1,6 +1,6 @@
 /*!
-* --- BASE --------------------------------------
-*/
+ * === BASE =====================================
+ */
 body, html
     border: 0;
     width: 100%;
@@ -10,20 +10,21 @@ body, html
 html
     font-size: 16px;
 
-    &.is-no-scroll, &.is-unimodal-active
+    &.is-no-scroll,
+    &.is-unimodal-active
         overflow: hidden;
 
 body
-    font-weight: normal;
-    background-color: #fff;
-    line-height: normal;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     min-height: 100vh;
+    background-color: #fff;
     font-family: $font;
     color: $colorText;
+    font-weight: normal;
+    line-height: 1;
 
 .browsehappy
     display: block;
@@ -40,8 +41,8 @@ body
         text-decoration: underline;
 
 /*!
-* --- FOOTER TO BOTTOM --------------------------
-*/
+ * --- FOOTER TO BOTTOM -------------------------
+ */
 .wrapper
     flex: 1 1 auto;
     width: 100%;
@@ -58,8 +59,8 @@ body
     flex-shrink: 0;
 
 /*!
-* --- UI ELEMENTS -------------------------------
-*/
+ * --- UI ELEMENTS ------------------------------
+ */
 a
     font-size: inherit;
     font-family: inherit;
@@ -84,30 +85,40 @@ button, input, select, textarea
     background-color: rgba(255, 255, 255, 0);
     transit();
 
-button, button[type='submit'], input[type='submit']
+button, button[type='submit'],
+input[type='submit']
     cursor: pointer;
 
-input[type='search'], input[type='number']
+input[type='search'],
+input[type='number']
     -webkit-appearance: textfield;
 
 /* clears the 'X' from Internet Explorer */
 input[type=search]
-    &::-ms-clear, &::-ms-reveal
+    &::-ms-clear,
+    &::-ms-reveal
         display: none;
         width: 0;
         height: 0;
 
 /* clears the 'X' from Chrome */
 input[type='search']
-    &::-webkit-search-decoration, &::-webkit-search-cancel-button, &::-webkit-search-results-button, &::-webkit-search-results-decoration
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration
         display: none;
 
-input[type='number']::-webkit-inner-spin-button, input[type='number']::-webkit-outer-spin-button
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button
     -webkit-appearance: none;
     margin: 0;
 
-button, input, textarea
-    &:disabled, &.is-disabled
+button,
+input,
+textarea
+    &:disabled,
+    &.is-disabled
         cursor: not-allowed;
 
 textarea

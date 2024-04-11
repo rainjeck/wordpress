@@ -1,7 +1,6 @@
 /*!
-* UI
-* ===============================================
-*/
+ * === UI =======================================
+ */
 .is-process
     position: relative;
 
@@ -32,17 +31,16 @@
 @keyframes process-rotate
     from
         transform: rotate(0);
-
     to
         transform: rotate(360deg);
 
 @import 'framework';
 
 /*!
-* --- ELEMENTS BASIC ----------------------------
-*/
+ * --- ELEMENTS BASIC ---------------------------
+ */
 
-.ui-icon
+.v-icon
     size(16px, 16px);
     flex: none;
     bg(center, contain);
@@ -50,7 +48,7 @@
     .ico
         size(100%, 100%);
 
-.ui-pic-bg
+.v-pic-bg
     position: absolute;
     size(100%, 100%);
     top: 0;
@@ -60,17 +58,17 @@
         size(100%, 100%);
         object-fit: cover;
 
-.ui-pic-cover
+.v-img-cover
     img
         size(100%, 100%);
         object-fit: cover;
 
-.ui-pic-contain
+.v-img-contain
     img
         size(100%, 100%);
         object-fit: contain;
 
-.ui-media-ratio-1, .ui-media-ratio-43, .ui-media-ratio-53, .ui-media-ratio-169
+.v-media-ratio
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -83,20 +81,19 @@
         top: 0;
         width: 100%;
 
-.ui-media-ratio
-    &-1
+    &.is-1
         padding-top: 100%;
 
-    &-169
+    &.is-169
         padding-top: round((9 / 16) * 100%, 2);
 
-    &-43
+    &.is-43
         padding-top: round((3 / 4) * 100%, 2);
 
-    &-53
+    &.is-53
         padding-top: round((3 / 5) * 100%, 2);
 
-.ui-tab
+.v-tab
     display: none;
     opacity: 0;
 
@@ -107,39 +104,39 @@
 @keyframes tab-show
     from
         opacity: 0;
-
     to
         opacity: 1;
 
-.ui-ul-clear
+.v-ul-clear
     padding: 0;
     margin: 0;
     list-style-type: none;
 
-.ui-status-success
+.v-status-success
     color: $colorSuccess;
 
-.ui-status-error
+.v-status-error
     color: $colorError;
 
 /*!
 * --- FORM --------------------------------------
 */
-.ui-form
-    .ui-form-result
+.v-form
+    .v-form-result-success,
+    .v-form-result-error
         display: none;
 
-    &.is-success .ui-form-result.is-success
+    &.is-success .v-form-result-success
         display: block;
 
-    &.is-error .ui-form-result.is-error
+    &.is-error .v-form-result-error
         display: block;
 
     .error-message
-        font-size: 10px;
+        font-size: 0.8em;
         color: $colorError;
 
-.ui-fg
+.v-fg
     position: relative;
 
     .error-message
@@ -147,23 +144,23 @@
         bottom: 3px;
         right: 5px;
 
-    &.is-cbx .error-message
+    &.is-cbx .v-status-error
         bottom: auto;
         top: 100%;
         right: 0;
 
-.ui-select
+.v-select
     select
         appearance: none;
 
         &::-ms-expand
             display: none;
 
-.ui-input
+.v-input
     height: 2em;
     border: 1px solid $colorText;
 
-.ui-cbx
+.v-cbx
     position: relative;
 
     input
@@ -190,7 +187,7 @@
 /*!
 * --- ELEMENTS ----------------------------------
 */
-.ui-burger
+.v-burger
     size(32px, 24px);
     position: relative;
 
@@ -236,5 +233,5 @@
     &:hover
         opacity: 0.6;
 
-.ui-link-zoom
+.v-link-zoom
     cursor: zoom-in;

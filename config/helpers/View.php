@@ -58,103 +58,130 @@ class View
         return $data;
     }
 
-    public static function getPhoneNumber($number)
+    /**
+     * Phone Number
+     */
+    public static function getPhone($number, $link = false, $classes = '')
     {
         if ( !$number ) return;
 
-        return preg_replace('/[^0-9]/', '', $number);
+        $num = preg_replace('/[^0-9]/', '', $number);
+
+        if ($link) {
+            return "<a href='tel:+{$num}' class='{$classes}'>{$number}</a>";
+        }
+
+        return $num;
     }
 
-    public static function getPhoneLink($number, $className = '')
+    /**
+     * E-mail link
+     */
+    public static function getEmail($email, $classes = '')
     {
-        if ( !$number ) return;
+        $mail = sanitize_email($email);
 
-        $clearNum = self::getPhoneNumber($number);
-
-        return '<a href="tel:+'. $clearNum .'" class="'. $className .'">'. $number .'</a>';
+        return "<a href='mailto:{$mail}' class='{$classes}'>{$email}</a>";
     }
 
-    public static function getEmailLink($email, $className = '')
+    /**
+     * Get relative URL
+     */
+    public static function getRelativeUrl($url)
     {
-        return '<a href="mailto:'. $email .'" class="'. $className .'">'. $email .'</a>';
+        $result = preg_replace('/(http|https):\/\/(?:.*?)\//i', '/', $url);
+
+        return $result;
     }
 
-    public static function getLogo($classes = '', $link = true, $bg = false)
+    /**
+     * Custom Logo
+     * type - img, inline, bg
+     */
+    public static function getLogo($type = 'img', $classes = '', $link = true)
     {
         $logo_id = get_theme_mod('custom_logo');
 
-        $classes = ($classes) ? $classes : 'customLogo';
+        if (!$logo_id) return '';
 
-        if ($logo_id) {
-            $home_url = self::$home_url;
-            $url = wp_get_attachment_image_url($logo_id, 'small');
-            $name = get_bloginfo('name');
-            $desc = get_bloginfo('description');
+        $classes = ($classes) ? $classes : '';
 
-            $style = '';
+        $home_url = self::$home_url;
+        $url = wp_get_attachment_image_url($logo_id, 'small');
+        $name = get_bloginfo('name');
+        $desc = get_bloginfo('description');
 
-            if ($bg) {
-                $style = " style='background-image: url({$url})'";
-            }
+        $html = '';
 
-            $html = "<div class='{$classes}'{$style}>";
-
+        if ($type == 'img') {
             if ($link) {
-                $html .= "
-                <a href='{$home_url}' class='ui-d-block'>
-                    <img src='{$url}' title='{$desc}' alt='{$name}'/>
-                </a>"
+                $html = "
+                    <a href='{$home_url}' class='{$classes}'>
+                        <img src='{$url}' title='{$desc}' alt='{$name}'/>
+                    </a>"
                 ;
+            } else {
+                $html = "<img src='{$url}' title='{$desc}' alt='{$name}' class='{$classes}'/>";
             }
-
-            if (!$link && !$bg) {
-                $html .= "<img src='{$url}' title='{$desc}' alt='{$name}'/>";
-            }
-
-            $html .= "</div>";
-
-
-            return $html;
         }
 
-        return '';
+        if ($type == 'bg') {
+            $style = "style='background-image: url({$url})'";
+
+            if ($link) {
+                $html = "<a href='{$home_url}' class='{$classes}'{$style}></a>";
+            } else {
+                $html = "<div class='{$classes}'{$style}></div>";
+            }
+        }
+
+        if ($type == 'inline') {
+            $url = ABSPATH . ltrim(self::getRelativeUrl($url),'/');
+            $content = file_get_contents($url);
+
+            if (!$content) return '';
+
+            if ($link) {
+                $html = "<a href='{$home_url}' class='{$classes}'>{$content}</a>";
+            } else {
+                $html = "<div class='{$classes}'>{$content}</div>";
+            }
+        }
+
+        return $html;
     }
 
-    public static function getImg($filename, $folder)
+    public static function getImg($filename = '', $folder = '')
     {
-        $url = self::$url;
+        $url = self::getRelativeUrl(self::$url);
 
         return "{$url}/assets/{$folder}/{$filename}";
     }
 
-    public static function getSvg($icon_id, $className = '')
+    public static function getSvg($icon_id, $classes = '')
     {
         if (!$icon_id) return;
-
-        $addClass = ( $className ) ? ' '.$className : '';
 
         $url = self::$url . '/assets/icons/sprite.svg#';
 
-        return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
+        return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
     }
 
-    public static function getSvgColor($icon_id, $className = '')
+    public static function getSvgColor($icon_id, $classes = '')
     {
         if (!$icon_id) return;
 
-        $addClass = ( $className ) ? ' '.$className : '';
-
         $url = self::$url . '/assets/icons/sprite-color.svg#';
 
-        return "<svg class='ico{$addClass}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
+        return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
     }
 
-    public static function getPluralForm($number, $after)
+    /**
+     * Get Plural Form
+     * getPluralForm($number, ['вариант', 'варианта', 'вариантов']);
+     */
+    public static function getPluralForm($number = 0, $after = [])
     {
-        /*
-        getPluralForm($number, [__('вариант', 'tnwpt'), __('варианта', 'tnwpt'), __('вариантов', 'tnwpt')]);
-        */
-
         $cases = [2, 0, 1, 1, 1, 2];
 
         return $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
@@ -166,6 +193,7 @@ class View
 
         $content = wpautop($text);
         $content = preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+        $content = self::getRelativeUrl($content);
 
         return $content;
     }
@@ -176,14 +204,10 @@ class View
 
         $key = array_search($template_file, self::$templates);
 
-        if ($key) {
-            return $key;
-        }
-
-        return false;
+        return ($key) ? $key : false;
     }
 
-    public static function getPostMeta($post_id, $keys = [])
+    public static function getPostMeta($post_id = 0, $keys = [])
     {
         if ( !$post_id || !$keys ) return;
 
@@ -294,23 +318,17 @@ class View
         return $data;
     }
 
-    public static function checkMeta($metas, $key, $return_type = '', $array_key = -1, $return_array_key = false)
+    public static function checkMeta($metas, $key, $return_default = '', $return_key = -1)
     {
-        $result = $return_type;
+        $result = $return_default;
 
-        if ($array_key < 0) {
-            // simple check
-            $result = (isset($metas[$key]) && !empty($metas[$key])) ? $metas[$key] : $return_type;
-        } else {
-            // if array (group)
-            if (!$return_array_key) {
-                // return full group
-                $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key] : $return_type;
-            } else {
-                // return key group
-                $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$array_key])) ? $metas[$key][$array_key] : $return_type;
-            }
+        if ($return_key >= 0) {
+            $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$return_key])) ? $metas[$key][$return_key] : $return_default;
+
+            return $result;
         }
+
+        $result = (isset($metas[$key]) && !empty($metas[$key])) ? $metas[$key] : $return_default;
 
         return $result;
     }
@@ -323,12 +341,12 @@ class View
     {
         if (!$array) return false;
 
-        if ($key) {
-            if ($value) {
-                return ( isset($array[$key]) && $array[$key] == $value ) ? true : false;
-            }
+        if ($value && isset($array[$key])) {
+            return ($value == $array[$key]) ? true : false;
+        }
 
-            return (isset($array[$key])) ? true : false;
+        if ($key && array_key_exists($key,$array)) {
+            return true;
         }
 
         return false;
@@ -365,12 +383,81 @@ class View
         return $sizes;
     }
 
-    public static function breadcrumbs($class = '')
+    /**
+     * Check Post Data
+     * @return array
+     */
+    public static function checkAjaxData()
+    {
+        // проверяем nonce код, если проверка не пройдена прерываем обработку
+        if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
+            wp_send_json_error(['msg' => 'Fail']); // Check failed
+        }
+
+        // разбираем строку data из ajax
+        $data = $_POST; // если FormData
+
+        // проверяем на робота
+        if (!empty($data['mouse']) || !isset($data['mouse'])) {
+            wp_send_json_error(['msg' => 'You are robot']); // Robot
+        }
+
+        return $data;
+    }
+
+    public static function writeLog($data)
+    {
+        if (!WP_DEBUG) return;
+
+        if ( is_array( $data ) || is_object( $data ) ) {
+            error_log( print_r( $data, true ) );
+        } else {
+            error_log( $data );
+        }
+    }
+
+    public static function getPostsOrder($ids = [], $post_type = '', $add = true)
+    {
+        $data = [];
+
+        $items = get_posts([
+            'post_type' => $post_type,
+            'posts_per_page' => -1,
+            'post_status' => 'publish',
+            'fields' => 'ids',
+            'orderby' => 'id',
+            'order' => 'ASC'
+        ]);
+
+        $items_data = self::getPostData($items, ['post_title'], []);
+
+        if ($ids) {
+            foreach($ids as $post_id) {
+                if ( array_key_exists($post_id, $items_data) ) {
+                $data[$post_id] = __($items_data[$post_id]['title']);
+                unset($items_data[$post_id]);
+                }
+            }
+        }
+
+        if ($items_data && $add) {
+            foreach($items_data as $one) {
+                $data[$one['ID']] = __($one['title']);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Breadcrumbs
+     */
+    public static function breadcrumbs($classes = '')
     {
         $sep = '<li class="breadcrumbs-separator">&nbsp;&mdash;&nbsp;</li>';
         $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
 
-        $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$class}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
+        $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$classes}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
 
         // Main page
         $main_name = 'Главная';
@@ -422,5 +509,3 @@ class View
         return $html;
     }
 }
-
-?>

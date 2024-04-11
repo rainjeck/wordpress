@@ -1,234 +1,197 @@
-var gulp = require("gulp");
-var plugin = require("gulp-load-plugins")();
-var webpack = require('webpack-stream');
+var gulp = require('gulp');
+var plugin = require('gulp-load-plugins')();
+var rollup = require('rollup');
+var rollup_resolve = require('@rollup/plugin-node-resolve');
+var rollup_commonjs = require('@rollup/plugin-commonjs');
 
+var destDir = './assets';
 
-var destAssetsDir = "./assets";
-
-
-// Stylus
-gulp.task("css-app", function () {
-  return (
-    gulp.src([
-      "./src/stylus/*.styl",
-      "!./src/stylus/libs.styl"
+// === Stylus
+gulp.task('css:app', function() {
+    return gulp.src([
+        './src/stylus/*.styl',
+        '!./src/stylus/libs.styl',
     ])
     .pipe(plugin.sourcemaps.init())
     .pipe(plugin.stylus({
-      'include css': true,
-      compress: false
-    }).on("error",
-      plugin.notify.onError("<%= error.message %>")))
+        'include css': true,
+        compress: false
+    }).on('error', plugin.notify.onError('<%= error.message %>')))
     .pipe(plugin.autoprefixer({
-      remove: false,
-      cascade: false
+        remove: false,
+        cascade: false,
     }))
-    .pipe(plugin.sourcemaps.write("../css"))
-    .pipe(gulp.dest(destAssetsDir + "/css"))
-  );
+    .pipe(plugin.sourcemaps.write('../css'))
+    .pipe(gulp.dest(destDir + '/css'))
 });
 
-gulp.task("css-app-minify", function () {
-  return gulp.src([
-      destAssetsDir + "/css/*.css",
-      "!" + destAssetsDir + "/css/*.min.css",
-      "!" + destAssetsDir + "/css/*libs*.css",
-      "!" + destAssetsDir + "/css/*bundle*.css",
+gulp.task('css:libs', function() {
+    return gulp.src([
+        './src/stylus/libs.styl',
     ])
-    .pipe(plugin.cleanCss())
-    .pipe(plugin.rename({
-      suffix: '.min'
-    }))
-    .pipe(gulp.dest(destAssetsDir + "/css/"));
-});
-
-
-gulp.task("css-libs", function () {
-  return (
-    gulp.src([
-      "./src/stylus/libs.styl"
-    ])
-    // .pipe(plugin.sourcemaps.init())
     .pipe(plugin.stylus({
-      'include css': true
-    }).on("error",
-      plugin.notify.onError("<%= error.message %>")))
-    .pipe(plugin.autoprefixer({
-      remove: false,
-      cascade: false
-    }))
+        'include css': true,
+        compress: false
+    }).on('error', plugin.notify.onError('<%= error.message %>')))
+    .pipe(gulp.dest(destDir + '/css/'))
+});
+
+gulp.task('css:bundle', function() {
+    return gulp.src([
+        destDir + '/css/libs.css',
+        destDir + '/css/main.css',
+    ])
+    .pipe(plugin.concat('bundle.css'))
+    .pipe(gulp.dest(destDir + '/css/'));
+});
+
+gulp.task('css:minify', function() {
+    return gulp.src([
+        destDir + '/css/*.css',
+        '!' + destDir + '/css/*.min.css',
+    ])
     .pipe(plugin.cleanCss())
     .pipe(plugin.rename({
-      suffix: '.min'
+        suffix: '.min'
     }))
-    // .pipe(plugin.sourcemaps.write("../css"))
-    .pipe(gulp.dest(destAssetsDir + "/css"))
-  );
+    .pipe(gulp.dest(destDir + '/css/'));
 });
 
-gulp.task("css-bundle", function () {
-  return gulp.src([
-      './assets/**/libs.min.css',
-      './assets/**/main.min.css'
+gulp.task('css', gulp.series('css:app', 'css:libs', 'css:bundle', 'css:minify'));
+
+
+// === JS
+gulp.task('js:app', function() {
+    return gulp.src([
+        './src/js/*.js',
+        '!./src/js/libs.js',
     ])
-    .pipe(plugin.concat("bundle.min.css"))
-    .pipe(gulp.dest(destAssetsDir + "/css/"))
-});
-
-gulp.task("css-app-bundle", gulp.series("css-app", "css-app-minify", "css-bundle"));
-gulp.task("css-libs-bundle", gulp.series("css-libs", "css-bundle"));
-gulp.task("css", gulp.series("css-libs", "css-app", "css-app-minify", "css-bundle"));
-
-
-
-// JS
-gulp.task('js-app', function () {
-  return gulp.src(['./src/js/main.js', './src/js/admin.js'])
     .pipe(plugin.sourcemaps.init())
     .pipe(plugin.include()).on('error', console.log)
-    .pipe(plugin.babel({
-      presets: ['@babel/env']
-    }))
-    .pipe(plugin.sourcemaps.write("../js"))
-    .pipe(gulp.dest(destAssetsDir + "/js"))
+    .pipe(plugin.babel({ presets: [ '@babel/env' ] }))
+    .pipe(plugin.sourcemaps.write('../js'))
+    .pipe(gulp.dest(destDir + '/js'))
 });
 
-gulp.task("js-app-minify", function () {
-  return gulp.src([
-      destAssetsDir + "/js/main.js",
-      destAssetsDir + "/js/admin.js"
+gulp.task('js:libs', function() {
+    return rollup.rollup({
+        input: './src/js/libs.js',
+        plugins: [ rollup_commonjs(), rollup_resolve() ],
+    })
+    .then(bundle => {
+        return bundle.write({
+            file: destDir + '/js/libs.js',
+            format: 'umd',
+            sourcemap: false,
+        });
+    });
+});
+
+gulp.task('js:bundle', function() {
+    return gulp.src([
+        './assets/js/libs.js',
+        './assets/js/main.js',
+    ])
+    .pipe(plugin.concat('bundle.js'))
+    .pipe(gulp.dest(destDir + '/js/'))
+});
+
+gulp.task('js:minify', function() {
+    return gulp.src([
+        destDir + '/js/*.js',
+        '!' + destDir + '/js/*.min.js',
     ])
     .pipe(plugin.uglify())
     .pipe(plugin.rename({
-      suffix: '.min'
+        suffix: '.min'
     }))
-    .pipe(gulp.dest(destAssetsDir + "/js"));
+    .pipe(gulp.dest(destDir + '/js'));
 });
 
-
-gulp.task("js-libs", function () {
-  return gulp.src('./src/js/libs.js')
-    .pipe(webpack({
-      mode: 'production',
-      entry: {
-        libs: './src/js/libs.js',
-      },
-      output: {
-        filename: '[name].min.js',
-      },
-      module: {
-        rules: [{
-          test: /\.js$/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env']
-            }
-          }
-        }]
-      }
-    }))
-    .on("error", plugin.notify.onError("<%= error.message %>"))
-    .pipe(gulp.dest(destAssetsDir + "/js"))
-});
-
-gulp.task("js-bundle", function () {
-  return gulp.src([
-      './assets/**/libs.min.js',
-      './assets/**/main.min.js'
-    ])
-    .pipe(plugin.uglify())
-    .pipe(plugin.concat("bundle.min.js"))
-    .pipe(gulp.dest(destAssetsDir + "/js/"))
-});
-
-gulp.task("js-app-bundle", gulp.series("js-app", "js-app-minify", "js-bundle"));
-gulp.task("js-libs-bundle", gulp.series("js-libs", "js-bundle"));
-gulp.task("js", gulp.series("js-libs", "js-app", "js-app-minify", "js-bundle"));
+gulp.task('js', gulp.series('js:app', 'js:libs', 'js:bundle', 'js:minify'));
 
 
-// SVG
-gulp.task("svg-sprite", function () {
-  return gulp
-    .src([
-      "./assets/icons/*.svg",
-      "!./assets/icons/sprite*.svg"
+// === SVG
+gulp.task('svg:sprite', function() {
+    return gulp.src([
+        '!./assets/icons/sprite*.svg',
+        './assets/icons/*.svg',
     ])
     .pipe(plugin.svgmin({
-      multipass: true,
-      plugins: [{
-        name: 'removeAttrs',
-        params: {
-          attrs: "(fill|stroke|opacity|color|style)"
-        }
-      }]
+        multipass: true,
+        plugins: [{
+            name: 'removeAttrs',
+            params: {
+                attrs: '(fill|stroke|opacity|color|style)'
+            }
+        }]
     }))
     .pipe(plugin.svgSprite({
-      mode: {
-        symbol: {
-          sprite: "sprite.svg",
-          bust: false,
-          dest: ""
+        mode: {
+            symbol: {
+                sprite: 'sprite.svg',
+                bust: false,
+                dest: ''
+            }
         }
-      }
     }))
-    .pipe(gulp.dest(destAssetsDir + "/icons"));
+    .pipe(gulp.dest(destDir + '/icons'));
 });
 
-gulp.task("svg-sprite-color", function () {
-  return gulp.src([
-      "./assets/icons/*.svg",
-      "!./assets/icons/sprite*.svg"
+gulp.task('svg:spritecolor', function() {
+    return gulp.src([
+        '!./assets/icons/sprite*.svg',
+        './assets/icons/*.svg',
     ])
     .pipe(plugin.svgmin({ multipass: true }))
     .pipe(plugin.svgSprite({
-      mode: {
-        symbol: {
-          sprite: "sprite-color.svg",
-          bust: false,
-          dest: ""
+        mode: {
+            symbol: {
+                sprite: 'sprite-color.svg',
+                bust: false,
+                dest: ''
+            }
         }
-      }
     }))
-    .pipe(gulp.dest(destAssetsDir + "/icons"));
+    .pipe(gulp.dest(destDir + '/icons'));
 });
 
-gulp.task("svg", gulp.series("svg-sprite", "svg-sprite-color"));
+gulp.task('svg', gulp.series('svg:sprite', 'svg:spritecolor'));
 
 
-// Reloader
-gulp.task("reloader", function (done) {
-  plugin.livereload.changed("/");
+// === Reloader
+gulp.task('reloader', function(done) {
+  plugin.livereload.changed('/');
   done();
 });
 
 
-// Watch
-gulp.task("watch", function () {
+// === Watch
+gulp.task('watch', function() {
   plugin.livereload.listen({
-    basePath: "./",
+    basePath: './',
     start: true
   });
 
-  // CSS
-  gulp.watch(["./src/stylus/**/*.styl", '!./src/stylus/**/libs.styl'], gulp.series("css-app-bundle", "reloader"));
-  gulp.watch(["./src/stylus/**/libs.styl"], gulp.series("css-libs-bundle", "reloader"));
+  // --- CSS
+  gulp.watch(['./src/stylus/**/*.styl', '!./src/stylus/**/libs.styl'], gulp.series('css:app', 'css:bundle', 'css:minify', 'reloader'));
+  gulp.watch(['./src/stylus/**/libs.styl'], gulp.series('css:libs', 'css:bundle', 'css:minify', 'reloader'));
 
-  // JS
-  gulp.watch(["./src/js/**/*.js", "!./src/js/**/libs.js"], gulp.series("js-app-bundle", "reloader"));
-  gulp.watch(["./src/js/**/libs.js"], gulp.series("js-libs-bundle", "reloader"));
+  // --- JS
+  gulp.watch(['./src/js/**/*.js', '!./src/js/**/libs.js'], gulp.series('js:app', 'js:bundle', 'js:minify', 'reloader'));
+  gulp.watch(['./src/js/**/libs.js'], gulp.series('js:libs', 'js:bundle', 'js:minify', 'reloader'));
 
-  // PHP
-  gulp.watch(["*.php", "views/**/*.php"], function php(done) {
+  // --- PHP
+  gulp.watch(['*.php', 'views/**/*.php'], function php(done) {
     plugin.livereload.reload();
     done();
   });
 });
 
-gulp.task("media", gulp.series("svg", "reloader"), function () {});
+gulp.task('media', gulp.series('svg', 'reloader'), function () {});
 
-gulp.task("build", gulp.series( "svg", "css", "js" ),
-  function () {}
+gulp.task('build', gulp.series( 'svg', 'css', 'js' ),
+  function() {}
 );
 
-gulp.task("default", gulp.series("build", "watch"), function () {});
+gulp.task('default', gulp.series('build', 'watch'), function () {});

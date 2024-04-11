@@ -8,7 +8,6 @@ class Init
     {
         return [
             setup\Setup::class,
-            setup\Enqueue::class,
             custom\PostType::class,
             custom\AdminOptionsPage::class,
             custom\CustomFields::class,

@@ -17,7 +17,7 @@ Starting template theme for WordPress
 4. Install devDependencies
 
     ```
-    npm i @babel/core @babel/preset-env babel-loader webpack-stream gulp gulp-autoprefixer gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-notify gulp-rename gulp-sourcemaps gulp-stylus gulp-svg-sprite gulp-svgmin gulp-uglify core-js -D
+    npm i @babel/core @babel/preset-env babel-loader gulp gulp-autoprefixer@8 gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-notify gulp-rename gulp-sourcemaps gulp-stylus gulp-svg-sprite gulp-svgmin gulp-uglify rollup @rollup/plugin-commonjs @rollup/plugin-node-resolve -D
     ```
 
 5. Install dependencies

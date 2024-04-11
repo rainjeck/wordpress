@@ -6,21 +6,17 @@ class AdminColumns
 {
     public function register()
     {
-        add_filter('manage_posts_columns', [&$this, 'adminColumnsAdd']);
-        add_action('manage_posts_custom_column', [&$this, 'adminColumnsView']);
+        add_filter('manage_posts_columns', [&$this, 'filter_manage_posts_columns'], 10, 2);
+        add_action('manage_posts_custom_column', [&$this, 'action_manage_posts_custom_column'], 10, 2);
     }
 
-    public function adminColumnsAdd($columns)
+    public function filter_manage_posts_columns($columns, $post_type)
     {
         $post_type = get_post_type();
 
         // THUMBNAIL
         if (in_array($post_type, [])) {
             $num = 1;
-
-            // if ($post_type == 'banner') {
-            //   $num = 2;
-            // }
 
             $new_column = ['thumbnail' => ''];
             $columns = array_slice($columns, 0, $num) + $new_column + array_slice($columns, $num);
@@ -36,7 +32,7 @@ class AdminColumns
         return $columns;
     }
 
-    public function adminColumnsView($column_name)
+    public function action_manage_posts_custom_column($column_name, $post_id)
     {
         if ( !in_array($column_name, ['thumbnail', 'pid']) ) return;
 
@@ -66,5 +62,3 @@ class AdminColumns
         }
     }
 }
-
-?>

@@ -1,6 +1,6 @@
 const app = {
     init() {
-        svg4everybody();
+        // svg4everybody();
 
         console.log("It works!");
 
@@ -21,16 +21,16 @@ const app = {
     },
 
     toggler() {
-        const toggler = new Unitoggle({
-            onOpen: (tab) => {}, // After open callback
-            onClose: (tab) => {}, // After close callback
+        new Unitoggle({
+            onOpen: tab => {}, // After open callback
+            onClose: tab => {}, // After close callback
         });
     },
 
     modal() {
         new Unimodal({
             onOpen: (modal, button) => {},
-            onClose: (modal) => {},
+            onClose: modal => {},
         });
     },
 

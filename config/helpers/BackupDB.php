@@ -19,10 +19,10 @@ class BackupDB
 
         $this->checkBackupDir();
 
-        add_action('admin_head', [&$this, 'setupCron']);
-        add_action('tnwpt_backupdb_cron', [&$this, 'actionCron']);
+        // -- Add cron job '_tnwpt_backupdb_cron'
+        add_action('_tnwpt_backupdb_cron', [&$this, 'action_backupdb_cron']);
 
-        add_action('cmb2_admin_init', [&$this, 'adminControlPage']);
+        add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
 
         add_action('wp_ajax_createBackupFile', [ &$this, 'createBackupFile']);
         add_action('wp_ajax_deleteBackupFile', [ &$this, 'deleteBackupFile']);
@@ -35,19 +35,12 @@ class BackupDB
         }
     }
 
-    public function setupCron()
-    {
-        if (!wp_next_scheduled('tnwpt_backupdb_cron')) {
-            wp_schedule_event(time(), 'weekly', 'tnwpt_backupdb_cron');
-        }
-    }
-
-    public function actionCron()
+    public function action_backupdb_cron()
     {
         $this->createBackup();
     }
 
-    public function adminControlPage()
+    public function action_cmb2_admin_init()
     {
         $list = $this->backupList();
 
@@ -60,18 +53,16 @@ class BackupDB
             'parent_slug' => 'tools.php',
             'option_key' => 'tnwpt_backupdb',
         ]);
-
         $mb->add_field([
             'id' => 'backupdb_title',
             'name' => '',
             'desc' => "
                 <p>Папка, где хранятся копии: {$this->db_path}</p>
-                <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>tnwpt_backupdb_cron</strong>'</p>
+                <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>_tnwpt_backupdb_cron</strong>'</p>
                 <p><button type='button' id='create-backup' data-token='{$nonce}'>Создать резервную копию</button></p>
                 ",
             'type' => 'title'
         ]);
-
         $mb->add_field([
             'id' => 'limit',
             'name' => 'Сколько хранить копий',
@@ -80,7 +71,6 @@ class BackupDB
             'attributes' => [ 'class' => 'large-text', 'type' => 'number' ],
             'default' => 0
         ]);
-
         $mb->add_field([
             'id' => 'backupdb_title_list',
             'name' => 'Текущие копии',
@@ -111,8 +101,6 @@ class BackupDB
                 unlink("{$this->db_path}{$file}");
             }
         }
-
-        return;
     }
 
     public function createBackup()
@@ -190,4 +178,3 @@ class BackupDB
         die();
     }
 }
-?>

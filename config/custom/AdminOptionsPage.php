@@ -8,11 +8,11 @@ class AdminOptionsPage
 {
     public function register()
     {
-        add_action('cmb2_admin_init', [&$this, 'adminOptionsPage']);
-        add_action('pre_get_posts', [&$this, 'setupThemeOptionsToQuery']);
+        add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
+        add_action('pre_get_posts', [&$this, 'action_pre_get_posts']);
     }
 
-    public function adminOptionsPage()
+    public function action_cmb2_admin_init()
     {
         $mb = new_cmb2_box([
             'id' => 'theme-options',
@@ -43,7 +43,8 @@ class AdminOptionsPage
                 'id' => 'email_order',
                 'name' => 'E-Mail для заявок',
                 'type' => 'text_email',
-                'attributes' => ['class' => 'large-text']
+                'attributes' => ['class' => 'large-text'],
+                'repeatable' => true,
             ]);
         //
 
@@ -72,11 +73,13 @@ class AdminOptionsPage
         //
     }
 
-    public function setupThemeOptionsToQuery($query)
+    /**
+     * Add theme options to query
+     */
+    public function action_pre_get_posts($query)
     {
         if (is_admin() || !$query->is_main_query()) return;
 
-        // Add theme options to query
         $theme_options = View::getOpt('all');
 
         $theme_options['front_id'] = get_option('page_on_front');

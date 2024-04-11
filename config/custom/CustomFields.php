@@ -5,20 +5,23 @@ namespace tnwpt\custom;
 class CustomFields
 {
     private $prefix = '';
+    private $front_id = 0;
 
     public function register()
     {
-        add_action('cmb2_admin_init', [&$this, 'registerCustomFields']);
+        $this->front_id = get_option('page_on_front');
+
+        add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
     }
 
-    public function registerCustomFields()
+    public function action_cmb2_admin_init()
     {
         $this->prefix = $_ENV['CMB'];
     }
 
-  /*
-  private function demo()
-  {
+    /*
+    private function demo()
+    {
         $bit = $this->prefix;
 
         $mb = new_cmb2_box([
@@ -73,8 +76,15 @@ class CustomFields
             'type' => 'text',
             'attributes' => ['class' => 'large-text']
         ]);
-  }
-  */
-}
+    }
 
-?>
+    public function field_pt_district_order($field)
+    {
+        $ids = $field->value;
+
+        $data = View::getPostsOrder($ids, 'post_type');
+
+        return $data;
+    }
+    */
+}

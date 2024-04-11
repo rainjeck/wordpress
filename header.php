@@ -1,9 +1,6 @@
 <?php
-
 // File Security Check
-if (!defined('ABSPATH')) {
-  exit;
-}
+if (!defined('ABSPATH')) exit;
 
 use tnwpt\helpers\View;
 
@@ -24,11 +21,9 @@ $app = get_query_var('app');
             echo (View::checkArray($app, 'head')) ? $app['head'] : '';
         }
     ?>
-
 </head>
 
 <body>
-
     <?php
         if (!is_user_logged_in()) {
             echo (View::checkArray($app, 'bodystart')) ? $app['bodystart'] : '';

@@ -6,45 +6,48 @@ class Filter
 {
     public function register()
     {
-        add_action('navigation_markup_template', [&$this, 'filterNavigationMarkupTemplate']);
-        add_action('excerpt_more', [&$this, 'filterExcerptMore']);
-        add_action('the_content', [&$this, 'filterTheContent']);
+        add_action('navigation_markup_template', [&$this, 'action_navigation_markup_template'], 10, 2);
+        add_action('excerpt_more', [&$this, 'action_excerpt_more'], 10, 1);
+        add_action('the_content', [&$this, 'action_the_content'], 10, 1);
 
         // Microdata
-        add_filter( 'nav_menu_item_args', [&$this, 'filterNavMenuItemArgsMicrodata'], 10, 3 );
-        add_filter( 'nav_menu_link_attributes', [$this, 'filterNavMenuLinkAttributesMicrodata'], 10, 4 );
-        add_filter( 'wp_nav_menu_items', [&$this, 'filterNavMenuItemsMicrodata'], 10, 2 );
+        add_filter('nav_menu_item_args', [&$this, 'filter_nav_menu_item_args_schemaorg'], 10, 3);
+        add_filter('nav_menu_link_attributes', [$this, 'filter_nav_menu_link_attributes_schemaorg'], 10, 4);
+        add_filter('wp_nav_menu_items', [&$this, 'filter_wp_nav_menu_items_schemaorg'], 10, 2);
 
-        if (is_admin()) {
-            add_action( 'save_post_page', [&$this, 'actionSavePostPage'], 10, 3 );
+        if (!is_admin()) return;
 
-            add_filter('use_block_editor_for_post', '__return_false');
+        add_filter('use_block_editor_for_post', '__return_false');
 
-            add_filter('editor_stylesheets', [&$this, 'filterEditorStylesheets']);
-            add_filter('mce_external_plugins', [&$this, 'filterMceExternalPlugins']);
+        add_action( 'save_post_page', [&$this, 'action_save_post_page'], 10, 3 );
 
-            // https://www.tiny.cloud/docs/advanced/editor-control-identifiers/#toolbarcontrols
-            add_filter('mce_buttons', [&$this, 'filterMceButtons']);
-            add_filter('mce_buttons_2', [&$this, 'filterMceButtons2']);
-        }
+        add_filter('editor_stylesheets', [&$this, 'filter_editor_stylesheets'], 10, 1);
+        add_filter('mce_external_plugins', [&$this, 'filter_mce_external_plugins'], 10, 2);
+
+        // https://www.tiny.cloud/docs/advanced/editor-control-identifiers/#toolbarcontrols
+        add_filter('mce_buttons', [&$this, 'filter_mce_buttons'], 10, 2);
+        add_filter('mce_buttons_2', [&$this, 'filter_mce_buttons_2'], 10, 2);
     }
 
-    public function filterNavigationMarkupTemplate($template, $class)
+    public function action_navigation_markup_template($template, $css_class)
     {
         return '<div class="nav-links">%3$s</div>';
     }
 
-    public function filterExcerptMore($more)
+    public function action_excerpt_more($more_string)
     {
         return '...';
     }
 
-    public function filterTheContent($content)
+    public function action_the_content($content)
     {
-        return preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+        $content = preg_replace('/<p>\s*(<a .*>)?\s*(<img .* \/>)\s*(<\/a>)?\s*<\/p>/iU', '\1\2\3', $content);
+        $content = View::getRelativeUrl($content);
+
+        return $content;
     }
 
-    public function filterNavMenuItemArgsMicrodata($args, $menu_item, $depth)
+    public function filter_nav_menu_item_args_schemaorg($args, $menu_item, $depth)
     {
         if ($args->theme_location !== 'place-menu-header') return $args;
 
@@ -53,7 +56,7 @@ class Filter
         return $args;
     }
 
-    public function filterNavMenuLinkAttributesMicrodata($atts, $menu_item, $args, $depth)
+    public function filter_nav_menu_link_attributes_schemaorg($atts, $menu_item, $args, $depth)
     {
         if ($args->theme_location !== 'place-menu-header') return $atts;
 
@@ -62,7 +65,7 @@ class Filter
         return $atts;
     }
 
-    public function filterNavMenuItemsMicrodata($items, $args)
+    public function filter_wp_nav_menu_items_schemaorg($items, $args)
     {
         if ($args->theme_location !== 'place-menu-header') return $items;
 
@@ -71,7 +74,7 @@ class Filter
         return $items;
     }
 
-    public function actionSavePostPage($post_id, $post, $update)
+    public function action_save_post_page($post_id, $post, $update)
     {
         $data = View::getPagesTemplate();
 
@@ -80,23 +83,23 @@ class Filter
         update_option('_page_templates', $data, false);
     }
 
-    public function filterEditorStylesheets($stylesheets)
+    public function filter_editor_stylesheets($stylesheets)
     {
         $stylesheets[] = get_stylesheet_directory_uri() . '/assets/css/tinymce.min.css';
 
         return $stylesheets;
     }
 
-    public function filterMceExternalPlugins($external_plugins)
+    public function filter_mce_external_plugins($external_plugins, $editor_id)
     {
-        // $external_plugins['table'] = get_template_directory_uri() . '/assets/js/tinymce-plugin-table.min.js' ;
+        // $external_plugins['table'] = get_template_directory_uri() . '/assets/libs/tinymce-plugin-table.min.js' ;
 
         return $external_plugins;
     }
 
-    public function filterMceButtons($buttons_row_1)
+    public function filter_mce_buttons($mce_buttons, $editor_id)
     {
-        $buttons_row_1 = [
+        $mce_buttons = [
             'formatselect',
             'bold',
             'italic',
@@ -114,12 +117,12 @@ class Filter
             'wp_adv'
         ];
 
-        return $buttons_row_1;
+        return $mce_buttons;
     }
 
-    public function filterMceButtons2($buttons_row_2)
+    public function filter_mce_buttons_2($mce_buttons_2, $editor_id)
     {
-        $buttons_row_2 = [
+        $mce_buttons_2 = [
             'pastetext',
             'removeformat',
             'charmap',
@@ -129,8 +132,6 @@ class Filter
             'redo'
         ];
 
-        return $buttons_row_2;
+        return $mce_buttons_2;
     }
 }
-
-?>

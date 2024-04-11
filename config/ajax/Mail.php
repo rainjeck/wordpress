@@ -2,6 +2,7 @@
 
 namespace tnwpt\ajax;
 
+use tnwpt\helpers\View;
 use tnwpt\custom\AdminOptionsPage;
 
 class Mail
@@ -12,23 +13,27 @@ class Mail
     public function register()
     {
         $this->from_name = str_replace(['http://', 'https://'], '', get_home_url());
-        $this->from_email = 'noreply@' . $this->from_name;
+        // $this->from_name = preg_replace('/(http)+(s)*:\/\/([a-z0-9])+\./i', '', get_home_url()); // subdomain
+        $this->from_email = 'msg@' . $this->from_name;
 
         $this->register_mail_actions();
     }
 
     private function register_mail_actions()
     {
-        add_action('phpmailer_init', [&$this, 'phpmailer_init']);
-        add_action('wp_mail_failed', [&$this, 'wp_mail_failed'], 10, 1);
+        add_action('phpmailer_init', [&$this, 'action_phpmailer_init']);
+        add_action('wp_mail_failed', [&$this, 'action_wp_mail_failed'], 10, 1);
 
-        add_action('wp_ajax_mail', [&$this, 'mailHandler']);
-        add_action('wp_ajax_nopriv_mail', [&$this, 'mailHandler']);
+        add_action('wp_ajax_mail', [&$this, 'action_wpajax_mail']);
+        add_action('wp_ajax_nopriv_mail', [&$this, 'action_wpajax_mail']);
     }
 
-    public function phpmailer_init($phpmailer)
+    /**
+     * PHPMAILER
+     * See .env
+     */
+    public function action_phpmailer_init($phpmailer)
     {
-        // See .env
         if ( isset($_ENV['MAIL_SMTP']) && $_ENV['MAIL_SMTP'] ) {
             $phpmailer->IsSMTP();
             $phpmailer->CharSet = 'UTF-8';
@@ -39,35 +44,26 @@ class Mail
             $phpmailer->SMTPSecure = $_ENV['MAIL_SMTP_SECURE'];
             $phpmailer->Port = $_ENV['MAIL_SMTP_PORT'];
             $phpmailer->From = $_ENV['MAIL_SMTP_FROM'];
-            $phpmailer->FromName = $_ENV['MAIL_SMTP_FROMNAME'];
+            $phpmailer->FromName = $this->from_name;
         }
 
         $phpmailer->isHTML( true );
-     }
+    }
 
-    public function wp_mail_failed($wp_error)
+    /**
+     * Выведем ошибку в .log файл
+     */
+    public function action_wp_mail_failed($wp_error)
     {
-        // выведем ошибку в .log файл
         error_log( $wp_error->get_error_message() );
     }
 
-    public function mailHandler()
+    public function action_wpajax_mail()
     {
-        // проверяем nonce код, если проверка не пройдена прерываем обработку
-        if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
-            wp_send_json_error(['msg' => 'Fail']); // Check failed
-        }
-
-        // разбираем строку data из ajax
-        $data = $_POST; // если FormData
-
-        // проверяем на робота
-        if (!empty($data['mouse']) || !isset($data['mouse'])) {
-            wp_send_json_error(['msg' => 'You are robot']); // Robot
-        }
+        $data = View::checkAjaxData(); // если FormData
 
         // Тема письма
-        $sbj = "Новая заявка {$this->from_name}";
+        $sbj = "Заявка с {$this->from_name}";
 
         // Сообщение
         $msg = '';
@@ -102,7 +98,7 @@ class Mail
         // }
 
         // отправляем на email, указанный в опциях сайта
-        $to = AdminOptionsPage::getAppOpts('email_order');
+        $to = View::getOpt('email_order');
 
         // URL, на который отправим после отправки письма
         // $page_thanks_id = View::getPostIdByTemplate('template-page-thanks.php');

@@ -2,9 +2,9 @@ const form = {
     init() {
         // this.inputTel();
 
-        this.setup();
-        this.validation();
-        this.sending();
+        // this.setup();
+        // this.validation();
+        // this.sending();
     },
 
     inputTel() {
