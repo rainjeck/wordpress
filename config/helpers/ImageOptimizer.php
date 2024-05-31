@@ -6,34 +6,37 @@ class ImageOptimizer
 {
     public function register()
     {
-        $this->checkOriginalImagesFolder();
+        add_action('tnwpt_regenerateimg_cron', [&$this, 'actionCron']);
 
-        add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
-
-        add_action('_tnwpt_regenerateimg_cron', [&$this, 'action_regenerateimg_cron']);
-
+        add_filter('jpeg_quality', [ &$this, 'jpeg_quality' ], 10, 1);
         add_filter('big_image_size_threshold', '__return_false');
 
-        add_filter('jpeg_quality', [ &$this, 'filter_jpeg_quality' ], 10, 1);
+        $this->checkOriginalImagesFolder();
 
         add_filter('wp_generate_attachment_metadata', [ &$this, 'optimizeImageStandart'], 10, 3);
         add_filter('pre_delete_attachment', [ &$this, 'deleteOriginalAttachment'], 10, 3);
+
+        add_action('cmb2_admin_init', [&$this, 'adminControlPage']);
 
         add_action('wp_ajax_regenerateThumbs', [ &$this, 'regenerateThumbsAjax']);
         add_action('wp_ajax_regenerateThumbsStatus', [ &$this, 'regenerateThumbsStatus']);
     }
 
-    public function checkOriginalImagesFolder()
+    public function setupCron()
     {
-        $upload_dir = wp_get_upload_dir();
-        $original_folder = "{$upload_dir['basedir']}/originals";
-
-        if (!is_dir($original_folder)) {
-            mkdir($original_folder, 0777);
+        if (!wp_next_scheduled('tnwpt_regenerateimg_cron')) {
+            wp_schedule_single_event(time(), 'tnwpt_regenerateimg_cron');
         }
+
+        wp_cron();
     }
 
-    public function action_cmb2_admin_init()
+    public function actionCron()
+    {
+        $this->regenerateThumbs();
+    }
+
+    public function adminControlPage()
     {
         $mb = new_cmb2_box([
             'id' => 'regenerate-thumbs',
@@ -43,6 +46,7 @@ class ImageOptimizer
             'option_key' => 'tnwpt_regenerate_thumbs',
             'save_button' => '-'
         ]);
+
         $mb->add_field([
             'id' => 'images_count',
             'name' => 'Всего изображений',
@@ -65,23 +69,6 @@ class ImageOptimizer
             'attributes' => ['class' => 'large-text', 'readonly' => true],
             'render_row_cb' => [&$this, 'regenerateThumbsButton']
         ]);
-    }
-
-    public function setup_cron()
-    {
-        if (!wp_next_scheduled('_tnwpt_regenerateimg_cron')) {
-            wp_schedule_single_event(time(), '_tnwpt_regenerateimg_cron');
-        }
-    }
-
-    public function action_regenerateimg_cron()
-    {
-        $this->regenerateThumbs();
-    }
-
-    public function filter_jpeg_quality($q)
-    {
-        return 100;
     }
 
     public function imagesCount($field_args, $field)
@@ -111,12 +98,16 @@ class ImageOptimizer
 
     public function regenerateThumbs()
     {
-        require ABSPATH . 'wp-admin/includes/image.php';
+        ini_set("max_execution_time", 0);
+        ini_set("max_input_time", 0);
+        ini_set('memory_limit', '4096M');
+
+        include_once(ABSPATH . 'wp-admin/includes/image.php');
 
         $get_upload_dir = wp_upload_dir();
         $upload_dir = $get_upload_dir['basedir'];
 
-        $opts = get_option('tnwpt_regenerate_thumbs', false);
+        $opts = get_option('tnwpt_regenerate_thumbs', []);
         $count = $opts['images_status'];
 
         $attachment_ids = get_posts([
@@ -127,22 +118,22 @@ class ImageOptimizer
             'posts_per_page' => -1
         ]);
 
-        $count = 1;
-        $total = count($attachment_ids);
-
-        $opts['images_status'] = 0;
-        update_option('tnwpt_regenerate_thumbs', $opts);
-
         // Delete Files
         foreach($attachment_ids as $id) {
             $meta = wp_get_attachment_metadata($id);
             $backup_sizes = get_post_meta($id, '_wp_attachment_backup_sizes', true);
             $file = get_attached_file($id);
 
+            $ext = pathinfo($file, PATHINFO_EXTENSION);
+            if (!in_array($ext, ['png', 'jpg', 'jpeg'])) continue;
+
             wp_delete_attachment_files($id, $meta, $backup_sizes, $file );
         }
 
-        $files = [];
+        $opts['images_status'] = 0;
+        update_option('tnwpt_regenerate_thumbs', $opts);
+
+        $count = 1;
 
         // Copy from Original
         foreach($attachment_ids as $id) {
@@ -154,6 +145,12 @@ class ImageOptimizer
             $original_file = "{$upload_dir}/originals/$filename";
             $to_copy = "{$upload_dir}/${filename}";
 
+            $ext = pathinfo($file, PATHINFO_EXTENSION);
+            if (!in_array($ext, ['png', 'jpg', 'jpeg'])) {
+                $count++;
+                continue;
+            }
+
             $copy = copy($original_file, $to_copy);
 
             if ( $copy ) {
@@ -162,8 +159,18 @@ class ImageOptimizer
             }
         }
 
-        $opts['images_status'] = 0;
+        $opts['images_status'] = 'done';
         update_option('tnwpt_regenerate_thumbs', $opts);
+
+        // Remove Cron Event
+        $timestamp = wp_next_scheduled('tnwpt_regenerateimg_cron');
+
+        if ($timestamp !== false) {
+            wp_unschedule_event($timestamp, 'tnwpt_regenerateimg_cron');
+        }
+
+        ini_set("max_execution_time", 30);
+        ini_set("max_input_time", 60);
     }
 
     public function regenerateThumbsAjax()
@@ -173,17 +180,40 @@ class ImageOptimizer
             wp_send_json_error(['msg' => 'Fail']); // Check failed
         }
 
-        // $this->regenerateThumbs();
-        $this->setup_cron();
-        $this->regenerateThumbsStatus();
+        $this->setupCron();
+
+        update_option('tnwpt_regenerate_thumbs', ['images_status' => 0]);
+
+        wp_send_json_success(['msg' => 'Процесс начат']);
     }
 
     public function regenerateThumbsStatus()
     {
-        $opts = get_option('tnwpt_regenerate_thumbs', false);
-        $count = $opts['images_status'];
+        $opts = get_option('tnwpt_regenerate_thumbs', []);
+        $count = ($opts && isset($opts['images_status'])) ? $opts['images_status'] : 0;
+
+        if ($count == 'end') {
+            wp_send_json_success('end');
+            die();
+        }
 
         wp_send_json_success($count);
+        die();
+    }
+
+    public function jpeg_quality($q)
+    {
+        return 100;
+    }
+
+    public function checkOriginalImagesFolder()
+    {
+        $upload_dir = wp_get_upload_dir();
+        $original_folder = "{$upload_dir['basedir']}/originals";
+
+        if (!is_dir($original_folder)) {
+            mkdir($original_folder, 0777);
+        }
     }
 
     public function optimizeImageStandart($image_meta, $attachment_id, $string)
@@ -191,8 +221,7 @@ class ImageOptimizer
         if (!wp_attachment_is_image($attachment_id)) return;
 
         $ext = pathinfo($image_meta['file'], PATHINFO_EXTENSION);
-
-        if (!in_array($ext, ['png', 'jpg'])) return $image_meta;
+        if (!in_array($ext, ['png', 'jpg', 'jpeg'])) return $image_meta;
 
         $this->checkOriginalImagesFolder();
 

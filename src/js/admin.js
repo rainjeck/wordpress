@@ -76,66 +76,67 @@
         regenerateThumbsButton() {
             if (!document.querySelector("#regenerate-thumbs-btn")) return;
 
-            let status = false;
-
             const btn = document.querySelector("#regenerate-thumbs-btn");
             const form = btn.closest("form");
 
-            btn.addEventListener("click", (e) => {
-                status = true;
-
+            // Start
+            btn.addEventListener("click", e => {
                 const url = "/wp-admin/admin-ajax.php";
-
                 const fd = new FormData();
 
                 fd.append("action", "regenerateThumbs");
                 fd.append("token", btn.dataset.token);
 
-                const fdStatus = new FormData();
-                fdStatus.append("action", "regenerateThumbsStatus");
-
                 form.classList.add("is-loading");
-
-                const int = setInterval(() => {
-                    fetch(url, {
-                        method: "POST",
-                        body: fdStatus,
-                    })
-                        .then((response) => response.json())
-                        .then((res) => {
-                            if (res.data) {
-                                document.querySelector("#images_status").value =
-                                    res.data;
-                            } else {
-                                clearInterval(int);
-                                document.querySelector(
-                                    "#images_status"
-                                ).value = 0;
-                                form.classList.remove("is-loading");
-                            }
-                        });
-                    // if (status) {
-                    // } else {
-                    //   clearInterval(int);
-                    //   document.querySelector('#images_status').value = 0;
-                    //   // fetch(url, {
-                    //   //   method: 'POST',
-                    //   //   body: fdStatus
-                    //   // }).then(response => response.json()).then(res => {
-                    //   //   document.querySelector('#images_status').value = res.data;
-                    //   // });
-                    // }
-                }, 300);
 
                 fetch(url, {
                     method: "POST",
                     body: fd,
                 })
                     .then((response) => response.json())
-                    .then((data) => {
-                        status = false;
+                    .then(data => {
+                        checkstatus(form);
                     });
             });
+
+            // Status check
+            const checkstatus = form => {
+                let int;
+
+                if (form.classList.contains('is-loading')) {
+                    const url = "/wp-admin/admin-ajax.php";
+                    const fdStatus = new FormData();
+                    fdStatus.append("action", "regenerateThumbsStatus");
+
+                    int = setInterval(() => {
+                        fetch(url, {
+                            method: 'POST',
+                            body: fdStatus,
+                        })
+                        .then((response) => response.json())
+                        .then(res => {
+                            if (!res.data) {
+                                document.querySelector("#images_status").value = '-1';
+                                return;
+                            }
+
+                            if (res.data == 'done') {
+                                document.querySelector("#images_status").value = 'done';
+                                form.classList.remove("is-loading");
+                                clearInterval(int);
+                                return;
+                            }
+
+                            document.querySelector("#images_status").value = res.data;
+                        });
+                    }, 1000);
+                    return;
+                } else {
+                    if (int) {
+                        clearInterval(int);
+                    }
+                }
+            };
         },
     };
 
