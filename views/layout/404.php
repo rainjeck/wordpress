@@ -3,4 +3,6 @@
 if (!defined('ABSPATH')) exit;
 ?>
 
-<p>This is 404</p>
+<main class="main">
+    <p>This is 404</p>
+</main>

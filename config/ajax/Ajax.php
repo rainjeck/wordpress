@@ -5,7 +5,7 @@ namespace tnwpt\ajax;
 use tnwpt\helpers\View;
 use tnwpt\custom\AdminOptionsPage;
 
-class Mail
+class Ajax
 {
     public $from_name;
     public $from_email;
@@ -16,6 +16,10 @@ class Mail
         // $this->from_name = preg_replace('/(http)+(s)*:\/\/([a-z0-9])+\./i', '', get_home_url()); // subdomain
         $this->from_email = 'msg@' . $this->from_name;
 
+        $this->actions = [
+            'mail',
+        ];
+
         $this->register_mail_actions();
     }
 
@@ -24,8 +28,12 @@ class Mail
         add_action('phpmailer_init', [&$this, 'action_phpmailer_init']);
         add_action('wp_mail_failed', [&$this, 'action_wp_mail_failed'], 10, 1);
 
-        add_action('wp_ajax_mail', [&$this, 'action_wpajax_mail']);
-        add_action('wp_ajax_nopriv_mail', [&$this, 'action_wpajax_mail']);
+        if ( !$this->actions ) return;
+
+        foreach($this->actions as $one) {
+            add_action("wp_ajax_{$one}", [&$this, "action_wpajax_{$one}"]);
+            add_action("wp_ajax_nopriv_{$one}", [&$this, "action_wpajax_{$one}"]);
+        }
     }
 
     /**
@@ -65,11 +73,13 @@ class Mail
         // Тема письма
         $sbj = "Заявка с {$this->from_name}";
 
+        $postdata = $this->getDataSanitizeArray($data);
+
         // Сообщение
         $msg = '';
         ob_start();
-        include(locate_template('views/email/template-email.php'));
-        $msg = ob_get_contents();
+            get_template_part('views/email/template', 'email', ['data' => $postdata]);
+            $msg = ob_get_contents();
         ob_end_clean();
 
         // Files
@@ -167,5 +177,33 @@ class Mail
         }
 
         return $filesArr;
+    }
+
+    private function getDataSanitizeArray($data)
+    {
+        $result = [];
+
+        if (!$data) return $data;
+
+        $result = [
+            'name' => (isset($data['name']) && !empty($data['name'])) ? sanitize_text_field($data['name']) : '',
+            'tel' => (isset($data['tel']) && !empty($data['tel'])) ? sanitize_text_field($data['tel']) : '',
+            'email' => (isset($data['email']) && !empty($data['email'])) ? sanitize_email($data['email']) : '',
+            'msg' => (isset($data['msg']) && !empty($data['msg'])) ? sanitize_textarea_field($data['msg']) : '',
+            'subject' => (isset($data['sbj']) && !empty($data['sbj'])) ? sanitize_textarea_field($data['sbj']) : '',
+            'title' => (isset($data['title']) && !empty($data['title'])) ? sanitize_text_field($data['title']) : '',
+            'url' => (isset($data['url']) && !empty($data['url'])) ? esc_url($data['url'], ['https', 'http']) : '',
+            'utm' => [],
+        ];
+
+        if ($data['utm']) {
+            foreach($data['utm'] as $key => $one) {
+                if (!$one) continue;
+
+                $result['utm'][$key] = $one;
+            }
+        }
+
+        return $result;
     }
 }

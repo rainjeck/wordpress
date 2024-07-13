@@ -78,7 +78,7 @@ class CustomFields
         ]);
     }
 
-    public function field_pt_district_order($field)
+    public function select_post_order($field)
     {
         $ids = $field->value;
 

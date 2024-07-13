@@ -6,19 +6,6 @@ class Admin
 {
     public function register()
     {
-        if (is_admin()) {
-            // отключим проверку обновлений при любом заходе в админку...
-            remove_action('admin_init', '_maybe_update_core');
-            remove_action('admin_init', '_maybe_update_plugins');
-            remove_action('admin_init', '_maybe_update_themes');
-
-            // отключим проверку обновлений при заходе на специальную страницу в админке...
-            remove_action('load-plugins.php', 'wp_update_plugins');
-            remove_action('load-themes.php', 'wp_update_themes');
-
-            add_filter('pre_site_transient_browser_'. md5( $_SERVER['HTTP_USER_AGENT'] ), '__return_true');
-        }
-
         add_action('login_enqueue_scripts', [&$this, 'action_login_enqueue_scripts']);
         add_filter('login_headertext', [&$this, 'filter_login_headertext'], 10, 1);
         add_filter('login_headerurl', [&$this, 'filter_login_headerurl'], 10, 1);

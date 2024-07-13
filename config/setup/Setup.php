@@ -18,8 +18,8 @@ class Setup
         add_theme_support('post-thumbnails');
         add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption']);
         add_theme_support('custom-logo', [
-            'height' => 250,
-            'width' => 250,
+            'height' => 512,
+            'width' => 512,
             'flex-width' => true,
             'flex-height' => true,
         ]);
@@ -48,7 +48,7 @@ class Setup
             // 'thumblarge' => __('Thumb Large'),
             'small' => __('Small'),
             'medium' => __('Medium'),
-            'medium_large' => __('Medium Large'),
+            // 'medium_large' => __('Medium Large'),
             'large' => __('Large'),
             'full' => __( 'Full Size' ),
         ];
@@ -64,17 +64,19 @@ class Setup
         wp_deregister_style('classic-theme-styles');
         wp_deregister_style('global-styles');
 
-        if (is_user_logged_in()) {
-            wp_enqueue_style('main', "{$url}/assets/css/libs.min.css", [], null, 'all');
-            wp_enqueue_style('app', "{$url}/assets/css/main.css", ['main'], null, 'all');
+        $is_logged = is_user_logged_in();
 
-            wp_enqueue_script('main', "{$url}/assets/js/libs.js", [], null, true);
-            wp_enqueue_script('app', "{$url}/assets/js/main.js", ['main'], null, true);
+        if ( $is_logged ) {
+            wp_enqueue_style('tnwpt-libs', "{$url}/assets/css/libs.min.css", [], null, 'all');
+            wp_enqueue_style('tnwpt-app', "{$url}/assets/css/main.css", ['tnwpt-libs'], null, 'all');
+
+            wp_enqueue_script('tnwpt-libs', "{$url}/assets/js/libs.js", [], null, true);
+            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/main.js", ['tnwpt-libs'], null, true);
         }
 
-        if (!is_user_logged_in()) {
-            wp_enqueue_style('app', "{$url}/assets/css/bundle.min.css", [], time(), 'all');
-            wp_enqueue_script('app', "{$url}/assets/js/bundle.min.js", [], time(), true);
+        if ( !$is_logged ) {
+            wp_enqueue_style('tnwpt-app', "{$url}/assets/css/bundle.min.css", [], null, 'all');
+            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/bundle.min.js", [], null, true);
         }
 
         if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

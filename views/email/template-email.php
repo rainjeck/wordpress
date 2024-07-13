@@ -1,11 +1,7 @@
 <?php
-$name = (isset($data['name']) && !empty($data['name'])) ? sanitize_text_field($data['name']) : '';
-$tel = (isset($data['tel']) && !empty($data['tel'])) ? sanitize_text_field($data['tel']) : '';
-$email = (isset($data['email']) && !empty($data['email'])) ? sanitize_email($data['email']) : '';
-$msg = (isset($data['msg']) && !empty($data['msg'])) ? sanitize_textarea_field($data['msg']) : '';
-$subject = (isset($data['sbj']) && !empty($data['sbj'])) ? sanitize_textarea_field($data['sbj']) : '';
-$title = (isset($data['title']) && !empty($data['title'])) ? sanitize_text_field($data['title']) : '';
-$url = (isset($data['url']) && !empty($data['url'])) ? esc_url($data['url'], ['https', 'http']) : '';
+use tnwpt\helpers\View;
+
+$data = View::checkMeta($args, 'data', '');
 ?>
 
 <?php include(locate_template('views/email/parts/header.php')); ?>
@@ -13,29 +9,29 @@ $url = (isset($data['url']) && !empty($data['url'])) ? esc_url($data['url'], ['h
 <table class="container">
     <tr>
         <td class="content">
-            <?php if ($title) : ?>
-                <p> <strong>Страница</strong>: <a href="<?= $url; ?>"><?= $title; ?></a> </p>
+            <?php if ( View::checkArray($data,'title','not_empty') ): ?>
+                <p> <strong>Страница</strong>: <a href="<?= $data['url']; ?>"><?= $data['title']; ?></a> </p>
                 <p>&nbsp;</p>
             <?php endif; ?>
 
-            <?php if ($subject) : ?>
-                <p> <strong>Запрос</strong>: <?= $subject; ?> </p>
+            <?php if ( View::checkArray($data,'subject','not_empty') ): ?>
+                <p> <strong>Запрос</strong>: <?= $data['subject']; ?> </p>
             <?php endif; ?>
 
-            <?php if ($name) : ?>
-                <p> <strong>Имя</strong>: <?= $name; ?> </p>
+            <?php if ( View::checkArray($data,'name','not_empty') ): ?>
+                <p> <strong>Имя</strong>: <?= $data['name']; ?> </p>
             <?php endif; ?>
 
-            <?php if ($tel) : ?>
-                <p> <strong>Телефон</strong>: <?= $tel; ?> </p>
+            <?php if ( View::checkArray($data,'tel','not_empty') ): ?>
+                <p> <strong>Телефон</strong>: <?= $data['tel']; ?> </p>
             <?php endif; ?>
 
-            <?php if ($email) : ?>
-                <p> <strong>E-mail</strong>: <?= $email; ?> </p>
+            <?php if ( View::checkArray($data,'email','not_empty') ): ?>
+                <p> <strong>E-mail</strong>: <?= $data['email']; ?> </p>
             <?php endif; ?>
 
-            <?php if ($msg) : ?>
-                <p> <strong>Сообщение</strong>: <?= $msg; ?> </p>
+            <?php if ( View::checkArray($data,'msg','not_empty') ): ?>
+                <p> <strong>Сообщение</strong>: <?= $data['msg']; ?> </p>
             <?php endif; ?>
         </td>
     </tr>

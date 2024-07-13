@@ -1,7 +1,8 @@
 /*!
  * === FRAMEWORK ================================
  */
-.container
+
+.v-box
     width: 100%;
     max-width: unit($containerWidth,'px');
     padding-left: unit($containerPadding,'px');
@@ -13,9 +14,11 @@
         padding-right: 0;
         max-width: unit($containerWidth - ($containerPadding * 2), 'px');
 
+
 /*!
  * --- GRID -------------------------------------
  */
+
 .v-row
     display: flex;
     flex-direction: row;
@@ -26,8 +29,8 @@
 
 .v-col
     width: 100%;
-    padding-left: $gridPadding;
-    padding-right: $gridPadding;
+    padding-left: unit($gridPadding,'px');
+    padding-right: unit($gridPadding,'px');
 
 cl($num, $columns)
     max-width: floor((100% / $columns) * $num, 2);
@@ -47,9 +50,15 @@ for one, key in $points
     @media one
         grid( $gridColumns, $pointsPrefix[key] );
 
+
 /*!
  * --- HELPER CLASSES ---------------------------
  */
+
+$paddings = 0 5;
+$fontsize = 16;
+$brad = 1000 100 10;
+
 uidisplay($prefix = '')
     // Flex
     for $one in flex inline-flex
@@ -100,7 +109,7 @@ uidisplay($prefix = '')
             flex-direction: $one;
 
     // Margins & Paddings
-    for $one in 0 5
+    for $one in $paddings
         .v-pt-{$one}{$prefix}
             padding-top: unit($one, 'px');
 
@@ -174,7 +183,7 @@ uidisplay($prefix = '')
         white-space: normal;
 
     // Font Size
-    for $one in 16 20
+    for $one in $fontsize
         .v-fz-{$one}{$prefix}
             font-size: unit($one,'px');
 
@@ -189,7 +198,7 @@ uidisplay($prefix = '')
             z-index: $one;
 
     // border-radius
-    for $one in 1000 100 10
+    for $one in $brad
         .v-brad-{$one}{$prefix}
             border-radius: unit($one,'px');
 

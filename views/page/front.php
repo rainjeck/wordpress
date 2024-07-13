@@ -7,23 +7,28 @@ use tnwpt\helpers\View;
 
 <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
 
-  <div class="v-box">
+<main class="main">
+    content
+</main>
+
+    <?php /*/ ?>
+    <div class="v-box">
         <p>This is "front-page"</p>
 
-        <?//= View::breadcrumbs(); ?>
+        <?= View::breadcrumbs(); ?>
 
         <nav class="" itemscope="" itemtype="http://schema.org/SiteNavigationElement">
-            <?php /*/
+            <?php
                 wp_nav_menu([
                     'theme_location' => 'place-menu-header',
                     'container' => false,
                     'menu_class' => 'v-ul-clear',
                     'items_wrap' => '<ul id="%1$s" class="%2$s" itemprop="about" itemscope="" itemtype="http://schema.org/ItemList">%3$s</ul>'
                 ]);
-            /**/ ?>
+            ?>
         </nav>
 
-        <?php //get_search_form(); ?>
+        <?php get_search_form(); ?>
 
         <form action="/" data-bouncer class="v-form">
             <input type="text" name="mouse" value="" class="v-d-none">
@@ -64,5 +69,6 @@ use tnwpt\helpers\View;
             <button type="submit" name="button">Отправить</button>
         </form>
     </div>
+    <?php /**/ ?>
 
 <?php endwhile; endif; ?>

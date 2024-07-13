@@ -1,7 +1,8 @@
 /*!
  * === UI =======================================
  */
-.is-process
+
+.is-loading
     position: relative;
 
     &:before
@@ -25,10 +26,10 @@
         border-width: 5px;
         border-color: #111827 #E5E7EB;
         border-style: solid;
-        animation: process-rotate 1s ease-in-out infinite forwards;
+        animation: loading-rotate 1s ease-in-out infinite forwards;
         z-index: 15;
 
-@keyframes process-rotate
+@keyframes loading-rotate
     from
         transform: rotate(0);
     to
@@ -118,9 +119,11 @@
 .v-status-error
     color: $colorError;
 
+
 /*!
 * --- FORM --------------------------------------
 */
+
 .v-form
     .v-form-result-success,
     .v-form-result-error
@@ -133,7 +136,7 @@
         display: block;
 
     .error-message
-        font-size: 0.8em;
+        font-size: 0.7em;
         color: $colorError;
 
 .v-fg
@@ -184,9 +187,11 @@
         border-radius: 100px;
         size(18px, 18px);
 
+
 /*!
 * --- ELEMENTS ----------------------------------
 */
+
 .v-burger
     size(32px, 24px);
     position: relative;

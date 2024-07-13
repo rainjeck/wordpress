@@ -18,20 +18,16 @@ $app = get_query_var('app');
 
     <?php
         if (!is_user_logged_in()) {
-            echo (View::checkArray($app, 'head')) ? $app['head'] : '';
+            echo View::checkMeta($app, 'head', '');
         }
     ?>
 </head>
 
 <body>
     <?php
-        if (!is_user_logged_in()) {
-            echo (View::checkArray($app, 'bodystart')) ? $app['bodystart'] : '';
+        if ( !is_user_logged_in() ) {
+            echo View::checkMeta($app, 'bodystart', '');
         }
     ?>
 
-    <div class="wrapper">
-
-        <?php get_template_part('views/layout/header'); ?>
-
-        <main class="main">
+    <?php get_template_part('views/layout/header'); ?>

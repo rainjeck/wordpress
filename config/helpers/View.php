@@ -184,7 +184,7 @@ class View
     {
         $cases = [2, 0, 1, 1, 1, 2];
 
-        return $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
+        return $number . ' ' . $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
     }
 
     public static function wpautop($text)
@@ -226,6 +226,91 @@ class View
         }
 
         return $arr;
+    }
+
+    public static function getTermMeta($term_id = 0, $keys = [])
+    {
+        if (!$term_id || !$keys) return [];
+
+        $bit = $_ENV['CMB'];
+
+        $result = [];
+
+        foreach($keys as $key) {
+            $meta = get_term_meta($term_id, "{$bit}_{$key}", 1);
+
+            if ( $meta ) {
+                $result[$key] = $meta;
+            } else {
+                $result[$key] = false;
+            }
+        }
+
+        return $result;
+    }
+
+    public static function getTermsData($tax = '', $ids = [], $keys = [])
+    {
+        if ( !$ids ) return;
+
+        $prefix = $_ENV['CMB'];
+
+        $arr = [];
+
+        global $wpdb;
+
+        $keys_sql = ($keys) ? implode(',', array_map(function($var) use ($prefix) {
+            return "'{$prefix}_{$var}'";
+        }, $keys)) : '';
+
+        $ids_sql = implode(',', $ids);
+
+        $sql = "
+            SELECT tt.term_id, t.name, t.slug
+            FROM $wpdb->term_taxonomy as tt
+            INNER JOIN $wpdb->terms as t ON tt.term_id = t.term_id
+            WHERE tt.taxonomy = '{$tax}'
+            AND tt.term_id IN ({$ids_sql})
+        ";
+
+        if ($keys_sql) {
+            $sql = "
+                SELECT tt.term_id, t.name, t.slug, tm.meta_key, tm.meta_value
+                FROM $wpdb->term_taxonomy as tt
+                INNER JOIN $wpdb->terms as t ON tt.term_id = t.term_id
+                INNER JOIN $wpdb->termmeta as tm ON tt.term_id = tm.term_id
+                WHERE tt.taxonomy = '{$tax}'
+                AND tt.term_id IN ({$ids_sql})
+                AND tm.meta_key IN ({$keys_sql})
+            ";
+        }
+
+        $res = $wpdb->get_results($sql, ARRAY_A);
+
+        if (!$res) return $arr;
+
+        foreach($res as $one) {
+            $arr[$one['term_id']]['link'] = get_term_link((int)$one['term_id'], $tax);
+            $arr[$one['term_id']]['term_id'] = $one['term_id'];
+            $arr[$one['term_id']]['name'] = $one['name'];
+            $arr[$one['term_id']]['slug'] = $one['slug'];
+
+            if ( self::checkArray($one, 'meta_key') ) {
+                $arr[$one['term_id']][ str_replace("{$prefix}_", '', $one['meta_key']) ] = maybe_unserialize($one['meta_value']);
+            }
+        }
+
+        $result = [];
+
+        foreach($ids as $termid) {
+            if ( array_key_exists($termid, $arr) ) {
+                $result[$termid] = $arr[$termid];
+            }
+        }
+
+        unset($arr);
+
+        return $result;
     }
 
     /**
@@ -278,11 +363,7 @@ class View
                     $data[$pid][$key] = $v2;
                 }
 
-                if ( in_array($query[$pid]->post_type, ['post']) ) {
-                    $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_name}";
-                } else {
-                    $data[$pid]['link'] = "{$home_url}/{$query[$pid]->post_type}/{$query[$pid]->post_name}";
-                }
+                $data[$pid]['link'] = get_permalink($pid);
             }
         }
 
@@ -335,6 +416,7 @@ class View
 
     /**
     * Check key & value in array
+    * @var value - value or 'not_empty'
     * @return boolean
     */
     public static function checkArray($array = [], $key = '', $value = '')
@@ -342,6 +424,10 @@ class View
         if (!$array) return false;
 
         if ($value && isset($array[$key])) {
+            if ( $value == 'not_empty' && !empty($array[$key]) ) {
+                return true;
+            }
+
             return ($value == $array[$key]) ? true : false;
         }
 
@@ -449,6 +535,42 @@ class View
         return $data;
     }
 
+    public static function getTaxOrder($ids = [], $tax = [], $add = true, $posts = [])
+    {
+        $data = [];
+
+        $args = [
+            'taxonomy' => $tax,
+            'orderby' => 'id',
+            'hide_empty' => false,
+            'order' => 'ASC',
+            'fields' => 'id=>name'
+        ];
+
+        if ($posts) {
+            $args['object_ids'] = $posts;
+        }
+
+        $items = get_terms($args);
+
+        if ($ids) {
+            foreach($ids as $term_id) {
+                if ( array_key_exists($term_id, $items) ) {
+                    $data[$term_id] = $items[$term_id];
+                    unset($items[$term_id]);
+                }
+            }
+        }
+
+        if ($items && $add) {
+            foreach($items as $term_id => $term_name) {
+                $data[$term_id] = $term_name;
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * Breadcrumbs
      */
@@ -507,5 +629,24 @@ class View
         $html .= '</ul>';
 
         return $html;
+    }
+
+    public static function explodeStrings($sep1 = '', $sep2 = '', $string = '')
+    {
+        if ( !$string || !$sep1 ) return $string;
+
+        $result = $string;
+
+        $result = ($result) ? explode($sep1, $result) : [];
+
+        $result = ($result) ? array_map(function($item) use ($sep2) {
+            $str = explode($sep2, $item);
+            return [
+                'name' => trim($str[0]),
+                'value' => trim($str[1]),
+            ];
+        }, $result) : [];
+
+        return $result;
     }
 }

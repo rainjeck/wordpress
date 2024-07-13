@@ -10,24 +10,24 @@
         },
 
         createBackupFile() {
-            const el = document.querySelector("#create-backup");
+            const el = document.querySelector('#create-backup');
 
             if (!el) return;
 
-            const form = el.closest("form");
+            const form = el.closest('form');
 
-            el.addEventListener("click", (e) => {
-                const url = `/wp-admin/admin-ajax.php`;
+            el.addEventListener('click', (e) => {
+                const url = '/wp-admin/admin-ajax.php';
 
                 const fd = new FormData();
 
-                fd.append("action", "createBackupFile");
-                fd.append("token", el.dataset.token);
+                fd.append('action', 'createBackupFile');
+                fd.append('token', el.dataset.token);
 
-                form.classList.add("is-loading");
+                form.classList.add('is-loading');
 
                 fetch(url, {
-                    method: "POST",
+                    method: 'POST',
                     body: fd,
                 })
                     .then((response) => response.json())
@@ -40,27 +40,27 @@
         },
 
         removeBackupFile() {
-            const elems = document.querySelectorAll(".js-backup-delete");
+            const elems = document.querySelectorAll('.js-backup-delete');
 
             if (!elems.length) return;
 
-            const form = elems[0].closest("form");
+            const form = elems[0].closest('form');
 
-            const url = `/wp-admin/admin-ajax.php`;
+            const url = '/wp-admin/admin-ajax.php';
 
             const fd = new FormData();
 
-            fd.append("action", "deleteBackupFile");
+            fd.append('action', 'deleteBackupFile');
 
             elems.forEach((el) => {
-                el.addEventListener("click", (e) => {
-                    fd.append("token", el.dataset.token);
-                    fd.append("file", el.dataset.file);
+                el.addEventListener('click', e => {
+                    fd.append('token', el.dataset.token);
+                    fd.append('file', el.dataset.file);
 
-                    form.classList.add("is-loading");
+                    form.classList.add('is-loading');
 
                     fetch(url, {
-                        method: "POST",
+                        method: 'POST',
                         body: fd,
                     })
                         .then((response) => response.json())
@@ -74,23 +74,23 @@
         },
 
         regenerateThumbsButton() {
-            if (!document.querySelector("#regenerate-thumbs-btn")) return;
+            if (!document.querySelector('#regenerate-thumbs-btn')) return;
 
-            const btn = document.querySelector("#regenerate-thumbs-btn");
-            const form = btn.closest("form");
+            const btn = document.querySelector('#regenerate-thumbs-btn');
+            const form = btn.closest('form');
 
             // Start
-            btn.addEventListener("click", e => {
-                const url = "/wp-admin/admin-ajax.php";
+            btn.addEventListener('click', e => {
+                const url = '/wp-admin/admin-ajax.php';
                 const fd = new FormData();
 
-                fd.append("action", "regenerateThumbs");
-                fd.append("token", btn.dataset.token);
+                fd.append('action', 'regenerateThumbs');
+                fd.append('token', btn.dataset.token);
 
-                form.classList.add("is-loading");
+                form.classList.add('is-loading');
 
                 fetch(url, {
-                    method: "POST",
+                    method: 'POST',
                     body: fd,
                 })
                     .then((response) => response.json())
@@ -104,9 +104,9 @@
                 let int;
 
                 if (form.classList.contains('is-loading')) {
-                    const url = "/wp-admin/admin-ajax.php";
+                    const url = '/wp-admin/admin-ajax.php';
                     const fdStatus = new FormData();
-                    fdStatus.append("action", "regenerateThumbsStatus");
+                    fdStatus.append('action', 'regenerateThumbsStatus');
 
                     int = setInterval(() => {
                         fetch(url, {
@@ -140,7 +140,7 @@
         },
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener('DOMContentLoaded', () => {
         app.init();
     });
 })();

@@ -114,44 +114,25 @@ gulp.task('js', gulp.series('js:app', 'js:libs', 'js:bundle', 'js:minify'));
 // === SVG
 gulp.task('svg:sprite', function() {
     return gulp.src([
-        '!./assets/icons/sprite*.svg',
         './assets/icons/*.svg',
+        '!./assets/icons/sprit*.svg',
     ])
-    .pipe(plugin.svgmin({
-        multipass: true,
-        plugins: [{
-            name: 'removeAttrs',
-            params: {
-                attrs: '(fill|stroke|opacity|color|style)'
-            }
-        }]
-    }))
-    .pipe(plugin.svgSprite({
-        mode: {
-            symbol: {
-                sprite: 'sprite.svg',
-                bust: false,
-                dest: ''
-            }
-        }
+    .pipe(plugin.svgSymbolView({
+        name: 'sprite',
+        svgo: { plugins: [
+            { removeAttrs: {attrs: '(fill-rule|clip-rule|fill|color|stroke-linecap|stroke-linejoin|style)'} }
+        ]}
     }))
     .pipe(gulp.dest(destDir + '/icons'));
 });
 
 gulp.task('svg:spritecolor', function() {
     return gulp.src([
-        '!./assets/icons/sprite*.svg',
         './assets/icons/*.svg',
+        '!./assets/icons/sprit*.svg',
     ])
-    .pipe(plugin.svgmin({ multipass: true }))
-    .pipe(plugin.svgSprite({
-        mode: {
-            symbol: {
-                sprite: 'sprite-color.svg',
-                bust: false,
-                dest: ''
-            }
-        }
+    .pipe(plugin.svgSymbolView({
+        name: 'sprite-color',
     }))
     .pipe(gulp.dest(destDir + '/icons'));
 });

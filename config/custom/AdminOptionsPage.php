@@ -78,7 +78,7 @@ class AdminOptionsPage
      */
     public function action_pre_get_posts($query)
     {
-        if (is_admin() || !$query->is_main_query()) return;
+        if ( is_admin() || !$query->is_main_query() ) return;
 
         $theme_options = View::getOpt('all');
 

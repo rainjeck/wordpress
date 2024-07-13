@@ -15,7 +15,7 @@ class Filter
         add_filter('nav_menu_link_attributes', [$this, 'filter_nav_menu_link_attributes_schemaorg'], 10, 4);
         add_filter('wp_nav_menu_items', [&$this, 'filter_wp_nav_menu_items_schemaorg'], 10, 2);
 
-        if (!is_admin()) return;
+        if ( !is_admin() ) return;
 
         add_filter('use_block_editor_for_post', '__return_false');
 

@@ -1,8 +1,7 @@
 const app = {
     init() {
-        // svg4everybody();
-
         console.log("It works!");
+        // svg4everybody();
 
         // this.toggler();
         // this.modal();
@@ -13,11 +12,11 @@ const app = {
 
     blockScroll(status = false) {
         if (!status) {
-            document.documentElement.classList.remove("is-no-scroll");
+            document.documentElement.classList.remove('is-no-scroll');
             return;
         }
 
-        document.documentElement.classList.add("is-no-scroll");
+        document.documentElement.classList.add('is-no-scroll');
     },
 
     toggler() {
@@ -29,19 +28,19 @@ const app = {
 
     modal() {
         new Unimodal({
-            onOpen: (modal, button) => {},
+            onOpen: (modal, btn) => {},
             onClose: modal => {},
         });
     },
 
     gallery() {
-        let elems = document.querySelectorAll(".js-gallery");
+        let elems = document.querySelectorAll('.js-gallery');
 
         if (!elems.length) return;
 
         elems.forEach((el) => {
             lightGallery(el, {
-                selector: ".js-gallery-link",
+                selector: '.js-gallery-link',
                 download: false,
                 getCaptionFromTitleOrAlt: true,
                 // appendSubHtmlTo: '.lg-item',
@@ -51,7 +50,7 @@ const app = {
     },
 
     yamap() {
-        const elems = document.querySelectorAll(".js-map");
+        const elems = document.querySelectorAll('.js-map');
 
         if (!elems.length) return;
 
@@ -64,9 +63,9 @@ const app = {
                     center: coords, // Координаты центра карты
                     zoom: 14, // от 0 (весь мир) до 19
                     controls: [
-                        "typeSelector",
-                        "fullscreenControl",
-                        "zoomControl",
+                        'typeSelector',
+                        'fullscreenControl',
+                        'zoomControl',
                     ],
                 });
 

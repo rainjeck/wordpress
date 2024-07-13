@@ -11,13 +11,13 @@ class Init
             custom\PostType::class,
             custom\AdminOptionsPage::class,
             custom\CustomFields::class,
-            ajax\Mail::class,
+            helpers\View::class,
             helpers\BackupDB::class,
             helpers\Admin::class,
             helpers\AdminColumns::class,
             helpers\ImageOptimizer::class,
             helpers\Filter::class,
-            helpers\View::class,
+            ajax\Ajax::class,
         ];
     }
 

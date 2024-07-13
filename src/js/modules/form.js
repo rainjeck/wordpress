@@ -10,7 +10,7 @@ const form = {
     inputTel() {
         // https://github.com/uNmAnNeR/imaskjs
         // npm install imask
-        const elems = document.querySelectorAll(".js-masked");
+        const elems = document.querySelectorAll('.js-masked');
 
         if (!elems.length) return;
 
@@ -20,11 +20,11 @@ const form = {
                 // lazy: false
             });
 
-            el.addEventListener("focus", (e) => {
+            el.addEventListener('focus', (e) => {
                 mask.updateOptions({ lazy: false });
             });
 
-            el.addEventListener("blur", (e) => {
+            el.addEventListener('blur', (e) => {
                 mask.updateOptions({ lazy: true });
             });
         });
@@ -36,21 +36,21 @@ const form = {
             messageAfterField: true,
             messages: {
                 missingValue: {
-                    checkbox: "Обязательное поле",
-                    radio: "Выберите значение",
-                    select: "Выберите значение",
-                    "select-multiple": "Выберите значение",
-                    default: "Обязательное поле",
+                    checkbox: 'Обязательное поле',
+                    radio: 'Выберите значение',
+                    select: 'Выберите значение',
+                    'select-multiple': 'Выберите значение',
+                    default: 'Обязательное поле',
                 },
                 patternMismatch: {
-                    email: "Не верный формат e-mail",
-                    default: "Проверьте формат значения",
+                    email: 'Не верный формат e-mail',
+                    default: 'Проверьте формат значения',
                 },
-                phoneNum: "Не верный формат телефона",
+                phoneNum: 'Не верный формат телефона',
             },
             customValidations: {
                 checkboxMultiValidator: (field) => {
-                    if (field.type == "checkbox" && field.name.includes("[]")) {
+                    if (field.type == 'checkbox' && field.name.includes('[]')) {
                         if (!field.required) return;
 
                         const fields = field.form.querySelectorAll(
@@ -62,14 +62,14 @@ const form = {
 
                         if (fieldsChecked.length) {
                             fields.forEach((item) => {
-                                item.classList.remove("error");
-                                item.removeAttribute("required");
+                                item.classList.remove('error');
+                                item.removeAttribute('required');
                             });
                             return false;
                         } else {
                             fields.forEach((item) => {
-                                item.classList.add("error");
-                                item.setAttribute("required", true);
+                                item.classList.add('error');
+                                item.setAttribute('required', true);
                             });
                             return true; // error
                         }
@@ -79,7 +79,8 @@ const form = {
                     return false;
                 },
                 phoneNum: (field) => {
-                    if (field.type == "tel") {
+                    if (field.type == 'tel') {
+                        if (!field.required) return;
                         const pattern = /^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
                         let test = pattern.test(field.value);
                         if (!test) return true;
@@ -92,91 +93,77 @@ const form = {
     },
 
     validation() {
-        if (!document.querySelector("[data-bouncer]")) return;
+        if (!document.querySelector('[data-bouncer]')) return;
 
-        const bouncer = new Bouncer("[data-bouncer]", this.bouncerSettings);
+        const bouncer = new Bouncer('[data-bouncer]', this.bouncerSettings);
 
-        document.addEventListener(
-            "bouncerRemoveError",
-            (e) => {
-                var field = e.target;
-                field.classList.add("valid");
-            },
-            false
-        );
+        document.addEventListener('bouncerRemoveError', e => {
+            var field = e.target;
+            field.classList.add('valid');
+        }, false);
 
-        document.addEventListener(
-            "bouncerShowError",
-            (e) => {
-                var field = e.target;
-                field.classList.remove("valid");
-            },
-            false
-        );
+        document.addEventListener('bouncerShowError', e => {
+            var field = e.target;
+            field.classList.remove('valid');
+        }, false);
     },
 
     sending() {
-        document.addEventListener(
-            "bouncerFormValid",
-            (e) => {
-                const form = e.target;
-                const type = form.dataset.type;
+        document.addEventListener('bouncerFormValid', e => {
+            const form = e.target;
+            const type = form.dataset.type;
 
-                if (form.hasAttribute("method")) {
-                    form.submit();
-                    return;
-                }
+            if (form.hasAttribute('method')) {
+                form.submit();
+                return;
+            }
 
-                const btn = form.querySelector('[type="submit"]');
+            const btn = form.querySelector('[type="submit"]');
 
-                const url = `/wp-admin/admin-ajax.php`;
+            const url = '/wp-admin/admin-ajax.php';
 
-                const fd = new FormData(form);
+            const fd = new FormData(form);
 
-                fd.append("action", "mail");
+            fd.append('action', form.dataset.action);
 
-                form.classList.add("is-process");
-                btn.setAttribute("disabled", true);
+            form.classList.add('is-loading');
+            btn.setAttribute('disabled', true);
 
-                fetch(url, {
-                    method: "POST",
-                    body: fd,
-                })
-                    .then((response) => response.json())
-                    .then((res) => {
-                        console.log(res);
+            fetch(url, {
+                method: 'POST',
+                body: fd,
+            })
+                .then((response) => response.json())
+                .then((res) => {
+                    form.classList.remove('is-loading');
+                    btn.removeAttribute('disabled');
+                    form.reset();
 
-                        form.classList.remove("is-process");
-                        btn.removeAttribute("disabled");
+                    if (res.data.url) {
+                        window.location.assign(res.data.url);
+                    }
+
+                    if (res.success) {
                         form.reset();
+                        form.classList.add('is-success');
 
-                        if (res.data.url) {
-                            window.location.assign(res.data.url);
-                        }
+                        setTimeout(() => {
+                            form.classList.remove('is-success');
+                            // Unimodal.closeAll();
+                        }, 3000);
+                    }
 
-                        if (res.success) {
-                            form.reset();
-                            form.classList.add("is-success");
+                    if (!res.success) {
+                        form.classList.add('is-error');
 
-                            setTimeout(() => {
-                                form.classList.remove("is-success");
-                                // Unimodal.closeAll();
-                            }, 3000);
-                        }
+                        setTimeout(() => {
+                            form.classList.remove('is-error');
+                        }, 3000);
 
-                        if (!res.success) {
-                            form.classList.add("is-error");
-
-                            setTimeout(() => {
-                                form.classList.remove("is-error");
-                            }, 3000);
-
-                            console.error(res);
-                            return;
-                        }
-                    });
-            },
-            false
-        );
+                        console.error(res);
+                        return;
+                    }
+                });
+        }, false);
     },
 };
