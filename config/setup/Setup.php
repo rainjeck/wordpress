@@ -29,7 +29,7 @@ class Setup
 
         // Custom Image Size
         // add_image_size('thumblarge', 500, 500, ['center', 'center']);
-        add_image_size('small', 768, 768, false);
+        // add_image_size('small', 768, 768, false);
 
         remove_image_size('1536x1536');
         remove_image_size('2048x2048');

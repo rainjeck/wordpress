@@ -31,12 +31,13 @@ Starting template theme for WordPress
 ## Images
 
 ```
-thumbnail - 150 [crop]
-medium - 1024
-medium_large - 1440
-large - 2048
+thumbnail - 512 x 512 [crop]
+medium - 1024 x 2048
+medium_large - off
+large - 1440 x 2048
+original - 2048 x 2048
 
 --- From theme: ---
-thumblarge - 500 [crop]
-small - 768
+thumblarge - 500 x 500 [crop]
+small - 768 x 2048
 ```
