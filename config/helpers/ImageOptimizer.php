@@ -125,7 +125,7 @@ class ImageOptimizer
             $file = get_attached_file($id);
 
             $ext = pathinfo($file, PATHINFO_EXTENSION);
-            if (!in_array($ext, ['png', 'jpg', 'jpeg'])) continue;
+            if (!in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) continue;
 
             wp_delete_attachment_files($id, $meta, $backup_sizes, $file );
         }
@@ -146,7 +146,7 @@ class ImageOptimizer
             $to_copy = "{$upload_dir}/${filename}";
 
             $ext = pathinfo($file, PATHINFO_EXTENSION);
-            if (!in_array($ext, ['png', 'jpg', 'jpeg'])) {
+            if (!in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) {
                 $count++;
                 continue;
             }
@@ -221,7 +221,7 @@ class ImageOptimizer
         if (!wp_attachment_is_image($attachment_id)) return;
 
         $ext = pathinfo($image_meta['file'], PATHINFO_EXTENSION);
-        if (!in_array($ext, ['png', 'jpg', 'jpeg'])) return $image_meta;
+        if (!in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) return $image_meta;
 
         $this->checkOriginalImagesFolder();
 
@@ -236,22 +236,34 @@ class ImageOptimizer
         $original_path_to = "{$upload_dir['basedir']}/originals/{$original}";
         copy($original_path, $original_path_to);
 
+        $quality = 90;
+
+        if ( $ext == 'webp' ) {
+            $quality = 95;
+        }
+
         foreach ($sizes as $size) {
             $path = "{$upload_dir['basedir']}/{$size['file']}";
             chmod($path, 0777);
             $image = wp_get_image_editor($path);
 
             if (!is_wp_error($image)) {
-                $image->set_quality(80);
+                $image->set_quality($quality);
                 $image->save($path);
             }
         }
 
         unset($image);
 
+        $quality = 90;
+
+        if ( $ext == 'webp' ) {
+            $quality = 95;
+        }
+
         $image = wp_get_image_editor($original_path);
         $image->resize(2048, 2048, false);
-        $image->set_quality(80);
+        $image->set_quality($quality);
         $image->save($original_path);
 
         return $image_meta;
