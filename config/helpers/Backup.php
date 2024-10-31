@@ -28,6 +28,8 @@ class Backup
 
         if (!$files) return;
 
+        unlink(ABSPATH . '/site.zip');
+
         $zip = new \ZipArchive();
         $zip->open(ABSPATH . '/site.zip', \ZipArchive::CREATE|\ZipArchive::OVERWRITE);
 
