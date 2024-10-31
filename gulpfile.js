@@ -3,6 +3,7 @@ var plugin = require('gulp-load-plugins')();
 var rollup = require('rollup');
 var rollup_resolve = require('@rollup/plugin-node-resolve');
 var rollup_commonjs = require('@rollup/plugin-commonjs');
+var minifyjs = require('gulp-minify.js');
 
 var destDir = './assets';
 
@@ -101,7 +102,8 @@ gulp.task('js:minify', function() {
         destDir + '/js/*.js',
         '!' + destDir + '/js/*.min.js',
     ])
-    .pipe(plugin.uglify())
+    // .pipe(plugin.uglify())
+    .pipe(minifyjs())
     .pipe(plugin.rename({
         suffix: '.min'
     }))
