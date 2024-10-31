@@ -13,6 +13,7 @@ class Init
             custom\CustomFields::class,
             helpers\View::class,
             helpers\BackupDB::class,
+            helpers\Backup::class,
             helpers\Admin::class,
             helpers\AdminColumns::class,
             helpers\ImageOptimizer::class,
