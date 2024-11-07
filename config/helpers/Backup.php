@@ -5,7 +5,7 @@ class Backup
 {
     public function register()
     {
-        // -- Add cron job '_tnwpt_backup_cron'
+        // -- Add cron job 'tnwpt_backup_cron'
         add_action('tnwpt_backup_cron', [&$this, 'action_backup_cron']);
     }
 
