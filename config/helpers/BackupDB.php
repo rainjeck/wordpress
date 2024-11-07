@@ -19,8 +19,8 @@ class BackupDB
 
         $this->checkBackupDir();
 
-        // -- Add cron job '_tnwpt_backupdb_cron'
-        add_action('_tnwpt_backupdb_cron', [&$this, 'action_backupdb_cron']);
+        // -- Add cron job 'tnwpt_backupdb_cron'
+        add_action('tnwpt_backup_db_cron', [&$this, 'action_backupdb_cron']);
 
         add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
 
