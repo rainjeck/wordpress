@@ -5,6 +5,11 @@ if (!defined('ABSPATH')) exit;
 use tnwpt\helpers\View;
 
 $app = get_query_var('app');
+
+$inhead = View::checkMeta($app, 'head', '');
+$inhead = ($inhead) ? preg_replace('/\s\s+/', ' ', $inhead) : '';
+$inbody = View::checkMeta($app, 'bodystart', '');
+$inbody = ($inbody) ? preg_replace('/\s\s+/', ' ', $inbody) : '';
 ?>
 
 <!doctype html>
@@ -14,20 +19,12 @@ $app = get_query_var('app');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <?php wp_head(); ?>
+    <?= ( !is_user_logged_in() ) ? $inhead : ''; ?>
 
-    <?php
-        if (!is_user_logged_in()) {
-            echo View::checkMeta($app, 'head', '');
-        }
-    ?>
+    <?php wp_head(); ?>
 </head>
 
 <body>
-    <?php
-        if ( !is_user_logged_in() ) {
-            echo View::checkMeta($app, 'bodystart', '');
-        }
-    ?>
+    <?= ( !is_user_logged_in() ) ? $inbody : ''; ?>
 
     <?php get_template_part('views/layout/header'); ?>
