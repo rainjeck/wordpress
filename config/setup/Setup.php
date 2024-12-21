@@ -70,13 +70,13 @@ class Setup
             wp_enqueue_style('tnwpt-libs', "{$url}/assets/css/libs.min.css", [], null, 'all');
             wp_enqueue_style('tnwpt-app', "{$url}/assets/css/main.css", ['tnwpt-libs'], null, 'all');
 
-            wp_enqueue_script('tnwpt-libs', "{$url}/assets/js/libs.js", [], null, true);
-            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/main.js", ['tnwpt-libs'], null, true);
+            wp_enqueue_script('tnwpt-libs', "{$url}/assets/js/libs.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
+            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/main.js", ['tnwpt-libs'], null, ['in_footer' => true, 'strategy'  => 'defer']);
         }
 
         if ( !$is_logged ) {
             wp_enqueue_style('tnwpt-app', "{$url}/assets/css/bundle.min.css", [], null, 'all');
-            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/bundle.min.js", [], null, true);
+            wp_enqueue_script('tnwpt-app', "{$url}/assets/js/bundle.min.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
         }
 
         if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
