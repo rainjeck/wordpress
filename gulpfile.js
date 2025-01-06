@@ -1,180 +1,179 @@
-var gulp = require('gulp');
-var plugin = require('gulp-load-plugins')();
-var rollup = require('rollup');
-var rollup_resolve = require('@rollup/plugin-node-resolve');
-var rollup_commonjs = require('@rollup/plugin-commonjs');
-var minifyjs = require('gulp-minify.js');
+const { src, dest, series, watch } = require('gulp');
+const load_plugin = require('gulp-load-plugins')();
+const minifyjs = require('gulp-minify.js');
 
-var destDir = './assets';
+const rollup = require('rollup');
+const rollup_resolve = require('@rollup/plugin-node-resolve');
+const rollup_commonjs = require('@rollup/plugin-commonjs');
 
-// === Stylus
-gulp.task('css:app', function() {
-    return gulp.src([
+const path = './assets';
+
+// --- CSS ---
+function css_app() {
+    return src([
         './src/stylus/*.styl',
         '!./src/stylus/libs.styl',
     ])
-    .pipe(plugin.sourcemaps.init())
-    .pipe(plugin.stylus({
+    .pipe(load_plugin.sourcemaps.init())
+    .pipe(load_plugin.stylus({
         'include css': true,
         compress: false
-    }).on('error', plugin.notify.onError('<%= error.message %>')))
-    .pipe(plugin.autoprefixer({
+    }).on('error', load_plugin.notify.onError('<%= error.message %>')))
+    .pipe(load_plugin.autoprefixer({
         remove: false,
         cascade: false,
     }))
-    .pipe(plugin.sourcemaps.write('../css'))
-    .pipe(gulp.dest(destDir + '/css'))
-});
+    .pipe(load_plugin.sourcemaps.write('../css'))
+    .pipe(dest(path + '/css'));
+};
 
-gulp.task('css:libs', function() {
-    return gulp.src([
+function css_libs() {
+    return src([
         './src/stylus/libs.styl',
     ])
-    .pipe(plugin.stylus({
+    .pipe(load_plugin.stylus({
         'include css': true,
         compress: false
-    }).on('error', plugin.notify.onError('<%= error.message %>')))
-    .pipe(gulp.dest(destDir + '/css/'))
-});
+    }).on('error', load_plugin.notify.onError('<%= error.message %>')))
+    .pipe(dest(path + '/css/'))
+};
 
-gulp.task('css:bundle', function() {
-    return gulp.src([
-        destDir + '/css/libs.css',
-        destDir + '/css/main.css',
+function css_bundle() {
+    return src([
+        path + '/css/libs.css',
+        path + '/css/main.css',
     ])
-    .pipe(plugin.concat('bundle.css'))
-    .pipe(gulp.dest(destDir + '/css/'));
-});
+    .pipe(load_plugin.concat('bundle.css'))
+    .pipe(dest(path + '/css/'));
+};
 
-gulp.task('css:minify', function() {
-    return gulp.src([
-        destDir + '/css/*.css',
-        '!' + destDir + '/css/*.min.css',
+function css_minify() {
+    return src([
+        path + '/css/*.css',
+        '!' + path + '/css/*.min.css',
     ])
-    .pipe(plugin.cleanCss())
-    .pipe(plugin.rename({
+    .pipe(load_plugin.cleanCss())
+    .pipe(load_plugin.rename({
         suffix: '.min'
     }))
-    .pipe(gulp.dest(destDir + '/css/'));
-});
+    .pipe(dest(path + '/css/'));
+};
 
-gulp.task('css', gulp.series('css:app', 'css:libs', 'css:bundle', 'css:minify'));
+const css = series(css_app, css_libs, css_bundle, css_minify);
 
 
-// === JS
-gulp.task('js:app', function() {
-    return gulp.src([
+// --- JS ---
+function js_app() {
+    return src([
         './src/js/*.js',
         '!./src/js/libs.js',
     ])
-    .pipe(plugin.sourcemaps.init())
-    .pipe(plugin.include()).on('error', console.log)
-    .pipe(plugin.babel({ presets: [ '@babel/env' ] }))
-    .pipe(plugin.sourcemaps.write('../js'))
-    .pipe(gulp.dest(destDir + '/js'))
-});
+    .pipe(load_plugin.sourcemaps.init())
+    .pipe(load_plugin.include()).on('error', console.log)
+    .pipe(load_plugin.babel({ presets: [ '@babel/env' ] }))
+    .pipe(load_plugin.sourcemaps.write('../js'))
+    .pipe(dest(path + '/js'))
+};
 
-gulp.task('js:libs', function() {
+function js_libs() {
     return rollup.rollup({
         input: './src/js/libs.js',
         plugins: [ rollup_commonjs(), rollup_resolve() ],
     })
     .then(bundle => {
         return bundle.write({
-            file: destDir + '/js/libs.js',
+            file: path + '/js/libs.js',
             format: 'umd',
             sourcemap: false,
         });
     });
-});
+};
 
-gulp.task('js:bundle', function() {
-    return gulp.src([
-        './assets/js/libs.js',
-        './assets/js/main.js',
+function js_bundle() {
+    return src([
+        path + '/js/libs.js',
+        path + '/js/main.js',
     ])
-    .pipe(plugin.concat('bundle.js'))
-    .pipe(gulp.dest(destDir + '/js/'))
-});
+    .pipe(load_plugin.concat('bundle.js'))
+    .pipe(dest(path + '/js/'))
+};
 
-gulp.task('js:minify', function() {
-    return gulp.src([
-        destDir + '/js/*.js',
-        '!' + destDir + '/js/*.min.js',
+function js_minify() {
+    return src([
+        path + '/js/*.js',
+        '!' + path + '/js/*.min.js',
     ])
-    // .pipe(plugin.uglify())
     .pipe(minifyjs())
-    .pipe(plugin.rename({
+    .pipe(load_plugin.rename({
         suffix: '.min'
     }))
-    .pipe(gulp.dest(destDir + '/js'));
-});
+    .pipe(dest(path + '/js'));
+};
 
-gulp.task('js', gulp.series('js:app', 'js:libs', 'js:bundle', 'js:minify'));
+const js = series(js_app, js_libs, js_bundle, js_minify);
 
 
-// === SVG
-gulp.task('svg:sprite', function() {
-    return gulp.src([
-        './assets/icons/*.svg',
-        '!./assets/icons/sprit*.svg',
+// --- SVG ---
+function svg_bw() {
+    return src([
+        path + '/icons/*.svg',
+        '!' + path + '/icons/sprit*.svg',
     ])
-    .pipe(plugin.svgSymbolView({
+    .pipe(load_plugin.svgSymbolView({
         name: 'sprite',
         svgo: { plugins: [
             { removeAttrs: {attrs: '(fill-rule|clip-rule|fill|color|stroke-linecap|stroke-linejoin|style)'} }
         ]}
     }))
-    .pipe(gulp.dest(destDir + '/icons'));
-});
+    .pipe(dest(path + '/icons'));
 
-gulp.task('svg:spritecolor', function() {
-    return gulp.src([
-        './assets/icons/*.svg',
-        '!./assets/icons/sprit*.svg',
+};
+
+function svg_color() {
+    return src([
+        path + '/icons/*.svg',
+        '!' + path + '/icons/sprit*.svg',
     ])
-    .pipe(plugin.svgSymbolView({
+    .pipe(load_plugin.svgSymbolView({
         name: 'sprite-color',
     }))
-    .pipe(gulp.dest(destDir + '/icons'));
-});
+    .pipe(dest(path + '/icons'));
+};
 
-gulp.task('svg', gulp.series('svg:sprite', 'svg:spritecolor'));
-
-
-// === Reloader
-gulp.task('reloader', function(done) {
-  plugin.livereload.changed('/');
-  done();
-});
+const svg = series(svg_bw, svg_color);
 
 
-// === Watch
-gulp.task('watch', function() {
-  plugin.livereload.listen({
-    basePath: './',
-    start: true
-  });
-
-  // --- CSS
-  gulp.watch(['./src/stylus/**/*.styl', '!./src/stylus/**/libs.styl'], gulp.series('css:app', 'css:bundle', 'css:minify', 'reloader'));
-  gulp.watch(['./src/stylus/**/libs.styl'], gulp.series('css:libs', 'css:bundle', 'css:minify', 'reloader'));
-
-  // --- JS
-  gulp.watch(['./src/js/**/*.js', '!./src/js/**/libs.js'], gulp.series('js:app', 'js:bundle', 'js:minify', 'reloader'));
-  gulp.watch(['./src/js/**/libs.js'], gulp.series('js:libs', 'js:bundle', 'js:minify', 'reloader'));
-
-  // --- PHP
-  gulp.watch(['*.php', 'views/**/*.php'], function php(done) {
-    plugin.livereload.reload();
+// --- TOOLS ---
+function reloader(done) {
+    load_plugin.livereload.changed('/');
     done();
-  });
-});
+};
 
-gulp.task('media', gulp.series('svg', 'reloader'), function () {});
+function look() {
+    load_plugin.livereload.listen({
+        basePath: './',
+        start: true
+    });
 
-gulp.task('build', gulp.series( 'svg', 'css', 'js' ),
-  function() {}
-);
+    // --- CSS
+    watch(['./src/stylus/**/*.styl', '!./src/stylus/**/libs.styl'], series(css_app, css_bundle, css_minify, reloader));
+    watch(['./src/stylus/**/libs.styl'], series(css_libs, css_bundle, css_minify, reloader));
 
-gulp.task('default', gulp.series('build', 'watch'), function () {});
+    // --- JS
+    watch(['./src/js/**/*.js', '!./src/js/**/libs.js'], series(js_app, js_bundle, js_minify, reloader));
+    watch(['./src/js/**/libs.js'], series(js_libs, js_bundle, js_minify, reloader));
+
+    // --- PHP
+    watch(['*.php', 'views/**/*.php'], reloader);
+};
+
+const build = series(svg, css, js);
+
+exports.css = css;
+exports.js = js;
+exports.svg = svg;
+
+exports.build = build;
+exports.look = look;
+
+exports.default = series(build);

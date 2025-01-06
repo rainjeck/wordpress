@@ -15,3 +15,4 @@ assets/libs/
 .env
 package.json
 composer.json
+_gulpfile.js

@@ -58,6 +58,8 @@ for one, key in $points
 $paddings = 0 5;
 $fontsize = 16;
 $brad = 1000 100 10;
+$icons = 16
+$zindex = 1 2 3 4 5
 
 uidisplay($prefix = '')
     // Flex
@@ -193,7 +195,7 @@ uidisplay($prefix = '')
             position: $one;
 
     // z-index
-    for $one in 0 5 10 15 20
+    for $one in $zindex
         .v-zi-{$one}{$prefix}
             z-index: $one;
 
@@ -201,6 +203,11 @@ uidisplay($prefix = '')
     for $one in $brad
         .v-brad-{$one}{$prefix}
             border-radius: unit($one,'px');
+
+    // icons
+    for $one in $icons
+        .v-ico-{$one}{$prefix}
+            size( unit($one,'px'), unit($one,'px') );
 
 uidisplay();
 
