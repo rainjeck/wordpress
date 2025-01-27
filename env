@@ -1,11 +1,16 @@
-APPDEV = 1
+DEV = 1
+
+APPOPTSKEY = "tnwpt_app"
 
 CMB = "_tnwpt"
-APPOPTSKEY = "_tnwpt_app"
+
+MAIL_NONCE = "app_nonce"
+
+DOMAIN = "mydev.dv"
 
 MAIL_DEV = 1
 
-MAIL_NONCE = "mail"
+MAIL_FROM = "msg@mydev.dv"
 
 MAIL_SMTP = 0
 MAIL_SMTP_AUTH = 1

@@ -73,7 +73,7 @@ class Setup
 
         $is_logged = is_user_logged_in();
 
-        if ( $is_logged ) {
+        if ( $is_logged || $_ENV['DEV'] ) {
             wp_enqueue_style('theme-libs', "{$url}/assets/css/libs.min.css", [], null, 'all');
             wp_enqueue_style('theme-app', "{$url}/assets/css/main.css", ['theme-libs'], null, 'all');
 
@@ -81,7 +81,7 @@ class Setup
             wp_enqueue_script('theme-app', "{$url}/assets/js/main.js", ['theme-libs'], null, ['in_footer' => true, 'strategy'  => 'defer']);
         }
 
-        if ( !$is_logged ) {
+        if ( !$is_logged && !$_ENV['DEV'] ) {
             wp_enqueue_style('theme-app', "{$url}/assets/css/bundle.min.css", [], null, 'all');
             wp_enqueue_script('theme-app', "{$url}/assets/js/bundle.min.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
         }
