@@ -26,6 +26,11 @@ body
     color: $colorText;
     font-weight: normal;
     line-height: 1;
+    margin: 0;
+    padding: 0;
+
+    *
+        box-sizing: border-box;
 
 .browsehappy
     display: block;
@@ -131,8 +136,9 @@ picture
     display: block;
 
 img
-    width: 100%;
     display: block;
+    width: 100%;
+    max-width: 100%;
 
 pre
     font-size: 12px;

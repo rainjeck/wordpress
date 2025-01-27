@@ -11,7 +11,7 @@ class View
     public function register()
     {
         self::$url = get_stylesheet_directory_uri();
-        self::$home_url = get_home_url();
+        self::$home_url = get_home_url(null,'/');
 
         self::$templates = get_option('_page_templates');
 
@@ -67,6 +67,10 @@ class View
 
         $num = preg_replace('/[^0-9]/', '', $number);
 
+        if ( substr($num, 0, 1) != '8' ) {
+            $num = "+{$num}";
+        }
+
         if ($link) {
             return "<a href='tel:+{$num}' class='{$classes}'>{$number}</a>";
         }
@@ -106,8 +110,8 @@ class View
 
         $classes = ($classes) ? $classes : '';
 
-        $home_url = self::$home_url;
-        $url = wp_get_attachment_image_url($logo_id, 'small');
+        $home_url = self::getRelativeUrl(self::$home_url);
+        $url = self::getRelativeUrl(wp_get_attachment_image_url($logo_id, 'small'));
         $name = get_bloginfo('name');
         $desc = get_bloginfo('description');
 
@@ -117,11 +121,11 @@ class View
             if ($link) {
                 $html = "
                     <a href='{$home_url}' class='{$classes}'>
-                        <img src='{$url}' title='{$desc}' alt='{$name}'/>
+                        <img src='{$url}' title='{$desc}' alt='{$name}' loading='lazy' decoding='async'/>
                     </a>"
                 ;
             } else {
-                $html = "<img src='{$url}' title='{$desc}' alt='{$name}' class='{$classes}'/>";
+                $html = "<div class='{$classes}'><img src='{$url}' title='{$desc}' alt='{$name}' loading='lazy' decoding='async'/></div>";
             }
         }
 
@@ -162,7 +166,7 @@ class View
     {
         if (!$icon_id) return;
 
-        $url = self::$url . '/assets/icons/sprite.svg#';
+        $url = self::getRelativeUrl(self::$url) . '/assets/icons/sprite.svg#';
 
         return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
     }
@@ -171,7 +175,7 @@ class View
     {
         if (!$icon_id) return;
 
-        $url = self::$url . '/assets/icons/sprite-color.svg#';
+        $url = self::getRelativeUrl(self::$url) . '/assets/icons/sprite-color.svg#';
 
         return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
     }
@@ -290,7 +294,7 @@ class View
         if (!$res) return $arr;
 
         foreach($res as $one) {
-            $arr[$one['term_id']]['link'] = get_term_link((int)$one['term_id'], $tax);
+            $arr[$one['term_id']]['link'] = self::getRelativeUrl(get_term_link((int)$one['term_id'], $tax));
             $arr[$one['term_id']]['term_id'] = $one['term_id'];
             $arr[$one['term_id']]['name'] = $one['name'];
             $arr[$one['term_id']]['slug'] = $one['slug'];
@@ -319,8 +323,6 @@ class View
     */
     public static function getPostData($post_ids = [], $fields = [], $metas = [], $prefix = true)
     {
-        $home_url = self::$home_url;
-
         $post_ids = array_filter($post_ids, function($item) {
             if (!empty($item)) return true;
             return false;
@@ -363,7 +365,7 @@ class View
                     $data[$pid][$key] = $v2;
                 }
 
-                $data[$pid]['link'] = get_permalink($pid);
+                $data[$pid]['link'] = self::getRelativeUrl(get_permalink($pid));
             }
         }
 
@@ -416,7 +418,7 @@ class View
 
     /**
     * Check key & value in array
-    * @var value - value or 'not_empty'
+    * @var value - value or '_' (not empty)
     * @return boolean
     */
     public static function checkArray($array = [], $key = '', $value = '')
@@ -424,7 +426,7 @@ class View
         if (!$array) return false;
 
         if ($value && isset($array[$key])) {
-            if ( $value == 'not_empty' && !empty($array[$key]) ) {
+            if ( $value == '_' && !empty($array[$key]) ) {
                 return true;
             }
 
@@ -569,6 +571,54 @@ class View
         }
 
         return $data;
+    }
+
+
+
+  public static function sendCurl($url = '', $type = 'get', $postdata = [], $return_type = '', $headers = [])
+    {
+        if (!$url) return;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // для отладки раскомментируйте и просмотрите файл
+        // $fp = fopen(dirname(__FILE__).'/_curl_error_log.txt', 'w');
+        // curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        // curl_setopt($ch, CURLOPT_STDERR, $fp);
+
+        if ($type == 'get') {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+
+            $curl_headers = [];
+            $curl_headers = array_merge($curl_headers, $headers);
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $curl_headers);
+        }
+
+        if ($type == 'post') {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+
+            $curl_headers = [
+                'Content-Type: application/json'
+            ];
+            $curl_headers = array_merge($curl_headers, $headers);
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $curl_headers);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postdata, JSON_NUMERIC_CHECK | JSON_UNESCAPED_UNICODE));
+        }
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        if ($return_type && $return_type == 'json') {
+            return json_decode($result, true);
+        }
+
+        return $result;
     }
 
     /**

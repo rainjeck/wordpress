@@ -17,13 +17,13 @@ Starting template theme for WordPress
 4. Install devDependencies
 
     ```
-    npm i @babel/core @babel/preset-env @rollup/plugin-commonjs @rollup/plugin-node-resolve babel-loader gulp gulp-autoprefixer@8 gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-notify gulp-rename gulp-sourcemaps gulp-stylus gulp-svg-symbol-view gulp-uglify gulp-minify.js rollup -D
+    npm i @babel/core @babel/preset-env @rollup/plugin-commonjs @rollup/plugin-node-resolve babel-loader gulp gulp-autoprefixer gulp-babel gulp-clean-css gulp-concat gulp-include gulp-livereload gulp-load-plugins gulp-minify.js gulp-notify gulp-rename gulp-rollup-each gulp-sourcemaps gulp-stylus gulp-svg-symbol-view gulp-uglify path -D
     ```
 
 5. Install dependencies
 
     ```
-    npm i modern-css-reset svg4everybody formbouncerjs
+    npm i modern-css-reset svg4everybody formbouncerjs drag-on-drop imask lightgallery.js swiper@6
     ```
 
 6. `gulp build`
@@ -32,9 +32,9 @@ Starting template theme for WordPress
 
 ```
 thumbnail - 512 x 512 [crop]
-medium - 1024 x 2048
+medium - 1024 x 1024
 medium_large - off
-large - 1440 x 2048
+large - 2048 x 2048
 original - 2048 x 2048
 
 --- From theme: ---

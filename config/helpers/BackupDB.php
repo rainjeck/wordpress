@@ -58,7 +58,7 @@ class BackupDB
             'name' => '',
             'desc' => "
                 <p>Папка, где хранятся копии: {$this->db_path}</p>
-                <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>_tnwpt_backupdb_cron</strong>'</p>
+                <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>tnwpt_backup_db_cron</strong>'</p>
                 <p><button type='button' id='create-backup' data-token='{$nonce}'>Создать резервную копию</button></p>
                 ",
             'type' => 'title'

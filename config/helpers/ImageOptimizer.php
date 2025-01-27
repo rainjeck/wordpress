@@ -127,6 +127,13 @@ class ImageOptimizer
             $ext = pathinfo($file, PATHINFO_EXTENSION);
             if (!in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) continue;
 
+            $filename = pathinfo($file, PATHINFO_BASENAME);
+            $original_file = "{$upload_dir}/originals/$filename";
+
+            if ( !file_exists($original_file) ) {
+                copy($file, $original_file);
+            }
+
             wp_delete_attachment_files($id, $meta, $backup_sizes, $file );
         }
 
@@ -155,6 +162,8 @@ class ImageOptimizer
 
             if ( $copy ) {
                 $new_meta = wp_generate_attachment_metadata($id, $file);
+                wp_update_attachment_metadata($id, $new_meta);
+                update_post_meta($id, '_wp_attached_file', $filename);
                 $count++;
             }
         }

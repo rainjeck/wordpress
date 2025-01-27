@@ -12,10 +12,6 @@ class Ajax
 
     public function register()
     {
-        $this->from_name = str_replace(['http://', 'https://'], '', get_home_url());
-        // $this->from_name = preg_replace('/(http)+(s)*:\/\/([a-z0-9])+\./i', '', get_home_url()); // subdomain
-        $this->from_email = 'msg@' . $this->from_name;
-
         $this->actions = [
             'mail',
         ];
@@ -42,9 +38,18 @@ class Ajax
      */
     public function action_phpmailer_init($phpmailer)
     {
+        $phpmailer->isHTML(true);
+        $phpmailer->CharSet = 'UTF-8';
+        $phpmailer->From = $_ENV['MAIL_FROM'];
+        $phpmailer->FromName = $_ENV['DOMAIN'];
+
+        // $phpmailer->DKIM_domain = $_ENV['DOMAIN'];
+        // $phpmailer->DKIM_private = ABSPATH . '/dkim_private.pem';
+        // $phpmailer->DKIM_selector = 'mail';
+        // $phpmailer->DKIM_identity = $_ENV['MAIL_FROM'];
+
         if ( isset($_ENV['MAIL_SMTP']) && $_ENV['MAIL_SMTP'] ) {
             $phpmailer->IsSMTP();
-            $phpmailer->CharSet = 'UTF-8';
             $phpmailer->Host = $_ENV['MAIL_SMTP_HOST'];
             $phpmailer->Username = $_ENV['MAIL_SMPT_USERNAME'];
             $phpmailer->Password = $_ENV['MAIL_SMTP_PASSWORD'];
@@ -52,10 +57,7 @@ class Ajax
             $phpmailer->SMTPSecure = $_ENV['MAIL_SMTP_SECURE'];
             $phpmailer->Port = $_ENV['MAIL_SMTP_PORT'];
             $phpmailer->From = $_ENV['MAIL_SMTP_FROM'];
-            $phpmailer->FromName = $this->from_name;
         }
-
-        $phpmailer->isHTML( true );
     }
 
     /**
@@ -71,7 +73,7 @@ class Ajax
         $data = View::checkAjaxData(); // если FormData
 
         // Тема письма
-        $sbj = "Заявка с {$this->from_name}";
+        $sbj = "Заявка с {$_ENV['DOMAIN']}";
 
         $postdata = $this->getDataSanitizeArray($data);
 
@@ -117,10 +119,10 @@ class Ajax
         // Отладка
         if ($_ENV['MAIL_DEV']) {
             wp_send_json_success([
-                'data' => $data,
-                'email' => $to,
-                'sbj' => $sbj,
-                'msg' => $msg,
+                '$data' => $data,
+                '$email' => $to,
+                '$sbj' => $sbj,
+                '$msg' => $msg,
                 // 'url' => '/'
             ]);
         }
@@ -131,7 +133,7 @@ class Ajax
 
         $headers = [
             'content-type: text/html',
-            "From: {$this->from_name} <{$this->from_email}>"
+            "From: {$_ENV['DOMAIN']} <{$_ENV['MAIL_FROM']}>"
         ];
 
         // Отправка
@@ -196,7 +198,7 @@ class Ajax
             'utm' => [],
         ];
 
-        if ($data['utm']) {
+        if ( isset($data['utm']) ) {
             foreach($data['utm'] as $key => $one) {
                 if (!$one) continue;
 

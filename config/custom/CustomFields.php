@@ -19,6 +19,13 @@ class CustomFields
         $this->prefix = $_ENV['CMB'];
     }
 
+    public function sanitization_field($value, $field_args, $field)
+    {
+        $sanitized_value = strip_tags($value, ['br','strong','b','em','i','iframe']);
+
+        return $sanitized_value;
+    }
+
     /*
     private function demo()
     {
@@ -38,7 +45,7 @@ class CustomFields
             'name' => '',
             'type' => 'file','file_list',
             'options' => ['url' => false],
-            'query_args' => [ 'type' => ['image/jpeg', 'image/png'] ],
+            'query_args' => [ 'type' => ['image/jpeg','image/png','image/webp'] ],
             'preview_size' => 'thumbnail'
         ]);
 
@@ -53,7 +60,8 @@ class CustomFields
             'id' => "{$bit}_",
             'name' => '',
             'type' => 'text','textarea',
-            'attributes' => ['class' => 'large-text', 'style' => 'width:99%;', 'rows' => 3]
+            'attributes' => ['class' => 'large-text', 'style' => 'width:99%;', 'rows' => 3],
+            'sanitization_cb' => [&$this, 'sanitization_field'],
         ]);
 
         $mb->add_field([
@@ -61,7 +69,9 @@ class CustomFields
             'name' => '',
             'type' => 'select','radio','radio_inline','checkbox','multicheck','multicheck_inline'
             'options' => [],
-            'options_cb' => [&$this, 'functionname'],
+            'options_cb' => [&$this, 'select_post_order'],
+            'attributes' => ['class' => 'bDragDropList js-drag-drop'],
+            'desc' => 'Drag & Drop. Не отмеченные не показываются',
         ]);
 
         $group = $mb->add_field([

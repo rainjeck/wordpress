@@ -9,7 +9,7 @@
     padding-right: unit($containerPadding,'px');
     margin: 0 auto;
 
-    &.is-pd-0
+    &.is-px-0
         padding-left: 0;
         padding-right: 0;
         max-width: unit($containerWidth - ($containerPadding * 2), 'px');
@@ -36,7 +36,7 @@ cl($num, $columns)
     max-width: floor((100% / $columns) * $num, 2);
 
 col($num, $columns)
-    width: 100%;
+    flex-grow: 1;
     max-width: floor((100% / $columns) * $num, 2);
 
 grid($columns, $prefix = '')

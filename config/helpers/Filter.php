@@ -58,6 +58,8 @@ class Filter
 
     public function filter_nav_menu_link_attributes_schemaorg($atts, $menu_item, $args, $depth)
     {
+        $atts['href'] = View::getRelativeUrl($atts['href']);
+
         if ($args->theme_location !== 'place-menu-header') return $atts;
 
         $atts['itemprop'] = 'url';

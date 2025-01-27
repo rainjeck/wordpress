@@ -7,6 +7,7 @@ const app = {
         // this.modal();
         // this.gallery();
         // this.modal();
+        // this.slider();
         // this.yamap();
     },
 
@@ -45,6 +46,41 @@ const app = {
                 getCaptionFromTitleOrAlt: true,
                 // appendSubHtmlTo: '.lg-item',
                 subHtmlSelectorRelative: true,
+            });
+        });
+    },
+
+    slider() {
+        const elems = document.querySelectorAll('.js-slider');
+
+        if ( !elems.length ) return;
+
+        elems.forEach(el => {
+            const sl = el.querySelector('.js-sl');
+
+            const prev = el.querySelector('.js-prev');
+            const next = el.querySelector('.js-next');
+            const pagin = el.querySelector('.js-pagin');
+            const autoplay = sl.getAttribute('data-autoplay');
+
+            new Swiper(sl, {
+                slidesPerView: 'auto',
+                autoplay: (autoplay) ? {
+                    delay: autoplay,
+                } : false,
+                navigation: (prev && next) ? {
+                    prevEl: prev,
+                    nextEl: next,
+                    disabledClass: 'is-disabled',
+                    lockClass: 'is-lock',
+                } : false,
+                pagination: (pagin) ? {
+                    el: pagin,
+                    type: 'bullets',
+                    bulletActiveClass: 'is-active',
+                    bulletClass: 'bullet',
+                    currentClass: 'is-current',
+                } : false,
             });
         });
     },

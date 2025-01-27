@@ -19,8 +19,6 @@ class Admin
         $url = get_template_directory_uri();
 
         wp_enqueue_style('tnwpt_login', "{$url}/assets/css/admin.min.css", [], null, 'all');
-        // wp_enqueue_script('tnwpt-main', "{$url}/assets/js/admin.min.js", [], null, true);
-        // wp_enqueue_script('tnwpt-dragondrop', "{$url}/assets/libs/dragon-drop.min.js", [], null, true);
     }
 
     public function filter_login_headertext($login_header_text)
@@ -44,7 +42,7 @@ class Admin
             'id'    => 'site-name',
             'title' => __('Visit Site'),
             'href'  => (is_admin() || ! current_user_can('read')) ? home_url( '/' ) : admin_url(),
-            'meta' => ['target' => '_blank', 'title' => 'Open in a new tab']
+            'meta' => ['target' => '_blank', 'title' => __('Open in a new tab')]
         ]);
 
         $wp_admin_bar->remove_node('wp-logo');
@@ -62,6 +60,8 @@ class Admin
 
         wp_enqueue_style('admin-modify', "{$url}/assets/css/admin.min.css", ['cmb2-styles'], null, 'all');
 
-        wp_enqueue_script('admin-main', "{$url}/assets/js/admin.min.js", [], null, true);
+        wp_enqueue_script('admin-main', "{$url}/assets/js/admin.min.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
+
+        wp_enqueue_script('admin-libs', "{$url}/assets/js/admin-libs.min.js", ['admin-main'], null, ['in_footer' => true, 'strategy'  => 'defer']);
     }
 }

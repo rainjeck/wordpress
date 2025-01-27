@@ -1,15 +1,45 @@
 const form = {
     init() {
-        // this.inputTel();
+        if ( typeof Bouncer != 'function' ) return;
 
-        // this.setup();
-        // this.validation();
-        // this.sending();
+        this.antispam();
+
+        this.inputTel();
+
+        this.setup();
+        this.validation();
+        this.sending();
+    },
+
+    antispam() {
+        let forms = document.forms;
+
+        if ( !forms.length ) return;
+
+        forms = Array.from(forms);
+
+        forms.forEach(form => {
+            const mouse = form.querySelector('input[name="mouse"]');
+
+            if ( mouse ) {
+                mouse.value = '';
+            }
+
+            const token = form.getAttribute('data-token');
+
+            if ( token ) {
+                let html = `<input type="hidden" name="token" value="${token}">`;
+                form.insertAdjacentHTML('beforeend', html);
+            }
+        });
     },
 
     inputTel() {
         // https://github.com/uNmAnNeR/imaskjs
         // npm install imask
+
+        if ( typeof IMask != 'function' ) return;
+
         const elems = document.querySelectorAll('.js-masked');
 
         if (!elems.length) return;
@@ -111,7 +141,6 @@ const form = {
     sending() {
         document.addEventListener('bouncerFormValid', e => {
             const form = e.target;
-            const type = form.dataset.type;
 
             if (form.hasAttribute('method')) {
                 form.submit();
@@ -138,6 +167,15 @@ const form = {
                     form.classList.remove('is-loading');
                     btn.removeAttribute('disabled');
                     form.reset();
+
+                    // metrika in Options
+                    if ( typeof fireball == 'function' ) {
+                        fireball();
+                    }
+
+                    if ( res.data.modal ) {
+                        Unimodal.open(res.data.modal);
+                    }
 
                     if (res.data.url) {
                         window.location.assign(res.data.url);

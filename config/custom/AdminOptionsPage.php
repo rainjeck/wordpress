@@ -46,6 +46,25 @@ class AdminOptionsPage
                 'attributes' => ['class' => 'large-text'],
                 'repeatable' => true,
             ]);
+            $mb->add_field([
+                'id' => 'address',
+                'name' => 'Адрес',
+                'type' => 'text',
+                'attributes' => ['class' => 'large-text']
+            ]);
+            $mb->add_field([
+                'id' => 'yamap',
+                'name' => 'Координаты Яндекс.Карты',
+                'type' => 'text',
+                'attributes' => ['class' => 'large-text'],
+                'desc' => 'Напр. <b>55.887210,37.406253</b>',
+            ]);
+            $mb->add_field([
+                'id' => 'schemaorg',
+                'name' => 'schema.org',
+                'type' => 'textarea_code',
+                'attributes' => [ 'rows' => 6 ],
+            ]);
         //
 
         // CODE

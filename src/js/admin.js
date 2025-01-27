@@ -7,6 +7,8 @@
             this.removeBackupFile();
 
             this.regenerateThumbsButton();
+
+            // this.dragDropList();
         },
 
         createBackupFile() {
@@ -137,6 +139,17 @@
                     }
                 }
             };
+        },
+
+        dragDropList() {
+            const elems = document.querySelectorAll('.js-drag-drop');
+            if (!elems.length) return;
+
+            elems.forEach(el => {
+                new DragonDrop(el, {
+                    handle: false,
+                });
+            });
         },
     };
 
