@@ -14,19 +14,6 @@ class Filter
         add_filter('nav_menu_item_args', [&$this, 'filter_nav_menu_item_args_schemaorg'], 10, 3);
         add_filter('nav_menu_link_attributes', [$this, 'filter_nav_menu_link_attributes_schemaorg'], 10, 4);
         add_filter('wp_nav_menu_items', [&$this, 'filter_wp_nav_menu_items_schemaorg'], 10, 2);
-
-        if ( !is_admin() ) return;
-
-        add_filter('use_block_editor_for_post', '__return_false');
-
-        add_action( 'save_post_page', [&$this, 'action_save_post_page'], 10, 3 );
-
-        add_filter('editor_stylesheets', [&$this, 'filter_editor_stylesheets'], 10, 1);
-        add_filter('mce_external_plugins', [&$this, 'filter_mce_external_plugins'], 10, 2);
-
-        // https://www.tiny.cloud/docs/advanced/editor-control-identifiers/#toolbarcontrols
-        add_filter('mce_buttons', [&$this, 'filter_mce_buttons'], 10, 2);
-        add_filter('mce_buttons_2', [&$this, 'filter_mce_buttons_2'], 10, 2);
     }
 
     public function action_navigation_markup_template($template, $css_class)
@@ -74,66 +61,5 @@ class Filter
         $items = preg_replace('/<li /', '<li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ItemList" ', $items);
 
         return $items;
-    }
-
-    public function action_save_post_page($post_id, $post, $update)
-    {
-        $data = View::getPagesTemplate();
-
-        if (!$data) return;
-
-        update_option('_page_templates', $data, false);
-    }
-
-    public function filter_editor_stylesheets($stylesheets)
-    {
-        $stylesheets[] = get_stylesheet_directory_uri() . '/assets/css/tinymce.min.css';
-
-        return $stylesheets;
-    }
-
-    public function filter_mce_external_plugins($external_plugins, $editor_id)
-    {
-        // $external_plugins['table'] = get_template_directory_uri() . '/assets/libs/tinymce-plugin-table.min.js' ;
-
-        return $external_plugins;
-    }
-
-    public function filter_mce_buttons($mce_buttons, $editor_id)
-    {
-        $mce_buttons = [
-            'formatselect',
-            'bold',
-            'italic',
-            'underline',
-            'strikethrough',
-            'bullist',
-            'numlist',
-            'blockquote',
-            'alignleft',
-            'aligncenter',
-            'alignright',
-            'link',
-            'wp_more',
-            // 'table',
-            'wp_adv'
-        ];
-
-        return $mce_buttons;
-    }
-
-    public function filter_mce_buttons_2($mce_buttons_2, $editor_id)
-    {
-        $mce_buttons_2 = [
-            'pastetext',
-            'removeformat',
-            'charmap',
-            'outdent',
-            'indent',
-            'undo',
-            'redo'
-        ];
-
-        return $mce_buttons_2;
     }
 }

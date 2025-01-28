@@ -2,6 +2,8 @@
 
 namespace tnwpt\custom;
 
+use tnwpt\helpers\View;
+
 class CustomFields
 {
     private $prefix = '';
@@ -9,14 +11,30 @@ class CustomFields
 
     public function register()
     {
-        $this->front_id = get_option('page_on_front');
-
         add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
     }
 
     public function action_cmb2_admin_init()
     {
         $this->prefix = $_ENV['CMB'];
+
+        $this->front_id = get_option('page_on_front');
+
+        // $this->pageFront();
+    }
+
+    public function pageFront()
+    {
+        if ( !View::checkArray($_GET,'post',$this->front_id) ) return;
+
+        $bit = $this->prefix;
+
+        $mb = new_cmb2_box([
+            'id' => 'mb-page-front',
+            'title' => 'Дополнительные поля',
+            'object_types' => ['page'],
+            'show_on' => [ 'key' => 'id', 'value' => $this->front_id ]
+        ]);
     }
 
     public function sanitization_field($value, $field_args, $field)
