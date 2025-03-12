@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 ?>
 
 <footer class="footer">
-    <div class="container">
+    <div class="v-box">
         <p>This is "views/footer"</p>
     </div>
 </footer>

@@ -205,3 +205,5 @@ const form = {
         }, false);
     },
 };
+
+export default form;

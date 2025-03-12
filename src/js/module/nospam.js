@@ -48,3 +48,5 @@ const nospam = {
         });
     },
 };
+
+export default nospam;

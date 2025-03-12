@@ -19,23 +19,23 @@ class View
     }
 
     public static function getOpt($key = '', $default = false)
-        {
-            if (function_exists('cmb2_get_option')) {
-                return cmb2_get_option($_ENV['APPOPTSKEY'], $key, $default);
-            }
+    {
+      if (function_exists('cmb2_get_option')) {
+        return cmb2_get_option($_ENV['APPOPTSKEY'], $key, $default);
+      }
 
-            $opts = get_option($_ENV['APPOPTSKEY'], $default);
+      $opts = get_option($_ENV['APPOPTSKEY'], $default);
 
-            $val = $default;
+      $val = $default;
 
-            if ('all' == $key) {
-                $val = $opts;
-            } elseif (is_array( $opts ) && array_key_exists($key, $opts) && false !== $opts[$key]) {
-                $val = $opts[$key];
-            }
+      if ('all' == $key) {
+        $val = $opts;
+      } elseif (is_array( $opts ) && array_key_exists($key, $opts) && false !== $opts[$key]) {
+        $val = $opts[$key];
+      }
 
-            return $val;
-        }
+      return $val;
+    }
 
     public static function getPagesTemplate()
     {
@@ -72,7 +72,7 @@ class View
         }
 
         if ($link) {
-            return "<a href='tel:+{$num}' class='{$classes}'>{$number}</a>";
+            return "<a href='tel:{$num}' class='{$classes}'>{$number}</a>";
         }
 
         return $num;
@@ -162,20 +162,17 @@ class View
         return "{$url}/assets/{$folder}/{$filename}";
     }
 
-    public static function getSvg($icon_id, $classes = '')
+    public static function getSvg($icon_id, $classes = '', $color = false)
     {
         if (!$icon_id) return;
 
-        $url = self::getRelativeUrl(self::$url) . '/assets/icons/sprite.svg#';
+        $base = self::getRelativeUrl(self::$url);
 
-        return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
-    }
+        $url = "{$base}/assets/icons/sprite.svg#";
 
-    public static function getSvgColor($icon_id, $classes = '')
-    {
-        if (!$icon_id) return;
-
-        $url = self::getRelativeUrl(self::$url) . '/assets/icons/sprite-color.svg#';
+        if ( $color ) {
+            $url = "{$base}/assets/icons/sprite-color.svg#";
+        }
 
         return "<svg class='ico{$classes}'><use xlink:href='{$url}{$icon_id}'></use></svg>";
     }
@@ -188,7 +185,9 @@ class View
     {
         $cases = [2, 0, 1, 1, 1, 2];
 
-        return $number . ' ' . $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
+        $tail = $after[($number % 100 > 4 && $number % 100 < 20) ? 2: $cases[min($number % 10, 5)]];
+
+        return "{$number} {$tail}";
     }
 
     public static function wpautop($text)
@@ -573,10 +572,8 @@ class View
         return $data;
     }
 
-
-
-  public static function sendCurl($url = '', $type = 'get', $postdata = [], $return_type = '', $headers = [])
-    {
+    public static function sendCurl($url = '', $type = 'get', $postdata = [], $return_type = '', $headers = [])
+      {
         if (!$url) return;
 
         $ch = curl_init();

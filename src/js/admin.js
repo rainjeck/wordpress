@@ -1,7 +1,11 @@
-(function () {
+// import DragonDrop from 'drag-on-drop';
+
+// window.DragonDrop = DragonDrop;
+
+(() => {
     "use strict";
 
-    const app = {
+    const module = {
         init() {
             this.createBackupFile();
             this.removeBackupFile();
@@ -154,6 +158,6 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        app.init();
+        module.init();
     });
 })();

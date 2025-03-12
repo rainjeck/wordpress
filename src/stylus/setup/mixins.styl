@@ -38,3 +38,10 @@ size($wsize, $hsize)
 font($size, $lineheight)
     font-size: unit($size, 'px');
     line-height: round(($lineheight / $size), 2);
+
+cl($num, $columns)
+    max-width: floor((100% / $columns) * $num, 2);
+
+col($num, $columns)
+    flex-grow: 1;
+    max-width: floor((100% / $columns) * $num, 2);

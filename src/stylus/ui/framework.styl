@@ -32,13 +32,6 @@
     padding-left: unit($gridPadding,'px');
     padding-right: unit($gridPadding,'px');
 
-cl($num, $columns)
-    max-width: floor((100% / $columns) * $num, 2);
-
-col($num, $columns)
-    flex-grow: 1;
-    max-width: floor((100% / $columns) * $num, 2);
-
 grid($columns, $prefix = '')
     for $col in 1 .. $columns
         .v-col-{$col}{$prefix}

@@ -16,6 +16,7 @@ class Setup
 
         add_filter('style_loader_src', [&$this, 'filter_enqueue_loader_src'], 10, 2 );
         add_filter('script_loader_src', [&$this, 'filter_enqueue_loader_src'], 10, 2 );
+        add_filter('style_loader_tag', [$this, 'filter_style_loader_tag'], 10, 4 );
     }
 
     public function action_after_setup_theme()
@@ -57,7 +58,7 @@ class Setup
             'medium' => __('Medium'),
             // 'medium_large' => __('Medium Large'),
             'large' => __('Large'),
-            'full' => __( 'Full Size' ),
+            // 'full' => __( 'Full Size' ),
         ];
 
         return $new_sizes;
@@ -71,28 +72,24 @@ class Setup
         wp_deregister_style('classic-theme-styles');
         wp_deregister_style('global-styles');
 
-        $is_logged = is_user_logged_in();
+        $ver = null;
 
-        if ( $is_logged || $_ENV['DEV'] ) {
-            wp_enqueue_style('theme-libs', "{$url}/assets/css/libs.min.css", [], null, 'all');
-            wp_enqueue_style('theme-app', "{$url}/assets/css/main.css", ['theme-libs'], null, 'all');
-
-            wp_enqueue_script('theme-libs', "{$url}/assets/js/libs.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
-            wp_enqueue_script('theme-app', "{$url}/assets/js/main.js", ['theme-libs'], null, ['in_footer' => true, 'strategy'  => 'defer']);
+        if ( is_user_logged_in() ) {
+            $ver = time();
         }
 
-        if ( !$is_logged && !$_ENV['DEV'] ) {
-            wp_enqueue_style('theme-app', "{$url}/assets/css/bundle.min.css", [], null, 'all');
-            wp_enqueue_script('theme-app', "{$url}/assets/js/bundle.min.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
-        }
-
-        if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-            wp_enqueue_script('comment-reply');
-        }
+        wp_enqueue_style('theme-app', "{$url}/assets/css/main.css", [], $ver, '');
+        wp_enqueue_script('theme-app', "{$url}/assets/js/main.js", [], $ver, ['in_footer' => true, 'strategy'  => 'defer']);
     }
 
     public function filter_enqueue_loader_src($src, $handle)
     {
         return View::getRelativeUrl($src);
+    }
+
+    public function filter_style_loader_tag($tag, $handle, $href, $media)
+    {
+        $new_tag = preg_replace('/(media=\'.*\')/','',$tag);
+        return $new_tag;
     }
 }
