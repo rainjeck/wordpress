@@ -31,7 +31,7 @@ class Admin
     {
         $url = get_template_directory_uri();
 
-        wp_enqueue_style('tnwpt_login', "{$url}/assets/css/admin.min.css", [], null, 'all');
+        wp_enqueue_style('tnwpt_login', "{$url}/assets/css/admin.css", [], null, 'all');
     }
 
     public function filter_login_headertext($login_header_text)
@@ -71,11 +71,9 @@ class Admin
     {
         $url = get_template_directory_uri();
 
-        wp_enqueue_style('admin-modify', "{$url}/assets/css/admin.min.css", ['cmb2-styles'], null, 'all');
+        wp_enqueue_style('admin-modify', "{$url}/assets/css/admin.css", ['cmb2-styles'], null, 'all');
 
-        wp_enqueue_script('admin-main', "{$url}/assets/js/admin.min.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
-
-        wp_enqueue_script('admin-libs', "{$url}/assets/js/admin-libs.min.js", ['admin-main'], null, ['in_footer' => true, 'strategy'  => 'defer']);
+        wp_enqueue_script('admin-main', "{$url}/assets/js/admin.js", [], null, ['in_footer' => true, 'strategy'  => 'defer']);
     }
 
     public function action_save_post_page($post_id, $post, $update)

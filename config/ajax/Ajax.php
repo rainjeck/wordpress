@@ -48,6 +48,13 @@ class Ajax
         // $phpmailer->DKIM_selector = 'mail';
         // $phpmailer->DKIM_identity = $_ENV['MAIL_FROM'];
 
+        $phpmailer->isSMTP();
+        $phpmailer->SMTPAuth = false;
+        $phpmailer->Host = 'mailpit';
+        $phpmailer->Port = 1025;
+        $phpmailer->Username = null;
+        $phpmailer->Password = null;
+
         if ( isset($_ENV['MAIL_SMTP']) && $_ENV['MAIL_SMTP'] ) {
             $phpmailer->IsSMTP();
             $phpmailer->Host = $_ENV['MAIL_SMTP_HOST'];

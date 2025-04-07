@@ -108,16 +108,16 @@ const form = {
                     // no error
                     return false;
                 },
-                phoneNum: (field) => {
-                    if (field.type == 'tel') {
-                        if (!field.required) return;
-                        const pattern = /^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
-                        let test = pattern.test(field.value);
-                        if (!test) return true;
-                    }
+                // phoneNum: (field) => {
+                    // if (field.type == 'tel') {
+                        // if (!field.required) return;
+                        // const pattern = /^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
+                        // let test = pattern.test(field.value);
+                        // if (!test) return true;
+                    // }
 
-                    return false;
-                },
+                    // return false;
+                // },
             },
         };
     },
