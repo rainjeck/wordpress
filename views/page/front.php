@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 use tnwpt\helpers\View;
 ?>
 
-<?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+<?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
 
 <main class="main">
     <div class="v-box">
@@ -14,16 +14,7 @@ use tnwpt\helpers\View;
         <p>content</p>
 
         <form action="#" data-action="mail" data-bouncer class="v-form" data-token="<?= wp_create_nonce($_ENV['MAIL_NONCE']); ?>">
-            <input type="text" name="mouse" value="<?= wp_generate_password(8,true); ?>" class="v-d-none">
-            <input type="hidden" name="title" value="<?= wp_get_document_title(); ?>">
-            <input type="hidden" name="url" value="<?= get_self_link(); ?>">
-            <input type="hidden" name="sbj" value="<?= wp_get_document_title(); ?>">
-
-            <input type="hidden" name="utm[UTM_CAMPAIGN]" value="<?= View::checkMeta($_GET, 'utm_campaign', ''); ?>">
-            <input type="hidden" name="utm[UTM_CONTENT]" value="<?= View::checkMeta($_GET, 'utm_content', ''); ?>">
-            <input type="hidden" name="utm[UTM_MEDIUM]" value="<?= View::checkMeta($_GET, 'utm_medium', ''); ?>">
-            <input type="hidden" name="utm[UTM_SOURCE]" value="<?= View::checkMeta($_GET, 'utm_source', ''); ?>">
-            <input type="hidden" name="utm[UTM_TERM]" value="<?= View::checkMeta($_GET, 'utm_term', ''); ?>">
+            <?= View::getFormFields(); ?>
 
             <span class="v-fg">
                 <input type="text" name="name" required placeholder="E-mail" class="v-input v-w-100">

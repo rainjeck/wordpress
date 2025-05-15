@@ -3,13 +3,9 @@
 namespace tnwpt\ajax;
 
 use tnwpt\helpers\View;
-use tnwpt\custom\AdminOptionsPage;
 
 class Ajax
 {
-    public $from_name;
-    public $from_email;
-
     public function register()
     {
         $this->actions = [
@@ -56,7 +52,7 @@ class Ajax
         $phpmailer->Password = null;
 
         if ( isset($_ENV['MAIL_SMTP']) && $_ENV['MAIL_SMTP'] ) {
-            $phpmailer->IsSMTP();
+            $phpmailer->isSMTP();
             $phpmailer->Host = $_ENV['MAIL_SMTP_HOST'];
             $phpmailer->Username = $_ENV['MAIL_SMPT_USERNAME'];
             $phpmailer->Password = $_ENV['MAIL_SMTP_PASSWORD'];
@@ -82,7 +78,7 @@ class Ajax
         // Тема письма
         $sbj = "Заявка с {$_ENV['DOMAIN']}";
 
-        $postdata = $this->getDataSanitizeArray($data);
+        $postdata = View::getAjaxSanitizedData($data);
 
         // Сообщение
         $msg = '';
@@ -134,7 +130,7 @@ class Ajax
             ]);
         }
 
-        if (!$to) {
+        if ( !$to ) {
             wp_send_json_error(['msg' => 'Не установлен адресат в настройках']);
         }
 
@@ -186,33 +182,5 @@ class Ajax
         }
 
         return $filesArr;
-    }
-
-    private function getDataSanitizeArray($data)
-    {
-        $result = [];
-
-        if (!$data) return $data;
-
-        $result = [
-            'name' => (isset($data['name']) && !empty($data['name'])) ? sanitize_text_field($data['name']) : '',
-            'tel' => (isset($data['tel']) && !empty($data['tel'])) ? sanitize_text_field($data['tel']) : '',
-            'email' => (isset($data['email']) && !empty($data['email'])) ? sanitize_email($data['email']) : '',
-            'msg' => (isset($data['msg']) && !empty($data['msg'])) ? sanitize_textarea_field($data['msg']) : '',
-            'subject' => (isset($data['sbj']) && !empty($data['sbj'])) ? sanitize_textarea_field($data['sbj']) : '',
-            'title' => (isset($data['title']) && !empty($data['title'])) ? sanitize_text_field($data['title']) : '',
-            'url' => (isset($data['url']) && !empty($data['url'])) ? esc_url($data['url'], ['https', 'http']) : '',
-            'utm' => [],
-        ];
-
-        if ( isset($data['utm']) ) {
-            foreach($data['utm'] as $key => $one) {
-                if (!$one) continue;
-
-                $result['utm'][$key] = $one;
-            }
-        }
-
-        return $result;
     }
 }

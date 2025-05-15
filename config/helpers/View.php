@@ -11,6 +11,7 @@ class View
     public function register()
     {
         self::$url = get_stylesheet_directory_uri();
+
         self::$home_url = get_home_url(null,'/');
 
         self::$templates = get_option('_page_templates');
@@ -18,17 +19,17 @@ class View
         return;
     }
 
-    public static function getOpt($key = '', $default = false)
+    public static function getOpt($key = '')
     {
-      if (function_exists('cmb2_get_option')) {
-        return cmb2_get_option($_ENV['APPOPTSKEY'], $key, $default);
+      if ( function_exists('cmb2_get_option') ) {
+        return cmb2_get_option($_ENV['APPOPTSKEY'], $key, false);
       }
 
-      $opts = get_option($_ENV['APPOPTSKEY'], $default);
+      $opts = get_option($_ENV['APPOPTSKEY'], false);
 
-      $val = $default;
+      $val = false;
 
-      if ('all' == $key) {
+      if ( $key == 'all') {
         $val = $opts;
       } elseif (is_array( $opts ) && array_key_exists($key, $opts) && false !== $opts[$key]) {
         $val = $opts[$key];
@@ -41,13 +42,13 @@ class View
     {
         global $wpdb;
 
-        $sql = "
+        $query = "
             SELECT post_id, meta_value as template
             FROM $wpdb->postmeta
             WHERE meta_key = '_wp_page_template'
         ";
 
-        $result = $wpdb->get_results($sql);
+        $result = $wpdb->get_results($query);
 
         $data = [];
 
@@ -59,7 +60,7 @@ class View
     }
 
     /**
-     * Phone Number
+     * Get Phone Number
      */
     public static function getPhone($number, $link = false, $classes = '')
     {
@@ -71,21 +72,27 @@ class View
             $num = "+{$num}";
         }
 
-        if ($link) {
-            return "<a href='tel:{$num}' class='{$classes}'>{$number}</a>";
+        if ( $link ) {
+            $classes = ( $classes ) ? "{$classes} " : '';
+
+            return "<div class='{$classes}js-tel-mobile' data-tel='{$num}'>{$number}</div>";
+            // "<a href='tel:{$num}' class='{$classes}'>{$number}</a>";
         }
 
         return $num;
     }
 
     /**
-     * E-mail link
+     * Get E-mail link
      */
     public static function getEmail($email, $classes = '')
     {
         $mail = sanitize_email($email);
 
-        return "<a href='mailto:{$mail}' class='{$classes}'>{$email}</a>";
+        $classes = ( $classes ) ? "{$classes} " : '';
+
+        return "<div class='{$classes}js-mail' data-mail='{$mail}'></div>";
+        // return "<a href='mailto:{$mail}' class='{$classes}'>{$email}</a>";
     }
 
     /**
@@ -212,23 +219,40 @@ class View
 
     public static function getPostMeta($post_id = 0, $keys = [])
     {
+        global $wpdb;
+
         if ( !$post_id || !$keys ) return;
 
-        $prefix = $_ENV['CMB'];
+        $bit = $_ENV['CMB'];
 
-        $arr = [];
+        $meta_bit = array_map(function($item) use ($bit) {
+            return "'{$bit}_{$item}'";
+        }, $keys);
 
-        foreach ($keys as $key) {
-            $meta = get_post_meta($post_id, "{$prefix}_{$key}", 1);
+        $meta_lodash = array_map(function($item) {
+            return "'_{$item}'";
+        }, $keys);
 
-            if ( $meta ) {
-                $arr[$key] = $meta;
-            } else {
-                $arr[$key] = false;
-            }
+        $metas = array_merge($meta_bit, $meta_lodash);
+        $metas = implode(',', $metas);
+
+        $query = "
+            SELECT meta_key, meta_value
+            FROM $wpdb->postmeta
+            WHERE post_id = {$post_id}
+                AND meta_key IN ({$metas})
+        ";
+
+        $result = $wpdb->get_results($query);
+
+        $data = [];
+
+        foreach($result as $one) {
+            $key = preg_replace(["/(^_)+/", "/(^_{$bit}_)+/"], '', $one->meta_key);
+            $data[$key] = maybe_unserialize($one->meta_value);
         }
 
-        return $arr;
+        return $data;
     }
 
     public static function getTermMeta($term_id = 0, $keys = [])
@@ -317,33 +341,30 @@ class View
     }
 
     /**
-    * Get metas for many objects
-    * @return array
-    */
-    public static function getPostData($post_ids = [], $fields = [], $metas = [], $prefix = true)
+     * Get metas for many objects
+     * @return array
+     */
+    public static function getPostsData($post_ids = [], $fields = [], $metas = [])
     {
+        global $wpdb;
+
         $post_ids = array_filter($post_ids, function($item) {
-            if (!empty($item)) return true;
-            return false;
+            return ( !empty($item) ) ? true : false;
         });
 
-        if (!$post_ids) return [];
+        if ( !$post_ids ) return [];
 
         $fields = array_filter($fields, function($item) {
-            if (!empty($item)) return true;
-            return false;
+            return ( !empty($item) ) ? true : false;
         });
 
         $metas = array_filter($metas, function($item) {
-            if (!empty($item)) return true;
-            return false;
+            return ( !empty($item) ) ? true : false;
         });
 
         $bit = $_ENV['CMB'];
 
         $data = [];
-
-        global $wpdb;
 
         $ids_str = implode(',', $post_ids);
 
@@ -368,31 +389,31 @@ class View
             }
         }
 
-        if ($prefix) {
-            $metas = array_map(function($var) use ($bit) {
-                return "'{$bit}_{$var}'";
-            }, $metas);
-        } else {
-            $metas = array_map(function($var) use ($bit) {
-                return "'{$var}'";
-            }, $metas);
-        }
+        $meta_bit = array_map(function($item) use ($bit) {
+            return "'{$bit}_{$item}'";
+        }, $metas);
+
+        $meta_lodash = array_map(function($item) {
+            return "'_{$item}'";
+        }, $metas);
+
+        $metas = array_merge($meta_bit, $meta_lodash);
 
         $metas[] = "'_thumbnail_id'";
 
-        $metas_str = implode(',', $metas);
+        $metas = implode(',', $metas);
 
         $sql = "
             SELECT post_id, meta_key, meta_value
             FROM $wpdb->postmeta
-            WHERE post_id IN ($ids_str) AND meta_key IN ($metas_str)
+            WHERE post_id IN ($ids_str) AND meta_key IN ($metas)
         ";
 
         $query = $wpdb->get_results($sql, 'ARRAY_A');
 
         if ($query) {
             foreach($query as $v) {
-                $key = str_replace(["{$bit}_"], '', $v['meta_key']);
+                $key = preg_replace(["/(^_)+/", "/(^_{$bit}_)+/"], '', $v['meta_key']);
                 $data[$v['post_id']][$key] = maybe_unserialize($v['meta_value']);
             }
         }
@@ -400,43 +421,54 @@ class View
         return $data;
     }
 
-    public static function checkMeta($metas, $key, $return_default = '', $return_key = -1)
-    {
-        $result = $return_default;
-
-        if ($return_key >= 0) {
-            $result = (isset($metas[$key]) && !empty($metas[$key]) && isset($metas[$key][$return_key])) ? $metas[$key][$return_key] : $return_default;
-
-            return $result;
-        }
-
-        $result = (isset($metas[$key]) && !empty($metas[$key])) ? $metas[$key] : $return_default;
-
-        return $result;
-    }
-
     /**
-    * Check key & value in array
-    * @var value - value or '_' (not empty)
-    * @return boolean
-    */
+     * Check key, value in array
+     * @return boolean
+     */
     public static function checkArray($array = [], $key = '', $value = '')
     {
-        if (!$array) return false;
+        if ( !$array ) return false;
+        if ( !$key ) return false;
 
-        if ($value && isset($array[$key])) {
-            if ( $value == '_' && !empty($array[$key]) ) {
+        if ( $value ) {
+            if ( isset($array[$key]) && !empty($array[$key]) ) {
+                if ( $value == $array[$key] ) {
+                    return true;
+                }
+
                 return true;
             }
 
-            return ($value == $array[$key]) ? true : false;
+            return false;
         }
 
-        if ($key && array_key_exists($key,$array)) {
+        if ( array_key_exists($key, $array) && !empty($array[$key]) ) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Check & return meta value from meta array
+     * @return value or default value
+     */
+    public static function checkMeta($metas = [], $key = '', $return_default = '', $return_key = -1)
+    {
+        $result = $return_default;
+
+        if ( !$metas ) return $result;
+        if ( !$key ) return $result;
+
+        if ($return_key >= 0) {
+            $result = ( self::checkArray($metas, $key) ) ? $metas[$key][$return_key] : $return_default;
+
+            return $result;
+        }
+
+        $result = ( self::checkArray($metas, $key) ) ? $metas[$key] : $return_default;
+
+        return $result;
     }
 
     public static function getImageSizes($unset_disabled = true)
@@ -471,7 +503,7 @@ class View
     }
 
     /**
-     * Check Post Data
+     * Check $_POST data
      * @return array
      */
     public static function checkAjaxData()
@@ -513,23 +545,23 @@ class View
             'post_status' => 'publish',
             'fields' => 'ids',
             'orderby' => 'id',
-            'order' => 'ASC'
+            'order' => 'ASC',
         ]);
 
-        $items_data = self::getPostData($items, ['post_title'], []);
+        $items_data = self::getPostsData($items, ['post_title'], []);
 
         if ($ids) {
             foreach($ids as $post_id) {
                 if ( array_key_exists($post_id, $items_data) ) {
-                $data[$post_id] = __($items_data[$post_id]['title']);
-                unset($items_data[$post_id]);
+                    $data[$post_id] = $items_data[$post_id]['title'];
+                    unset($items_data[$post_id]);
                 }
             }
         }
 
         if ($items_data && $add) {
             foreach($items_data as $one) {
-                $data[$one['ID']] = __($one['title']);
+                $data[$one['ID']] = $one['title'];
             }
         }
 
@@ -572,7 +604,7 @@ class View
         return $data;
     }
 
-    public static function sendCurl($url = '', $type = 'get', $postdata = [], $return_type = '', $headers = [])
+    public static function sendCurl($url = '', $type = 'get', $postdata = [], $return_type = 'json', $headers = [])
       {
         if (!$url) return;
 
@@ -623,16 +655,43 @@ class View
      */
     public static function breadcrumbs($classes = '')
     {
+        $classes = ( $classes ) ? " {$classes}" : '';
         $sep = '<li class="breadcrumbs-separator">&nbsp;&mdash;&nbsp;</li>';
-        $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
+        $position = 1;
 
-        $html = "<ul class='breadcrumbs ui-d-flex ui-ul-clear {$classes}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
+        $get_item_html = function($title = '', $link = '', $position = 1, $current = false)
+        {
+            $html = '';
+
+            $schema_li = 'itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"';
+
+            if ( !$current ) {
+                $html = "
+                <li {$schema_li} class='breadcrumbs-item'>
+                    <a class='breadcrumbs-link' href='{$link}' itemprop='item'>
+                    <span itemprop='name'>{$title}</span>
+                    </a>
+                    <meta itemprop='position' content='{$position}'>
+                </li>
+                ";
+
+                return $html;
+            }
+
+            $html .= "
+                <li {$schema_li} class='breadcrumbs-item is-current'>
+                <span itemprop='name'>{$title}</span>
+                <meta itemprop='position' content='{$position}'>
+                </li>
+            ";
+
+            return $html;
+        };
+
+        $html = "<ul class='breadcrumbs{$classes}' itemscope itemtype='https://schema.org/BreadcrumbList'>";
 
         // Main page
-        $main_name = 'Главная';
-        $main_link = self::$home_url;
-
-        $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$main_link}' itemprop='item'><span itemprop='name'>{$main_name}</span></a><meta itemprop='position' content='1'></li>";
+        $html .= $get_item_html('Главная', get_home_url(), $position);
 
         $position = 2;
 
@@ -640,37 +699,8 @@ class View
         if ( is_page() ) {
             global $post;
 
-            $ptitle = $post->post_title;
-
             $html .= $sep;
-
-            $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
-        }
-
-        // Single Post
-        if ( is_singular('post') ) {
-            global $post;
-
-            $cats = get_the_category($post->ID);
-
-            if ($cats) {
-                $cat = array_shift($cats);
-
-                $ptitle = $cat->name;
-                $plink = get_category_link($cat->term_id);
-
-                $html .= $sep;
-
-                $html .= "<li {$schema_li} class='breadcrumbs-item'><a class='breadcrumbs-link' href='{$plink}' itemprop='item'><span itemprop='name'>{$ptitle}</span></a><meta itemprop='position' content='{$position}'></li>";
-
-                $position += 1;
-            }
-
-            $ptitle = $post->post_title;
-
-            $html .= $sep;
-
-            $html .= "<li {$schema_li} class='breadcrumbs-item is-current'><span itemprop='name'>{$ptitle}</span><meta itemprop='position' content='{$position}'></li>";
+            $html .= $get_item_html($post->post_title, '', $position, true);
         }
 
         $html .= '</ul>';
@@ -693,6 +723,52 @@ class View
                 'value' => trim($str[1]),
             ];
         }, $result) : [];
+
+        return $result;
+    }
+
+    public static function getFormFields()
+    {
+        $html = '
+            <input type="text" name="mouse" value="'. wp_generate_password(12,true) .'" class="v-d-none">
+            <input type="hidden" name="title" value="'. wp_get_document_title() .'">
+            <input type="hidden" name="url" value="'. get_self_link() .'">
+            <input type="hidden" name="sbj" value="'. wp_get_document_title() .'">
+
+            <input type="hidden" name="utm[UTM_CAMPAIGN]" value="'. self::checkMeta($_GET, 'utm_campaign', '') .'">
+            <input type="hidden" name="utm[UTM_CONTENT]" value="'. self::checkMeta($_GET, 'utm_content', '') .'">
+            <input type="hidden" name="utm[UTM_MEDIUM]" value="'. self::checkMeta($_GET, 'utm_medium', '') .'">
+            <input type="hidden" name="utm[UTM_SOURCE]" value="'. self::checkMeta($_GET, 'utm_source', '') .'">
+            <input type="hidden" name="utm[UTM_TERM]" value="'. self::checkMeta($_GET, 'utm_term', '') .'">
+        ';
+
+        return $html;
+    }
+
+    public static function getAjaxSanitizedData($data = [])
+    {
+        $result = [];
+
+        if ( !$data ) return $result;
+
+        $result = [
+            'name' => ( self::checkArray($data,'name') ) ? sanitize_text_field($data['name']) : '',
+            'tel' => ( self::checkArray($data,'tel') ) ? sanitize_text_field($data['tel']) : '',
+            'email' => ( self::checkArray($data,'email') ) ? sanitize_email($data['email']) : '',
+            'msg' => ( self::checkArray($data,'msg') ) ? sanitize_textarea_field($data['msg']) : '',
+            'subject' => ( self::checkArray($data,'sbj') ) ? sanitize_textarea_field($data['sbj']) : '',
+            'title' => ( self::checkArray($data,'title') ) ? sanitize_text_field($data['title']) : '',
+            'url' => ( self::checkArray($data,'url') ) ? esc_url($data['url'], ['https', 'http']) : '',
+            'utm' => [],
+        ];
+
+        if ( self::checkArray($data,'utm') ) {
+            foreach($data['utm'] as $key => $one) {
+                if (!$one) continue;
+
+                $result['utm'][$key] = $one;
+            }
+        }
 
         return $result;
     }
