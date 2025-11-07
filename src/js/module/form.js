@@ -12,24 +12,47 @@ const form = {
     },
 
     antispam() {
-        let forms = document.forms;
+        let done = false;
 
+        window.onscroll = () => {
+            if ( done ) return;
+
+            if ( pageYOffset > 15 ) {
+                done = true;
+
+                this.blockSpam(0);
+                return;
+            }
+        };
+
+        if ( !done ) {
+            this.blockSpam(5000);
+        }
+    },
+
+    blockSpam(timeout) {
+        let forms = document.forms;
         if ( !forms.length ) return;
 
         forms = Array.from(forms);
 
         forms.forEach(form => {
-            const mouse = form.querySelector('input[name="mouse"]');
-
+            const mouse = form.querySelector('input[name="formid"]');
             if ( mouse ) {
-                mouse.value = '';
+                mouse.setAttribute('value',Math.random() * 100000);
+
+                setTimeout(() => {
+                    mouse.setAttribute('value','');
+                }, timeout);
             }
 
-            const token = form.getAttribute('data-token');
+            const btn = form.querySelector('[type="submit"]');
+            if ( btn ) {
+                btn.setAttribute('disabled',true);
 
-            if ( token ) {
-                let html = `<input type="hidden" name="token" value="${token}">`;
-                form.insertAdjacentHTML('beforeend', html);
+                setTimeout(() => {
+                    btn.removeAttribute('disabled');
+                }, timeout);
             }
         });
     },
@@ -108,16 +131,16 @@ const form = {
                     // no error
                     return false;
                 },
-                // phoneNum: (field) => {
-                    // if (field.type == 'tel') {
-                        // if (!field.required) return;
-                        // const pattern = /^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/;
-                        // let test = pattern.test(field.value);
-                        // if (!test) return true;
-                    // }
+                phoneNum: (field) => {
+                    if (field.type == 'tel') {
+                        if ( !field.required ) return;
+                        const pattern = /(\d{5})+/;
+                        let test = pattern.test(field.value);
+                        if ( !test ) return true; // error
+                    }
 
-                    // return false;
-                // },
+                    return false;
+                },
             },
         };
     },
@@ -154,6 +177,7 @@ const form = {
             const fd = new FormData(form);
 
             fd.append('action', form.dataset.action);
+            fd.append('token', form.dataset.formid);
 
             form.classList.add('is-loading');
             btn.setAttribute('disabled', true);
@@ -166,7 +190,20 @@ const form = {
                 .then((res) => {
                     form.classList.remove('is-loading');
                     btn.removeAttribute('disabled');
-                    form.reset();
+
+                    // block spam
+                    this.blockSpam(10000);
+
+                    if ( !res.success ) {
+                        form.classList.add('is-error');
+
+                        setTimeout(() => {
+                            form.classList.remove('is-error');
+                        }, 3000);
+
+                        console.error(res);
+                        return;
+                    }
 
                     // metrika in Options
                     if ( typeof fireball == 'function' ) {
@@ -177,11 +214,11 @@ const form = {
                         Unimodal.open(res.data.modal);
                     }
 
-                    if (res.data.url) {
+                    if ( res.data.url ) {
                         window.location.assign(res.data.url);
                     }
 
-                    if (res.success) {
+                    if ( res.success ) {
                         form.reset();
                         form.classList.add('is-success');
 
@@ -189,17 +226,6 @@ const form = {
                             form.classList.remove('is-success');
                             // Unimodal.closeAll();
                         }, 3000);
-                    }
-
-                    if (!res.success) {
-                        form.classList.add('is-error');
-
-                        setTimeout(() => {
-                            form.classList.remove('is-error');
-                        }, 3000);
-
-                        console.error(res);
-                        return;
                     }
                 });
         }, false);

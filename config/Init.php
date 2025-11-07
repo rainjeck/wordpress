@@ -18,6 +18,7 @@ class Init
             helpers\Admin::class,
             helpers\AdminColumns::class,
             helpers\ImageOptimizer::class,
+            helpers\RestApi::class,
             ajax\Ajax::class,
         ];
     }

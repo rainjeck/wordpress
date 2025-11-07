@@ -13,15 +13,15 @@ use tnwpt\helpers\View;
 
         <p>content</p>
 
-        <form action="#" data-action="mail" data-bouncer class="v-form" data-token="<?= wp_create_nonce($_ENV['MAIL_NONCE']); ?>">
+        <form action="#" data-action="mail" data-bouncer class="v-form" data-formid="<?= wp_create_nonce($_ENV['MAIL_NONCE']); ?>">
             <?= View::getFormFields(); ?>
 
             <span class="v-fg">
-                <input type="text" name="name" required placeholder="E-mail" class="v-input v-w-100">
+                <input type="text" name="name" required placeholder="E-mail" class="v-input v-w-100" autocomplete="name">
             </span>
 
             <div class="v-fg">
-                <input type="tel" name="tel" class="v-input v-w-100 js-masked" required placeholder="Ваш номер" data-mask="+7 (000) 000-00-00">
+                <input type="tel" name="tel" class="v-input v-w-100 js-masked" required placeholder="Ваш номер" autocomplete="tel" data-mask="+7 (000) 000-00-00">
             </div>
 
             <div class="v-cbx is-cbx v-fg v-d-block">

@@ -7,27 +7,31 @@
 
     const module = {
         init() {
+            // backup db
+            this.createBackupDBFile();
+            this.removeBackupDBFile();
+
+            // backup files
             this.createBackupFile();
             this.removeBackupFile();
 
             this.regenerateThumbsButton();
 
-            // this.dragDropList();
+            // this.dragdrop();
         },
 
-        createBackupFile() {
-            const el = document.querySelector('#create-backup');
-
+        createBackupDBFile() {
+            const el = document.querySelector('#create-backup-db');
             if (!el) return;
 
             const form = el.closest('form');
 
-            el.addEventListener('click', (e) => {
+            el.addEventListener('click', e => {
                 const url = '/wp-admin/admin-ajax.php';
 
                 const fd = new FormData();
 
-                fd.append('action', 'createBackupFile');
+                fd.append('action', 'create_backupdb_file');
                 fd.append('token', el.dataset.token);
 
                 form.classList.add('is-loading');
@@ -36,8 +40,8 @@
                     method: 'POST',
                     body: fd,
                 })
-                    .then((response) => response.json())
-                    .then((res) => {
+                    .then(response => response.json())
+                    .then(res => {
                         if (res.success) {
                             window.location.reload();
                         }
@@ -45,9 +49,8 @@
             });
         },
 
-        removeBackupFile() {
-            const elems = document.querySelectorAll('.js-backup-delete');
-
+        removeBackupDBFile() {
+            const elems = document.querySelectorAll('.js-backup-db-delete');
             if (!elems.length) return;
 
             const form = elems[0].closest('form');
@@ -56,7 +59,67 @@
 
             const fd = new FormData();
 
-            fd.append('action', 'deleteBackupFile');
+            fd.append('action', 'delete_backupdb_file');
+
+            elems.forEach(el => {
+                el.addEventListener('click', e => {
+                    fd.append('token', el.dataset.token);
+                    fd.append('file', el.dataset.file);
+
+                    form.classList.add('is-loading');
+
+                    fetch(url, {
+                        method: 'POST',
+                        body: fd,
+                    })
+                        .then(response => response.json())
+                        .then(res => {
+                            if (res.success) {
+                                window.location.reload();
+                            }
+                        });
+                });
+            });
+        },
+
+        createBackupFile() {
+            const el = document.querySelector('#create-backup-files');
+            if (!el) return;
+
+            const form = el.closest('form');
+
+            el.addEventListener('click', e => {
+                const url = '/wp-admin/admin-ajax.php';
+
+                const fd = new FormData();
+
+                fd.append('action', 'create_backup_file');
+                fd.append('token', el.dataset.token);
+
+                form.classList.add('is-loading');
+
+                fetch(url, {
+                    method: 'POST',
+                    body: fd,
+                })
+                    .then(response => response.json())
+                    .then(res => {
+                        if (res.success) {
+                            window.location.reload();
+                        }
+                    });
+            });
+        },
+
+        removeBackupFile() {
+            const elems = document.querySelectorAll('.js-backup-files-delete');
+            if (!elems.length) return;
+
+            const url = '/wp-admin/admin-ajax.php';
+
+            const form = elems[0].closest('form');
+            const fd = new FormData();
+            fd.append('action', 'delete_backup_file');
 
             elems.forEach((el) => {
                 el.addEventListener('click', e => {
@@ -69,12 +132,12 @@
                         method: 'POST',
                         body: fd,
                     })
-                        .then((response) => response.json())
-                        .then((res) => {
-                            if (res.success) {
-                                window.location.reload();
-                            }
-                        });
+                    .then(response => response.json())
+                    .then(res => {
+                        if (res.success) {
+                            window.location.reload();
+                        }
+                    });
                 });
             });
         },
@@ -145,12 +208,13 @@
             };
         },
 
-        dragDropList() {
+        dragdrop() {
             const elems = document.querySelectorAll('.js-drag-drop');
-            if (!elems.length) return;
+            if ( !elems.length ) return;
 
             elems.forEach(el => {
-                new DragonDrop(el, {
+                const ul = el.querySelector('ul');
+                new DragonDrop(ul, {
                     handle: false,
                 });
             });

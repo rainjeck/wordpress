@@ -25,8 +25,6 @@ class CustomFields
 
     public function pageFront()
     {
-        if ( !View::checkArray($_GET,'post',$this->front_id) ) return;
-
         $bit = $this->prefix;
 
         $mb = new_cmb2_box([
@@ -85,11 +83,14 @@ class CustomFields
         $mb->add_field([
             'id' => "{$bit}_",
             'name' => '',
-            'type' => 'select','radio','radio_inline','checkbox','multicheck','multicheck_inline'
+            'type' => 'select','radio','radio_inline','checkbox','multicheck','multicheck_inline',
             'options' => [],
             'options_cb' => [&$this, 'select_post_order'],
-            'attributes' => ['class' => 'bDragDropList js-drag-drop'],
-            'desc' => 'Drag & Drop. Не отмеченные не показываются',
+            'select_all_button' => 1,
+            'attributes' => ['data-list-drag-drop' => ''],
+            'before' => '<div class="bDragDropList js-drag-drop">',
+            'after' => '</div>',
+            'desc' => 'Drag&Drop. Расставляем в нужном порядке. Для сортировки обязательно отметить нужные. Не отмеченные не показываются',
         ]);
 
         $group = $mb->add_field([

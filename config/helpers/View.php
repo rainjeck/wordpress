@@ -427,11 +427,10 @@ class View
      */
     public static function checkArray($array = [], $key = '', $value = '')
     {
-        if ( !$array ) return false;
-        if ( !$key ) return false;
+        if ( !$array || !$key ) return false;
 
         if ( $value ) {
-            if ( isset($array[$key]) && !empty($array[$key]) ) {
+            if ( array_key_exists($key, $array) && !empty($array[$key]) ) {
                 if ( $value == $array[$key] ) {
                     return true;
                 }
@@ -509,16 +508,24 @@ class View
     public static function checkAjaxData()
     {
         // проверяем nonce код, если проверка не пройдена прерываем обработку
-        if (!wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE'])) {
-            wp_send_json_error(['msg' => 'Fail']); // Check failed
+        if ( !wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE']) ) {
+            wp_send_json_error(['msg' => 'Fail (core)']); // Check failed
         }
 
         // разбираем строку data из ajax
         $data = $_POST; // если FormData
 
         // проверяем на робота
-        if (!empty($data['mouse']) || !isset($data['mouse'])) {
-            wp_send_json_error(['msg' => 'You are robot']); // Robot
+        if ( array_key_exists('formid',$data) && !empty($data['formid']) ) {
+            wp_send_json_error(['msg' => 'Fail (robot)']); // Robot
+        }
+
+        // проверяем tel
+        if ( self::checkArray($data,'tel') ) {
+            $check = preg_match("/(\d{5})+/i", $data['tel']);
+            if ( !$check ) {
+                wp_send_json_error(['msg' => 'Fail (tel)']); // not tel number
+            }
         }
 
         return $data;
@@ -730,7 +737,7 @@ class View
     public static function getFormFields()
     {
         $html = '
-            <input type="text" name="mouse" value="'. wp_generate_password(12,true) .'" class="v-d-none">
+            <input type="text" name="formid" value="'. wp_generate_password(12,true) .'" class="v-d-none">
             <input type="hidden" name="title" value="'. wp_get_document_title() .'">
             <input type="hidden" name="url" value="'. get_self_link() .'">
             <input type="hidden" name="sbj" value="'. wp_get_document_title() .'">

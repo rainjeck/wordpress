@@ -24,8 +24,8 @@ class BackupDB
 
         add_action('cmb2_admin_init', [&$this, 'action_cmb2_admin_init']);
 
-        add_action('wp_ajax_createBackupFile', [ &$this, 'createBackupFile']);
-        add_action('wp_ajax_deleteBackupFile', [ &$this, 'deleteBackupFile']);
+        add_action('wp_ajax_create_backupdb_file', [ &$this, 'createBackupFile']);
+        add_action('wp_ajax_delete_backupdb_file', [ &$this, 'deleteBackupFile']);
     }
 
     public function checkBackupDir()
@@ -59,7 +59,7 @@ class BackupDB
             'desc' => "
                 <p>Папка, где хранятся копии: {$this->db_path}</p>
                 <p>Расписание устанавливается через плагин <a href='/wp-admin/tools.php?page=crontrol_admin_manage_page'>WP Crontrol</a>. Задание '<strong>tnwpt_backup_db_cron</strong>'</p>
-                <p><button type='button' id='create-backup' data-token='{$nonce}'>Создать резервную копию</button></p>
+                <p><button type='button' id='create-backup-db' data-token='{$nonce}'>Создать резервную копию</button></p>
                 ",
             'type' => 'title'
         ]);
@@ -139,7 +139,7 @@ class BackupDB
 
         if ($files) {
             foreach($files as $file) {
-                $html .= "<li>{$file} <a href='{$this->db_path_url}{$file}'>Скачать</a> <button type='button' class='js-backup-delete' data-file='{$file}' data-token='{$nonce}'><span class='dashicons dashicons-trash'></span></button></li>";
+                $html .= "<li>{$file} <a href='{$this->db_path_url}{$file}'>Скачать</a> <button type='button' class='js-backup-db-delete' data-file='{$file}' data-token='{$nonce}'><span class='dashicons dashicons-trash'></span></button></li>";
             }
         }
 
