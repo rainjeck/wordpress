@@ -134,8 +134,9 @@ const form = {
                 phoneNum: (field) => {
                     if (field.type == 'tel') {
                         if ( !field.required ) return;
+                        let value = field.value.replaceAll(/[+\s()-]/g,'');
                         const pattern = /(\d{5})+/;
-                        let test = pattern.test(field.value);
+                        let test = pattern.test(value);
                         if ( !test ) return true; // error
                     }
 

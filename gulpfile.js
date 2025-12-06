@@ -1,7 +1,6 @@
 const path = require('path');
 const { src, dest, series, watch } = require('gulp');
 const load_plugin = require('gulp-load-plugins')();
-const minifyjs = require('gulp-minify.js');
 
 const rollup_resolve = require('@rollup/plugin-node-resolve');
 const rollup_commonjs = require('@rollup/plugin-commonjs');
@@ -52,9 +51,9 @@ function js_app() {
                     name: path.basename(file.path, '.js')
                 }
             }
-        )
+        ).on('error', load_plugin.notify.onError('<%= error.message %>'))
     )
-    .pipe(minifyjs())
+    .pipe(load_plugin.uglify())
     .pipe(load_plugin.sourcemaps.write("../js"))
     .pipe(dest(_path + '/js'));
 };
@@ -105,7 +104,7 @@ function watching() {
     });
 
     // --- CSS
-    watch(['./src/stylus/**/*.styl'], series(css_app, reloader));
+    watch(['./src/stylus/**/*.styl', './src/libs/*.css'], series(css_app, reloader));
 
     // --- JS
     watch(['./src/js/**/*.js'], series(js_app, reloader));

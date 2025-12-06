@@ -509,7 +509,7 @@ class View
     {
         // проверяем nonce код, если проверка не пройдена прерываем обработку
         if ( !wp_verify_nonce($_POST['token'], $_ENV['MAIL_NONCE']) ) {
-            wp_send_json_error(['msg' => 'Fail (core)']); // Check failed
+            wp_send_json_error(['msg' => 'Fail 1']); // Check failed
         }
 
         // разбираем строку data из ajax
@@ -517,14 +517,15 @@ class View
 
         // проверяем на робота
         if ( array_key_exists('formid',$data) && !empty($data['formid']) ) {
-            wp_send_json_error(['msg' => 'Fail (robot)']); // Robot
+            wp_send_json_error(['msg' => 'Fail 2']); // Robot
         }
 
         // проверяем tel
         if ( self::checkArray($data,'tel') ) {
-            $check = preg_match("/(\d{5})+/i", $data['tel']);
+            $tel = preg_replace('/[+\s()-]/i','',$data['tel']);
+            $check = preg_match("/(\d{5})+/i", $tel);
             if ( !$check ) {
-                wp_send_json_error(['msg' => 'Fail (tel)']); // not tel number
+                wp_send_json_error(['msg' => 'Fail 3']); // not tel number
             }
         }
 

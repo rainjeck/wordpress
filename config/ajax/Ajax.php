@@ -44,12 +44,14 @@ class Ajax
         // $phpmailer->DKIM_selector = 'mail';
         // $phpmailer->DKIM_identity = $_ENV['MAIL_FROM'];
 
-        $phpmailer->isSMTP();
-        $phpmailer->SMTPAuth = false;
-        $phpmailer->Host = 'mailpit';
-        $phpmailer->Port = 1025;
-        $phpmailer->Username = null;
-        $phpmailer->Password = null;
+        if ( $_ENV['MAIL_DEV'] ) {
+            $phpmailer->isSMTP();
+            $phpmailer->SMTPAuth = false;
+            $phpmailer->Host = 'mailpit';
+            $phpmailer->Port = 1025;
+            $phpmailer->Username = null;
+            $phpmailer->Password = null;
+        }
 
         if ( isset($_ENV['MAIL_SMTP']) && $_ENV['MAIL_SMTP'] ) {
             $phpmailer->isSMTP();
@@ -59,7 +61,6 @@ class Ajax
             $phpmailer->SMTPAuth = $_ENV['MAIL_SMTP_AUTH'];
             $phpmailer->SMTPSecure = $_ENV['MAIL_SMTP_SECURE'];
             $phpmailer->Port = $_ENV['MAIL_SMTP_PORT'];
-            $phpmailer->From = $_ENV['MAIL_SMTP_FROM'];
         }
     }
 
@@ -119,17 +120,6 @@ class Ajax
         // $page_thanks_id = View::getPostIdByTemplate('template-page-thanks.php');
         // $url = get_the_permalink($page_thanks_id);
 
-        // Отладка
-        if ($_ENV['MAIL_DEV']) {
-            wp_send_json_success([
-                '$data' => $data,
-                '$email' => $to,
-                '$sbj' => $sbj,
-                '$msg' => $msg,
-                // 'url' => '/'
-            ]);
-        }
-
         if ( !$to ) {
             wp_send_json_error(['msg' => 'Не установлен адресат в настройках']);
         }
@@ -149,6 +139,10 @@ class Ajax
 
             wp_send_json_success([
                 // 'url' => $url
+                '$data' => $data,
+                '$email' => $to,
+                '$sbj' => $sbj,
+                '$msg' => $msg,
             ]);
         } else {
             wp_send_json_error('Somethings went wrong. See logs');

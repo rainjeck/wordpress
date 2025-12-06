@@ -1,5 +1,3 @@
-DEV = 1
-
 APPOPTSKEY = "tnwpt_app"
 
 CMB = "_tnwpt"
@@ -19,4 +17,3 @@ MAIL_SMTP_PORT = 465
 MAIL_SMTP_HOST = ""
 MAIL_SMPT_USERNAME = ""
 MAIL_SMTP_PASSWORD = ""
-MAIL_SMTP_FROM = ""
