@@ -26,7 +26,7 @@ const form = {
         };
 
         if ( !done ) {
-            this.blockSpam(5000);
+            this.blockSpam(3000);
         }
     },
 
@@ -193,7 +193,7 @@ const form = {
                     btn.removeAttribute('disabled');
 
                     // block spam
-                    this.blockSpam(10000);
+                    this.blockSpam(5000);
 
                     if ( !res.success ) {
                         form.classList.add('is-error');

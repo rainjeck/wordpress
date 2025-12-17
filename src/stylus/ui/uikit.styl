@@ -46,7 +46,8 @@
     bg(center, contain);
 
     .ico
-        size(100%, 100%);
+        max-width: 100%;
+        max-height: 100%;
 
 .v-pic-bg
     position: absolute;
@@ -68,7 +69,7 @@
         size(100%, 100%);
         object-fit: contain;
 
-.v-media-ratio
+.v-ratio
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -112,11 +113,29 @@
     margin: 0;
     list-style-type: none;
 
-.v-status-success
-    color: $colorSuccess;
 
-.v-status-error
-    color: $colorError;
+/*!
+* --- COLORS ------------------------------------
+*/
+
+for $name, $color in $color_vars
+    .v-bg-{$name}
+        background-color: $color;
+
+    .v-fill-{$name}
+        fill: $color;
+
+    .v-color-{$name}
+        color: $color;
+
+    .v-stroke-{$name}
+        border-style: solid;
+        border-color: $color;
+
+
+for $one in 1
+    .v-border-{$one}
+        border-width: unit($one,'px');
 
 
 /*!
@@ -239,3 +258,70 @@
 
 .v-link-zoom
     cursor: zoom-in;
+
+
+.v-hr
+    border: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+
+
+/*!
+* --- TEXT --------------------------------------
+*/
+
+// Font Weight
+for $one in 400 500 600 700 800
+    .v-fw-{$one}
+        font-weight: $one;
+
+// Line Height
+.v-lh-auto
+    line-height: normal;
+
+for $one in 100 150
+    .v-lh-{$one}
+        line-height: round(($one/100),2);
+
+// for $one in 40 60
+//     .v-opacity-{$one}
+//         opacity: (60/100);
+
+.v-tt-upper
+    text-transform: uppercase;
+
+.v-td-underline
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+
+.v-txt
+    h1, h2, h3, h4
+        &:not(:first-child)
+            margin-top: 1.4em;
+
+        &:not(:last-child)
+            margin-bottom: 0.4em;
+
+    h4
+        font-size: 1em;
+    h3
+        font-size: 1.1em;
+    h2
+        font-size: 1.2em;
+    h1
+        font-size: 1.3em;
+
+    p
+        &:not(:last-child)
+            margin-bottom: 1em;
+
+    ul, ol
+        padding-left: 1.5em;
+
+        &:not(:first-child)
+            margin-top: 1em;
+
+        &:not(:last-child)
+            margin-bottom: 2em;

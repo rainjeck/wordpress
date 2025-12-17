@@ -1,4 +1,3 @@
-import svg4everybody from 'svg4everybody';
 import Bouncer from 'formbouncerjs';
 // import IMask from 'imask';
 // import SwiperCore, { Navigation, Pagination } from 'swiper/core';
@@ -9,7 +8,6 @@ import Bouncer from 'formbouncerjs';
 // import Unitoggle from '../libs/unitoggle.js';
 // import Unimodal from '../libs/unimodal.js';
 
-window.svg4everybody = svg4everybody;
 window.Bouncer = Bouncer;
 // window.IMask = IMask;
 // window.Swiper = SwiperCore;
@@ -23,7 +21,6 @@ import form from './module/form';
     const module = {
         init() {
             console.log("It works!");
-            // svg4everybody();
 
             // this.toggler();
             // this.modal();

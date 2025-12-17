@@ -50,9 +50,9 @@ for one, key in $points
 
 $paddings = 0 5;
 $fontsize = 16;
-$brad = 1000 100 10;
-$icons = 16
-$zindex = 1 2 3 4 5
+$brad = 1000 10;
+$icons = 16;
+$zindex = 1 2 3 4 5;
 
 uidisplay($prefix = '')
     // Flex
@@ -69,6 +69,14 @@ uidisplay($prefix = '')
 
     .v-flexgrow-1{$prefix}
         flex-grow: 1;
+
+    .v-flexgrow-0{$prefix}
+        flex-grow: 0;
+
+    // order
+    for $one in 1 2 3 4 5
+        .v-order-{$one}{$prefix}
+            order: $one;
 
     // Display
     for $one in block inline-block inline none
@@ -105,11 +113,19 @@ uidisplay($prefix = '')
 
     // Margins & Paddings
     for $one in $paddings
+        .v-py-{$one}{$prefix}
+            padding-top: unit($one, 'px');
+            padding-bottom: unit($one, 'px');
+
         .v-pt-{$one}{$prefix}
             padding-top: unit($one, 'px');
 
         .v-pb-{$one}{$prefix}
             padding-bottom: unit($one, 'px');
+
+        .v-px-{$one}{$prefix}
+            padding-right: unit($one, 'px');
+            padding-left: unit($one, 'px');
 
         .v-pr-{$one}{$prefix}
             padding-right: unit($one, 'px');
@@ -117,11 +133,19 @@ uidisplay($prefix = '')
         .v-pl-{$one}{$prefix}
             padding-left: unit($one, 'px');
 
+        .v-my-{$one}{$prefix}
+            margin-top: unit($one, 'px');
+            margin-bottom: unit($one, 'px');
+
         .v-mt-{$one}{$prefix}
             margin-top: unit($one, 'px');
 
         .v-mb-{$one}{$prefix}
             margin-bottom: unit($one, 'px');
+
+        .v-mx-{$one}{$prefix}
+            margin-left: unit($one, 'px');
+            margin-right: unit($one, 'px');
 
         .v-ml-{$one}{$prefix}
             margin-left: unit($one, 'px');
@@ -146,14 +170,10 @@ uidisplay($prefix = '')
         margin-left: initial;
         margin-right: initial;
 
-    .v-mx-0{$prefix}
-        margin-left: 0;
-        margin-right: 0;
-
-    // Padding
-    .v-px-0{$prefix}
-        padding-left: 0;
-        padding-right: 0;
+    for $one in $gridPadding
+        .v-mx-out-{$one}{$prefix}
+            margin-left: -(unit($one, 'px'));
+            margin-right: -(unit($one, 'px'));
 
     // Width
     .v-w-100{$prefix}
@@ -201,6 +221,11 @@ uidisplay($prefix = '')
     for $one in $icons
         .v-ico-{$one}{$prefix}
             size( unit($one,'px'), unit($one,'px') );
+
+    // overflow
+    for $one in hidden initial
+        .v-overflow-{$one}{$prefix}
+            overflow: $one;
 
 uidisplay();
 

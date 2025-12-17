@@ -36,7 +36,7 @@ class Setup
         load_theme_textdomain('tnwpt', get_template_directory() . '/languages');
 
         // Custom Image Size
-        // add_image_size('thumblarge', 500, 500, ['center', 'center']);
+        // add_image_size('thumblarge', 500, 500, false);
         // add_image_size('small', 768, 768, false);
 
         remove_image_size('1536x1536');
@@ -72,10 +72,10 @@ class Setup
         wp_deregister_style('classic-theme-styles');
         wp_deregister_style('global-styles');
 
-        $ver = null;
+        $ver = date('HdYm');
 
         if ( is_user_logged_in() ) {
-            $ver = time();
+            $ver = date('HdYmi');
         }
 
         wp_enqueue_style('theme-app', "{$url}/assets/css/main.css", [], $ver, '');

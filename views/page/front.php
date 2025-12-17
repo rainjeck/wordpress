@@ -25,9 +25,9 @@ use tnwpt\helpers\View;
             </div>
 
             <div class="v-cbx is-cbx v-fg v-d-block">
-                <label class="v-cbx-wrapper v-d-flex v-ai-center v-flex-nowrap">
+                <label class="v-cbx-wrapper v-d-inline-flex v-ai-center v-flex-nowrap">
                     <input type="checkbox" name="type[]" value="checkbox">
-                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-16"></span>
+                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-5"></span>
                     <span class="v-cbx-txt">checkbox</span>
                 </label>
             </div>
@@ -35,16 +35,16 @@ use tnwpt\helpers\View;
             <div class="v-cbx is-radio v-fg is-cbx v-d-block">
                 <label class="v-cbx-wrapper v-d-flex v-ai-center v-flex-nowrap">
                     <input type="radio" name="type[]" value="radio" checked>
-                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-16"></span>
+                    <span class="v-cbx-box v-icon v-d-flex v-ai-center v-jc-center v-mr-5"></span>
                     <span class="v-cbx-txt">radio</span>
                 </label>
             </div>
 
-            <div class="v-form-result-success v-status-success v-ta-center v-mb-24 js-result-success">
+            <div class="v-form-result-success v-color-success v-ta-center v-mb-15 js-result-success">
                 Спасибо! Ваша заявка отправлена
             </div>
 
-            <div class="v-form-result-error v-status-error v-ta-center v-mb-24 js-result-error">
+            <div class="v-form-result-error v-color-error v-ta-center v-mb-15 js-result-error">
                 Ошибка! Что-то пошло не так
             </div>
 
