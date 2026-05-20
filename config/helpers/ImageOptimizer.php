@@ -10,6 +10,7 @@ class ImageOptimizer
 
         add_filter('jpeg_quality', [ &$this, 'jpeg_quality' ], 10, 1);
         add_filter('big_image_size_threshold', '__return_false');
+        add_filter('wp_image_editors', [&$this, 'filter_wp_image_editors']);
 
         $this->checkOriginalImagesFolder();
 
@@ -20,6 +21,16 @@ class ImageOptimizer
 
         add_action('wp_ajax_regenerateThumbs', [ &$this, 'regenerateThumbsAjax']);
         add_action('wp_ajax_regenerateThumbsStatus', [ &$this, 'regenerateThumbsStatus']);
+    }
+
+    public function filter_wp_image_editors($image_editors)
+    {
+        $image_editors = [
+            'WP_Image_Editor_GD',
+            // 'WP_Image_Editor_Imagick',
+        ];
+
+        return $image_editors;
     }
 
     public function setupCron()
@@ -128,7 +139,7 @@ class ImageOptimizer
             if (!in_array($ext, ['png', 'jpg', 'jpeg', 'webp'])) continue;
 
             $filename = pathinfo($file, PATHINFO_BASENAME);
-            $original_file = "{$upload_dir}/originals/$filename";
+            $original_file = "{$upload_dir}/originals/{$filename}";
 
             if ( !file_exists($original_file) ) {
                 copy($file, $original_file);
@@ -149,7 +160,7 @@ class ImageOptimizer
 
             $file = get_attached_file( $id );
             $filename = pathinfo($file, PATHINFO_BASENAME);
-            $original_file = "{$upload_dir}/originals/$filename";
+            $original_file = "{$upload_dir}/originals/{$filename}";
             $to_copy = "{$upload_dir}/${filename}";
 
             $ext = pathinfo($file, PATHINFO_EXTENSION);
