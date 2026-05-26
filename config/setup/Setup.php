@@ -8,6 +8,8 @@ class Setup
 {
     public function register()
     {
+        add_action('init', [&$this, 'action_init']);
+
         add_action('after_setup_theme', [&$this, 'action_after_setup_theme']);
 
         add_filter('image_size_names_choose', [&$this, 'filter_image_size_names_choose']);
@@ -17,6 +19,13 @@ class Setup
         add_filter('style_loader_src', [&$this, 'filter_enqueue_loader_src'], 10, 2 );
         add_filter('script_loader_src', [&$this, 'filter_enqueue_loader_src'], 10, 2 );
         add_filter('style_loader_tag', [$this, 'filter_style_loader_tag'], 10, 4 );
+    }
+
+    public function action_init()
+    {
+        remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+        remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+        remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
     }
 
     public function action_after_setup_theme()
@@ -70,7 +79,6 @@ class Setup
 
         wp_deregister_style('wp-block-library');
         wp_deregister_style('classic-theme-styles');
-        wp_deregister_style('global-styles');
 
         $ver = date('HdYm');
 
